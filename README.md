@@ -78,3 +78,25 @@ Rung 2 adds **editorial themed office departments**, not source-certified depend
 ### Acceptance
 
 Run `npm test` and `npm run build`. Test changing several floors, clicking map locations, importing an Agentora plan, inspecting live GitHub CI on one desk, and reduced-motion mode in a browser. A green CI build of this code alone is **not** confirmation that the deployed interface has passed a manual browser check.
+
+
+## Rung 3: Fleet Mission Board (read-only)
+
+The Mission Board turns an imported Agentora Fleet R0.2 plan into a navigable review surface:
+
+- Open **Mission Board** from the top navigation or the Missions tab. When no plan is loaded, the board explains how to produce `fleet-plan.json` from Agentora's read-only Actions workflow, instead of inventing tasks.
+- See the **complete bounded Agentora queue**, no silent truncation after the first 200 entries.
+- Filter by project name, check, department and local review state. Pin items and mark them **reviewed locally** without changing anything on GitHub or Agentora.
+- Select **Visit desk** to return to the relevant themed floor and inspect the public repository.
+- Select **Copy review handoff** to copy an explicitly non-executable text summary with the project, task, observed source commit and snapshot date. The operator must review current HEAD, required CI and acceptance evidence before creating a real job.
+- Re-importing a new plan resets local pin/review flags; the board never says a task was completed, approved, merged or dispatched.
+
+The Mission Board is a client-side React surface. It uses only the existing public repository catalog and manually imported public-only JSON. **There are no new GitHub API reads, API tokens, mutations, background tasks or dispatch permissions.** Pin and review decisions live only in React memory for the current browser session. Reloading the page clears them.
+
+The module `src/missions.mjs` has deterministic queue IDs, public-repository binding, source-SHA tracking, filters, session-only triage counts and explicit non-authorization handoffs. `tests/missions.test.mjs` tests the trust boundary, search, priorities, duplicate task handling and an imported 230-task plan.
+
+### Field acceptance
+
+After merging, validate in the deployed browser: open the Mission Board with no plan loaded, import a public R0.2 plan, inspect the full job list, filter by department, pin and mark locally reviewed, copy a review-only handoff, visit the correct project desk, and confirm browser refresh clears local annotations.
+
+**No job is verified complete** by any of the R0.1, R0.2 or R0.3 views. Verification and governed dispatch remain separate Agentora work.
