@@ -220,3 +220,31 @@ Do not enter secrets, authentication tokens or private information into checklis
 CI must pass Node tests and Vite production build. Following deployment, inspect a WebXR desk, create a WebXR checklist, mark one item reviewed and add a note, export it, refresh, reimport, and confirm the note returns with **zero verified completion**. Switch to a research or OS project and confirm different acceptance checks. Check source rebinding resets review ticks. A green CI job alone does not establish browser functionality.
 
 **Future Agentora step:** accept operator-reviewed contract manifests with a separate authentication and approval gate, run the correct checks against immutable source revisions, verify receipts independently, then and only then authorize controlled execution/merge.
+
+## Rung 8: Local verification handoff to Agentora
+
+The Rung 7 completion contract can now produce a **strict, SHA-pinned review request for Agentora Fleet R0.3**, using a local JSON download. Nothing is automatically transferred between websites, and no GitHub write permission is used.
+
+### Step-by-step
+
+1. At a public repository's desk, select its actual deliverable types and create a completion contract. These choices are acceptance requirements, not test results.
+2. Click **Check current CI and PRs** to perform a fresh public GitHub read of the default branch HEAD. The selected desk must match the public repository name and numeric ID.
+3. If the contract source matches the newly observed HEAD and the observation is less than **15 minutes** old, the button **Download Agentora verification request** becomes available.
+4. Download the JSON file. It includes the immutable SHA, timestamp, repository ID, selected surfaces and required checks with local-review flags, plus explicitly disabled execution, verification and merge authority. It **does not include local review notes**.
+5. In a local Agentora checkout with Fleet R0.3 installed, run:
+
+    python scripts/fleet_r03_acceptance_intake.py --input /path/to/phimada-verification-request-BTM.json --output-dir local-fleet-intake
+
+6. Inspect the generated **verification-intake.json**. Its status is **HELD_FOR_OPERATOR_REVIEW**, every check is **NOT_RUN**, HEAD has **not** been independently revalidated, and zero software is certified complete.
+
+A mismatched or stale HEAD must be rechecked. If the project code changed, rebind the Rung 7 contract and review the requirements again. The download is refused when SHA, catalog identity or operator authority flags are invalid.
+
+### What this does not do
+
+It does **not** automatically send data to Agentora, create GitHub issues, dispatch workers, run build checks, publish anything, merge PRs, or certify any product. The intake's digest identifies exactly which file was processed but does **not authenticate the request's author**. Independent source verification and scoped approval are future explicit gates.
+
+The pair of PRs is [PhiMada Prime Rung 8](https://github.com/MichaelWave369/PhiMadaPrime/pull/8) and [Agentora Fleet R0.3](https://github.com/MichaelWave369/Agentora/pull/77). **Merge Agentora first**, then PhiMada, so the documented local intake CLI is present when the office export becomes live.
+
+### Testing
+
+Run npm test and npm run build. After deployment, create a WebXR contract, inspect a current GitHub HEAD, download a request, confirm no notes were exported, then process it through Agentora's offline intake CLI. The run must yield **NOT_RUN** receipts, and it must not modify either repository.

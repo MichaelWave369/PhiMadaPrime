@@ -11,6 +11,7 @@ import { fetchPublicSnapshot } from "./public-feed.mjs";
 import { fetchPublicCoverage, coverageFailureReason } from "./coverage.mjs";
 import { TriageCoverage, TriageForDesk } from "./triage-parts.jsx";
 import { ContractDesk, ContractDirectory } from "./contract-parts.jsx";
+import { prepareVerificationRequest, verificationHandoffMessage } from "./verification-request.mjs";
 import { newContract, updateContract, rebaseContract, observedSourceSha, serializeContracts, parseContracts, MAX_CONTRACT_FILE_BYTES } from "./contracts.mjs";
 import { CoverageStrip, CoverageSidebar, CoverageInspector } from "./coverage-parts.jsx";
 import { missionQueue } from "./missions.mjs";
@@ -80,7 +81,8 @@ function Desk({ repo, position, evidence, signal, cohort, onSelect }) {
 }
 
 function DetailPanel({ repo, evidence, plan, audit, signal, cohort,
-  contract, sourceSha, onCreateContract, onToggleContract, onNoteContract,
+  contract, sourceSha, liveSignal, onExportVerification,
+  onCreateContract, onToggleContract, onNoteContract,
   onRebaseContract, onDeleteContract,
   signalLoading, signalError, onCheckSignal, onClose, onJump }) {
   const closeRef = useRef(null);
@@ -112,6 +114,7 @@ function DetailPanel({ repo, evidence, plan, audit, signal, cohort,
         <CoverageInspector record={cohort} />
         <ContractDesk key={repo.id} repo={repo} contract={contract}
           suggestedTypes={evidence?.surfaces} sourceSha={sourceSha}
+          liveSignal={liveSignal} onExportVerification={onExportVerification}
           onCreate={onCreateContract} onToggle={onToggleContract}
           onSetNote={onNoteContract} onRebase={onRebaseContract}
           onDelete={onDeleteContract} />
@@ -411,6 +414,24 @@ function App() {
       return next;
     });
   }
+  function downloadVerificationRequest(repo) {
+    try {
+      const raw = prepareVerificationRequest(
+        repo, contracts[repo.id], signals[repo.id]);
+      const blob = new Blob([raw], { type: "application/json" });
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = "phimada-verification-request-" + repo.name + ".json";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
+      setMessage("Agentora verification request downloaded locally. No job was submitted, checked or merged.");
+    } catch (error) {
+      setMessage(verificationHandoffMessage(error));
+    }
+  }
   function exportLocalContracts() {
     try {
       const raw = serializeContracts(contracts, rows);
@@ -692,7 +713,7 @@ function App() {
             </>}
           <footer className="main-footer">
             <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
-            <span>ΦMADA PRIME R7 · LOCAL COMPLETION CONTRACTS / NO AUTOMATED DISPATCH</span>
+            <span>ΦMADA PRIME R8 · SOURCE-BOUND AGENTORA INTAKE / NO AUTOMATED DISPATCH</span>
           </footer>
           {message && <div className="toast" role="status">{message}
             <button type="button" onClick={() => setMessage("")} aria-label="Dismiss message">×</button></div>}
@@ -703,6 +724,8 @@ function App() {
         audit={audit} plan={plan} signal={signals[selected.id]}
         cohort={coverage?.byRepo[selected.name]}
         contract={contracts[selected.id]}
+        liveSignal={signals[selected.id]}
+        onExportVerification={() => downloadVerificationRequest(selected)}
         sourceSha={observedSourceSha(signals[selected.id],
           coverage?.byRepo[selected.name],
           plan?.freshness === "RECENT" ? plan.byRepo?.[selected.name] : null)}
