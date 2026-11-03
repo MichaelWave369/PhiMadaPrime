@@ -380,6 +380,66 @@ function App() {
     x.completion === "UNVERIFIED").length;
   const missions = useMemo(() => missionQueue(plan, rows), [plan, rows]);
   const taskCount = missions.length;
+  const savedContracts = Object.values(contracts).filter(c =>
+    rows.some(r => !r.exampleOnly && r.id === c.repository_id &&
+      r.full_name === c.repository));
+  function createLocalContract(repo, types) {
+    const sha = observedSourceSha(signals[repo.id], coverage?.byRepo[repo.name],
+      plan?.byRepo?.[repo.name]);
+    const contract = newContract(repo, types, sha);
+    setContracts(previous => ({ ...previous, [repo.id]: contract }));
+    setMessage("Local completion checklist prepared for " + repo.name +
+      ". No independent evidence has been verified.");
+  }
+  function patchLocalContract(repo, checkId, patch) {
+    setContracts(previous => {
+      const contract = previous[repo.id];
+      if (!contract) return previous;
+      return { ...previous, [repo.id]: updateContract(contract, checkId, patch) };
+    });
+  }
+  function rebindLocalContract(repo, sha) {
+    setContracts(previous => previous[repo.id] ?
+      { ...previous, [repo.id]: rebaseContract(previous[repo.id], sha) } : previous);
+    setMessage("Contract rebound to observed SHA; local review ticks reset.");
+  }
+  function discardLocalContract(repo) {
+    setContracts(previous => {
+      const next = { ...previous };
+      delete next[repo.id];
+      return next;
+    });
+  }
+  function exportLocalContracts() {
+    try {
+      const raw = serializeContracts(contracts, rows);
+      const url = URL.createObjectURL(new Blob([raw], { type: "application/json" }));
+      const element = document.createElement("a");
+      element.href = url;
+      element.download = "phimada-local-completion-contracts.json";
+      document.body.appendChild(element);
+      element.click();
+      element.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+      setMessage("Local contracts exported to JSON. No data was uploaded.");
+    } catch {
+      setMessage("Contract export refused. Check current public catalog identity.");
+    }
+  }
+  async function importLocalContracts(event) {
+    const file = event.target.files?.[0];
+    if (contractUploadRef.current) contractUploadRef.current.value = "";
+    if (!file) return;
+    try {
+      if (file.size > MAX_CONTRACT_FILE_BYTES) throw Error("CONTRACT_FILE_TOO_LARGE");
+      const imported = parseContracts(await file.text(), rows);
+      setContracts(imported);
+      setMessage("Imported " + Object.keys(imported).length +
+        " local completion contracts. None certified or dispatched.");
+    } catch (error) {
+      setMessage("Local contract import refused: " + (error?.message || "Invalid file"));
+    }
+  }
   const markReviewed = id => setReviewedJobs(prev => ({ ...prev, [id]: !prev[id] }));
   const togglePinned = id => setPinnedJobs(prev => ({ ...prev, [id]: !prev[id] }));
   async function inspectLiveRepo(repo) {
