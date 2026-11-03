@@ -1,0 +1,52 @@
+/* Rung 7: operator-only acceptance contracts. Review ticks never certify software. */
+.contract-desk{margin:15px 0;padding:13px 12px;background:#202c31;border:1px solid #6b8d8f;
+  border-radius:7px;color:#e9e2d6}
+.contract-desk h3,.contract-directory h3{margin:0 0 10px;color:#c7e7b2;
+  font:bold 13px monospace}
+.contract-desk p,.contract-directory p{font:11px/1.6 monospace;color:#c3c9c5}
+.contract-desk small{font:10px/1.5 monospace;color:#adb7b5}
+.contract-intro{display:flex;flex-direction:column;gap:6px;padding:12px;background:#24363c;
+  border-radius:5px;border:1px solid #5b7c83}
+.contract-intro strong{font:bold 12px monospace;color:#d6efcb}
+.contract-intro span{font:11px/1.5 monospace;color:#c8d9d8}
+.contract-type-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;
+  border:1px solid #638183;border-radius:6px;padding:13px 9px;margin:12px 0}
+.contract-type-choices legend{font:bold 11px monospace;color:#e5deaa}
+.contract-type-choices label{font:11px/1.4 monospace;color:#e3ded4;display:flex;align-items:start;gap:6px;
+  cursor:pointer}
+.contract-type-choices input{accent-color:#82c8a3;flex:none;margin-top:2px}
+.contract-action,.contract-danger{background:#435f52;color:#f2fbe8;border:1px solid #93c4a6;
+  border-radius:5px;padding:10px;font:bold 11px monospace}
+.contract-action:hover:not(:disabled){background:#527c64}
+.contract-danger{background:#4e3438;color:#ffd5cd;border-color:#bc807b}
+.contract-danger:hover{background:#714549}
+.contract-action:disabled{opacity:.5;cursor:not-allowed}
+.contract-header{display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:9px;background:#293b39;border-radius:5px}
+.contract-header strong{color:#eaf3c7;font:bold 12px monospace}
+.contract-header span{color:#a9dac8;font:10px monospace;text-align:right}
+.contract-warning{border-left:3px solid #cda56c;padding:10px;background:#373b32;color:#f0d8b9!important}
+.contract-types{display:flex;flex-wrap:wrap;gap:5px;margin:11px 0}
+.contract-types span{background:#374b50;color:#c8edf0;padding:4px 7px;border:1px solid #577a82;
+  font:10px monospace;border-radius:4px}
+.contract-checks{display:flex;flex-direction:column;gap:11px;margin:14px 0}
+.contract-check{background:#2a3437;border:1px solid #577477;border-radius:6px;padding:10px}
+.contract-check label{display:flex;align-items:flex-start;gap:8px;color:#f0e9d8;
+  font:11px/1.45 monospace;cursor:pointer}
+.contract-check label input{flex:none;accent-color:#83ccaa;margin-top:2px}
+.contract-check textarea{margin-top:9px;display:block;width:100%;max-width:100%;min-height:52px;
+  resize:vertical;background:#181f28;color:#e5eeeb;border:1px solid #587177;
+  border-radius:4px;padding:8px;font:11px/1.4 monospace}
+.contract-action-row{display:flex;gap:9px;flex-wrap:wrap}
+.contract-desk .contract-safety,.contract-directory .contract-safety{display:block;
+  border-top:1px solid #536961;padding-top:10px;margin-top:12px;color:#bbb7ad}
+.contract-directory{background:#242f32;border:1px solid #5d807e;border-radius:6px;padding:13px}
+.contract-directory-list{display:flex;flex-direction:column;gap:6px;max-height:330px;overflow:auto}
+.contract-directory-list button{background:#2b3d44;border:1px solid #6b9394;color:#e7f1e7;
+  padding:9px;border-radius:4px;text-align:left;display:flex;flex-direction:column;gap:3px}
+.contract-directory-list button:hover{background:#3d5357;border-color:#b4dbd0}
+.contract-directory-list button strong{font:12px monospace}
+.contract-directory-list button small{margin:0;color:#a7c9c8;font:10px monospace}
+.contract-export-controls{display:grid;grid-template-columns:1fr;gap:6px;
+  padding-bottom:9px;border-bottom:1px solid #55485a}
+@media(max-width:620px){.contract-type-choices{grid-template-columns:1fr}}
