@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { filterMissions, handoffText, missionStats } from "./missions.mjs";
 import { WINGS } from "./tower.mjs";
 import { SchedulerPreview } from "./scheduler-preview.jsx";
+import { EvidenceBay } from "./evidence-bay.jsx";
 
 export function MissionBoard({ queue, plan, catalog, reviewed, pinned,
   onReview, onPin, onVisit, onClose }) {
@@ -36,6 +37,7 @@ export function MissionBoard({ queue, plan, catalog, reviewed, pinned,
         ← Return to office
       </button>
     </header>
+    <EvidenceBay catalog={catalog} />
     <SchedulerPreview queue={queue} plan={plan} catalog={catalog} />
     <div className="mission-stat-grid" aria-label="Review-only mission counts">
       <div><strong>{stats.proposed}</strong><span>Proposed jobs</span></div>
