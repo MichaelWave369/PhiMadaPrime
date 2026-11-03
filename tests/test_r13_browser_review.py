@@ -150,8 +150,9 @@ class R13ReviewTests(unittest.TestCase):
 
     def test_tampered_zip_fails_github_sha256_first(self):
         raw = pack()
-        forged = pack(receipt({"merge_authorized": True}))
-        self.assertHeld(forged, GitHub(raw), "ARTIFACT_SHA256_MISMATCH")
+        forged = bytearray(raw)
+        forged[-10] ^= 1
+        self.assertHeld(bytes(forged), GitHub(raw), "ARTIFACT_SHA256_MISMATCH")
 
     def test_same_digest_but_forged_authority_is_rejected(self):
         for key in ("merge_authorized", "product_verified",
