@@ -2,6 +2,57 @@
 
 **An armada of Φ software. One living virtual office.**
 
-A read-only, multi-floor pixel-art fleet observatory. Each floor holds exactly twelve repository stations. Initial implementation arrives by pull request.
+ΦMada Prime is a playful, **read-only React command tower** for the public `MichaelWave369` GitHub repository fleet. It does not execute agents, change code, merge pull requests or call private GitHub APIs.
 
-See upcoming Rung 1 for browser implementation, privacy boundaries, and verified source data.
+## Rung 1: Twelve desks per level
+
+- **Exactly 12 workstations per floor:** six along the upper wall, six along the lower wall. Vacant seats remain visible on the final level.
+- **Automatic skyscraper growth:** public repositories are fetched from the fully paginated GitHub public owner endpoint. Each twelve additional stations automatically creates another floor.
+- **First floor: flagship bridge:** Agentora, PhiOS, BTM, FieldConstellation, PhiServe, SuperPhiVessel, PaperGhost, Blackout, RacetoOblivion, Domistika, SparkTheSubstrate and PhiOperator, when available.
+- **Working elevator:** floor directory, previous/next buttons, and left/right keyboard arrows. Search filters desks, with floor counts recalculated.
+- **Clickable desk inspector:** repository metadata, GitHub link, optional HTTPS homepage, and any safe imported Fleet evidence.
+- **Local-only evidence handoff:** import an exported `fleet-audit.json` (Agentora R0.1) and/or `fleet-plan.json` (Agentora R0.2) into the browser. Nothing is uploaded, cached, or published.
+- **Pixel-art identity:** original HTML/CSS virtual office with characters, workstation monitors, Chief of Staff / Fleet Control, cozy lounge, arcade and retro details. No external art or fonts.
+- **Responsive and accessible:** keyboard-operable desk stations and elevator, visible focus outlines, reduced-motion settings, inspector Escape handling.
+
+## Run locally
+
+Node.js 22 or newer is recommended.
+
+```sh
+npm install
+npm test
+npm run dev
+npm run build
+npm run preview
+```
+
+The production build uses relative asset paths so the same static files work under `/PhiMadaPrime/` on GitHub Pages and from another mounted subdirectory.
+
+## Publish on GitHub Pages
+
+After the Rung 1 PR is merged, open repository **Settings → Pages → Build and deployment** and choose **GitHub Actions**. The `Publish PhiMada Prime` workflow builds and deploys on commits to `main`. Once GitHub Pages reports success, the expected address is:
+
+https://michaelwave369.github.io/PhiMadaPrime/
+
+**Do not assume that address is live until the actual deployment succeeds.** CI building a bundle is not a browser acceptance test.
+
+## Truth and privacy boundaries
+
+The public GitHub API is used to discover and display **public owner repositories only**. API pagination must exhaust successfully, or the office falls back to **12 explicitly labeled curated examples**, never a deceptive partial "full" inventory. It uses no personal access tokens.
+
+Desk lights show evidence presence, not code health: **UNVERIFIED**, **AUDIT FOUND**, **NOT AUDITED**, **ARCHIVED**, or **EXAMPLE**. None of these means finished, merged, released, running, or tested on-device.
+
+An imported report is validated against schema, owner, public visibility, repository identity and no-authority flags. Private input and dispatchable tasks are rejected. Source data remains untrusted: SHA/time metadata is *not* independent verification. Audit/plan data is kept in temporary React memory, not uploaded and not stored between sessions. The public office never publishes private repository names or contents.
+
+This visual application is **not a CI orchestrator, agent runtime or work dispatcher**. The backend stays with Agentora, and future authorization must remain separate from this display.
+
+## Roadmap
+
+- **R1 (this PR):** multi-floor pixel office, GitHub public inventory, local Agentora audit/plan inspector.
+- **R2:** building zones, floor minimap, project relationships, better status provenance, inventory snapshots, project assignment views.
+- **R3:** optional authenticated read-only Agentora gateway with approved data contracts and private/local-only deployment mode.
+- **R4:** human-approved job dispatch, exact-SHA checks, independent validation and governed PR handoff.
+- **R5:** optional shared VR/XR tower via PhiOS XR and Gen.E-Wrist, without silently inheriting merge authority.
+
+**Build outward. Circle back. Compile forward.**
