@@ -248,3 +248,9 @@ The pair of PRs is [PhiMada Prime Rung 8](https://github.com/MichaelWave369/PhiM
 ### Testing
 
 Run npm test and npm run build. After deployment, create a WebXR contract, inspect a current GitHub HEAD, download a request, confirm no notes were exported, then process it through Agentora's offline intake CLI. The run must yield **NOT_RUN** receipts, and it must not modify either repository.
+
+## Rung 18: NBG Research Council receipts in the existing Evidence Bay
+
+The Mission Board's existing **Agentora / Pilot Evidence Bay** now includes a nested **R18 / NBG RESEARCH COUNCIL** panel for manually selected, public-synthetic NBGPocketMesh E1 records. It checks exactly three roles (ThinkTank, PocketBrain, Vessie), strict no-authority/source-tier flags, E0 parent linkage, source SHA declaration format and Web Crypto SHA-256 of inner/outer receipts. The import remains in browser memory only, never touches model providers, private chat, Agentora, GitHub APIs or fleet-completion contracts, and **never promotes an internally valid hash into authenticated evidence**.
+
+The [R18 review guide](docs/rung-18-council-evidence.md) documents operator inspection and mandatory deployed-browser acceptance. The tests use an actual producer-generated synthetic E1-D fixture from NBGPocketMesh PR #13 pinned at source `ac471885cc4f5a2aae95358ae79122bddf3f8d67`, with adversarial forged approvals and negative cases. No real NBG physics, model execution, consumer run, dispatch, merge or product completion is claimed. Run `npm test` and `npm run build`.
