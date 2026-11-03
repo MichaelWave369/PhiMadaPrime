@@ -48,6 +48,7 @@ jobs:
         run: |
           npm test
           python -m unittest discover -s tests -p 'test_public_snapshot.py' -v
+          python -m unittest discover -s tests -p 'test_coverage_cohort.py' -v
       - name: Build browser application
         run: npm run build
       - name: Generate fresh public-owner Agentora pilot audit
@@ -63,6 +64,11 @@ jobs:
       - name: Validate public-only evidence and attach integrity manifest
         run: |
           python scripts/verify_public_fleet.py --source fleet-artifacts --out dist/fleet --agentora-sha 502115508421eb1c98a6c05a79d04a9e432b8b27
+      - name: Deep-scan bounded public rotating cohort and update coverage ledger
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/coverage_cohort.py --agentora-root agentora-fleet --output dist/fleet/coverage.json --manifest dist/fleet/manifest.json --cohort-size 24
       - name: Upload Pages artifact with only validated public pilot evidence
         uses: actions/upload-pages-artifact@v3
         with:
