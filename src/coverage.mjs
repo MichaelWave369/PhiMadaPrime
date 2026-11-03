@@ -156,3 +156,25 @@ export async function fetchPublicCoverage(rows, manifest, fetcher = fetch, optio
   if (digest !== file.sha256) throw new Error("COVERAGE_HASH_MISMATCH");
   return parsePublicCoverage(raw, manifest, rows, options.now ?? Date.now());
 }
+
+export function coverageFailureReason(error) {
+  const code = typeof error?.message === "string" ? error.message : "";
+  const explanations = {
+    COVERAGE_MANIFEST_UNAVAILABLE: "The public manifest does not contain a valid rolling coverage entry.",
+    COVERAGE_FEED_UNAVAILABLE: "The published coverage file could not be fetched.",
+    COVERAGE_SNAPSHOT_STALE: "The published scan is too old to be used as current evidence.",
+    COVERAGE_SIZE_MISMATCH: "The downloaded coverage file size differs from its published manifest.",
+    COVERAGE_HASH_MISMATCH: "Coverage integrity check failed. No records were loaded.",
+    COVERAGE_MANIFEST_PROVENANCE_INVALID: "Coverage totals and publication metadata do not agree.",
+    COVERAGE_TOTALS_INVALID: "Published observed/never/stale totals do not reconcile.",
+    COVERAGE_ROW_INVALID: "A published repository observation has an invalid record.",
+    COVERAGE_SCHEMA_OR_COUNTS_INVALID: "The coverage schema or inventory count is incompatible.",
+    COVERAGE_SNAPSHOT_FUTURE: "The coverage timestamp is ahead of the local clock.",
+    PUBLIC_FEED_INTEGRITY_UNAVAILABLE: "Secure browser digest support is unavailable.",
+  };
+  return {
+    code: Object.hasOwn(explanations, code) ? code : "COVERAGE_READ_FAILED",
+    message: Object.hasOwn(explanations, code) ?
+      explanations[code] : "Coverage could not be validated. Try reloading it without assuming any repo is unhealthy."
+  };
+}

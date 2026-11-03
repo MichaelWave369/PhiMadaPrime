@@ -8,7 +8,8 @@ import { fetchRepoSignals, signalsFresh } from "./signals.mjs";
 import { ChiefOfStaff, SignalInspector, WingRibbon } from "./office-parts.jsx";
 import { MissionBoard } from "./mission-board.jsx";
 import { fetchPublicSnapshot } from "./public-feed.mjs";
-import { fetchPublicCoverage } from "./coverage.mjs";
+import { fetchPublicCoverage, coverageFailureReason } from "./coverage.mjs";
+import { TriageCoverage, TriageForDesk } from "./triage-parts.jsx";
 import { CoverageStrip, CoverageSidebar, CoverageInspector } from "./coverage-parts.jsx";
 import { missionQueue } from "./missions.mjs";
 import { MAX_ARTIFACT_BYTES, parseOfficeArtifact, safeTime } from "./audit.mjs";
@@ -16,6 +17,7 @@ import "./office.css";
 import "./living.css";
 import "./mission-board.css";
 import "./coverage.css";
+import "./triage.css";
 
 const TABS = ["Directory", "Signals", "Coverage", "Missions"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
@@ -102,6 +104,7 @@ function DetailPanel({ repo, evidence, plan, audit, signal, cohort,
         <SignalInspector repo={repo} signal={signal} loading={signalLoading}
           error={signalError} onCheck={onCheckSignal} />
         <CoverageInspector record={cohort} />
+        <TriageForDesk repo={repo} record={cohort} />
         {repo.exampleOnly ? (
           <p className="caution">This is a curated example while GitHub is unavailable. No live repository information has been verified.</p>
         ) : (
@@ -237,6 +240,7 @@ function App() {
   const [publishedStatus, setPublishedStatus] = useState("waiting");
   const [coverage, setCoverage] = useState(null);
   const [coverageStatus, setCoverageStatus] = useState("waiting");
+  const [coverageError, setCoverageError] = useState(null);
   const uploadRef = useRef(null);
   async function refreshCatalog() {
     setCatalogState("loading");
@@ -249,6 +253,7 @@ function App() {
       setPublishedStatus("waiting");
       setCoverage(null);
       setCoverageStatus("waiting");
+      setCoverageError(null);
       setCatalogState("live");
       setMessage("Public GitHub inventory loaded: " + discovered.length + " repos.");
     } catch {
@@ -257,6 +262,7 @@ function App() {
       setAudit(null); setPlan(null); setSignals({});
       setPublishedMeta(null); setPublishedStatus("unavailable");
       setCoverage(null); setCoverageStatus("unavailable");
+      setCoverageError({ code: "CATALOG_UNAVAILABLE", message: "Public catalog unavailable; no cohort data will be inferred." });
       setMessage("Live public inventory unavailable. Showing twelve labeled examples only.");
     }
   }
@@ -266,6 +272,7 @@ function App() {
     let cancelled = false;
     setPublishedStatus("loading");
     setCoverageStatus("loading");
+    setCoverageError(null);
     fetchPublicSnapshot(rows).then(async snapshot => {
       if (cancelled) return;
       // A user-selected local report must not be silently replaced by the feed.
@@ -278,18 +285,22 @@ function App() {
         if (!cancelled) {
           setCoverage(observed);
           setCoverageStatus("ready");
+          setCoverageError(null);
         }
-      } catch {
+      } catch (error) {
         if (!cancelled) {
           setCoverage(null);
           setCoverageStatus("unavailable");
+          setCoverageError(coverageFailureReason(error));
         }
       }
-    }).catch(() => {
+    }).catch((error) => {
       if (cancelled) return;
       setPublishedStatus("unavailable");
       setCoverage(null);
       setCoverageStatus("unavailable");
+      setCoverageError({ code: "PILOT_FEED_UNAVAILABLE",
+        message: "The Agentora pilot snapshot failed validation; coverage cannot be loaded from its manifest." });
     });
     return () => { cancelled = true; };
   }, [catalogState, rows]);
@@ -305,17 +316,41 @@ function App() {
       setPinnedJobs({});
       setPublishedStatus("ready");
       setCoverageStatus("loading");
+      setCoverageError(null);
       try {
         setCoverage(await fetchPublicCoverage(rows, snapshot.manifest));
         setCoverageStatus("ready");
-      } catch {
+        setCoverageError(null);
+        setMessage("Published public pilot and rolling coverage loaded. No work executed.");
+      } catch (error) {
         setCoverage(null);
         setCoverageStatus("unavailable");
+        setCoverageError(coverageFailureReason(error));
+        setMessage("Pilot loaded, but rolling coverage failed validation. Check the Coverage tab.");
       }
-      setMessage("Published pilot and available rolling coverage loaded; no work executed.");
     } catch {
       setPublishedStatus("unavailable");
       setMessage("Published public pilot unavailable or stale. Existing local evidence was not changed.");
+    }
+  }
+  async function retryPublishedCoverage() {
+    if (catalogState !== "live" || coverageStatus === "loading") return;
+    setCoverageStatus("loading");
+    setCoverageError(null);
+    try {
+      // Recheck manifest as well as coverage. Handles a deployment race or old browser cache.
+      const snapshot = await fetchPublicSnapshot(rows);
+      const result = await fetchPublicCoverage(rows, snapshot.manifest);
+      setCoverage(result);
+      setCoverageStatus("ready");
+      setCoverageError(null);
+      setPublishedMeta(snapshot.manifest);
+      setMessage("Published rolling coverage revalidated. No jobs created.");
+    } catch (error) {
+      setCoverage(null);
+      setCoverageStatus("unavailable");
+      setCoverageError(coverageFailureReason(error));
+      setMessage("Rolling coverage still unavailable. Review the diagnostic in Coverage.");
     }
   }
   const filtered = useMemo(() => rows.filter(repo =>
@@ -445,11 +480,13 @@ function App() {
             </div>
           </> : activeTab === "Coverage" ? <>
             <CoverageSidebar coverage={coverage} status={coverageStatus}
+              error={coverageError?.message} onRetry={retryPublishedCoverage}
               floors={allFloors} onVisitFloor={level => {
                 setFloor(level);
                 setActiveTab("Directory");
                 setBoardOpen(false);
               }} />
+            {coverage && <TriageCoverage coverage={coverage} rows={rows} onJump={jumpToRepo} />}
           </> : activeTab === "Missions" ? <>
             <div className="signal-feed">
               <h3>Mission Control</h3>
@@ -472,6 +509,8 @@ function App() {
               {publishedMeta && <p className="feed-coverage">Published pilot coverage:
                 {publishedMeta.deep_audited_count} of {publishedMeta.inventory_count} public repos.
                 Generated {safeTime(publishedMeta.generated_utc)}. No completed software certified.</p>}
+              {coverageError && <p className="coverage-error" role="status">
+                Rolling coverage: {coverageError.code}. {coverageError.message}</p>}
               <h3>Desk checks performed</h3>
               {Object.values(signals).length === 0 ?
                 <p>No live desk inspections yet. Open a repository and select "Check current CI and PRs".</p> :
@@ -495,6 +534,11 @@ function App() {
             <button type="button" className="import-button"
               disabled={catalogState !== "live"} onClick={() => uploadRef.current?.click()}>
               ＋ Import Fleet JSON
+            </button>
+            <button type="button" className="refresh-button"
+              onClick={retryPublishedCoverage}
+              disabled={catalogState !== "live" || coverageStatus === "loading"}>
+              {coverageStatus === "loading" ? "Checking coverage…" : "↻ Refresh coverage"}
             </button>
             <button type="button" className="refresh-button" onClick={reloadPublishedPilot}
               disabled={catalogState !== "live" || publishedStatus === "loading"}>
@@ -549,7 +593,9 @@ function App() {
             <>
               <WingRibbon current={currentFloor} floors={tower}
                 onSelect={setSelectedId} />
-              <CoverageStrip coverage={coverage} stations={stations} />
+              <CoverageStrip coverage={coverage} stations={stations}
+                status={coverageStatus} error={coverageError?.message}
+                onRetry={retryPublishedCoverage} />
               <ChiefOfStaff plan={plan} audit={audit} signals={signals} onJump={jumpToRepo} />
               <Office stations={stations} floor={activeFloor} wing={currentFloor.wing}
                 evidence={evidence} signals={signals} coverage={coverage}
@@ -557,7 +603,7 @@ function App() {
             </>}
           <footer className="main-footer">
             <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
-            <span>ΦMADA PRIME R5 · ROLLING PUBLIC COVERAGE / NO AUTOMATED DISPATCH</span>
+            <span>ΦMADA PRIME R6 · EVIDENCE TRIAGE / NO AUTOMATED DISPATCH</span>
           </footer>
           {message && <div className="toast" role="status">{message}
             <button type="button" onClick={() => setMessage("")} aria-label="Dismiss message">×</button></div>}
