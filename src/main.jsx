@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
-  DESKS_PER_FLOOR, KNOWN_EXAMPLES, fetchPublicFleet, floorOfRepo,
-  floorsForCount, floorStations, displayName
+  DESKS_PER_FLOOR, KNOWN_EXAMPLES, fetchPublicFleet, displayName
 } from "./fleet.mjs";
+import { towerFloors, floorForId } from "./tower.mjs";
+import { fetchRepoSignals, signalsFresh } from "./signals.mjs";
+import { ChiefOfStaff, SignalInspector, WingRibbon } from "./office-parts.jsx";
 import { MAX_ARTIFACT_BYTES, parseOfficeArtifact, safeTime } from "./audit.mjs";
 import "./office.css";
+import "./living.css";
 
 const TABS = ["Directory", "Signals"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
@@ -26,8 +29,11 @@ function deriveState(repo, report) {
   return { label: "UNVERIFIED", kind: "unknown" };
 }
 
-function Desk({ repo, position, evidence, onSelect }) {
+function Desk({ repo, position, evidence, signal, onSelect }) {
   const state = deriveState(repo, evidence);
+  const fresh = signalsFresh(signal);
+  const ciGreen = fresh && signal?.ci?.state === "OBSERVED_GREEN_AT_HEAD";
+  const ciFailed = fresh && signal?.ci?.state === "FAILED_AT_HEAD_OBSERVED";
   if (!repo) return (
     <div className="desk-slot desk-vacant" aria-label="Unused station, reserved for future repository">
       <div className="desk-label">VACANT {String(position).padStart(2, "0")}</div>
@@ -36,21 +42,26 @@ function Desk({ repo, position, evidence, onSelect }) {
     </div>
   );
   return (
-    <button type="button" className={"desk-slot desk-filled desk-" + state.kind}
+    <button type="button" className={"desk-slot desk-filled desk-" + state.kind +
+      (ciGreen ? " desk-ci-observed" : "") + (ciFailed ? " desk-ci-failed" : "")}
       onClick={() => onSelect(repo.id)} aria-label={"Inspect " + displayName(repo.name)}>
       <span className="desk-label"><i className="status-light" />{displayName(repo.name)}</span>
       <span className="desk-scene">
+        {ciGreen && <span className="observed-speech">CI observed green ✓</span>}
+        {ciFailed && <span className="observed-speech observed-fail">CI failure observed</span>}
         <span className="desk-monitor"><span className="screen-lines">
           <i /><i /><i /><i /></span><span className="screen-small">Φ</span></span>
         <span className="desk-table"><span className="desk-drawer" /><span className="desk-lamp" /></span>
         <Star index={position} />
       </span>
-      <span className="desk-status">{state.label}</span>
+      <span className="desk-status">{ciGreen ? "OBSERVED CI GREEN" :
+        ciFailed ? "OBSERVED CI ISSUE" : state.label}</span>
     </button>
   );
 }
 
-function DetailPanel({ repo, evidence, plan, audit, onClose, onJump }) {
+function DetailPanel({ repo, evidence, plan, audit, signal,
+  signalLoading, signalError, onCheckSignal, onClose, onJump }) {
   const closeRef = useRef(null);
   useEffect(() => {
     closeRef.current?.focus();
@@ -75,6 +86,8 @@ function DetailPanel({ repo, evidence, plan, audit, onClose, onJump }) {
           <span className="status-orb" /> {state.label}
         </div>
         <p>{repo.description || "No public project description provided."}</p>
+        <SignalInspector repo={repo} signal={signal} loading={signalLoading}
+          error={signalError} onCheck={onCheckSignal} />
         {repo.exampleOnly ? (
           <p className="caution">This is a curated example while GitHub is unavailable. No live repository information has been verified.</p>
         ) : (
@@ -117,10 +130,15 @@ function DetailPanel({ repo, evidence, plan, audit, onClose, onJump }) {
   );
 }
 
-function Office({ stations, floor, evidence, onSelect, hasPlan }) {
+function Office({ stations, floor, evidence, signals, onSelect, hasPlan, wing }) {
   const count = stations.filter(Boolean).length;
+  const observedPrs = stations.reduce((total, repo) => {
+    const signal = signals[repo?.id];
+    return total + (signalsFresh(signal) ? signal.openPrs?.length || 0 : 0);
+  }, 0);
   return (
-    <section className="office" aria-label={"Virtual fleet office, floor " + floor}>
+    <section className={"office office-wing-" + wing}
+      aria-label={"Virtual fleet office, floor " + floor}>
       <div className="office-wall">
         <div className="light-string" aria-hidden="true">
           {Array.from({ length: 22 }, (_, n) =>
@@ -140,9 +158,14 @@ function Office({ stations, floor, evidence, onSelect, hasPlan }) {
           <span>{count} OCCUPIED / {DESKS_PER_FLOOR} STATIONS</span></div>
         <div className="desk-grid">
           {stations.slice(0, 6).map((repo, i) => <Desk key={repo?.id ?? "empty-" + i}
-            repo={repo} position={i + 1} evidence={evidence[repo?.name]} onSelect={onSelect} />)}
+            repo={repo} position={i + 1} evidence={evidence[repo?.name]}
+            signal={signals[repo?.id]} onSelect={onSelect} />)}
         </div>
         <div className="middle-bay">
+          {observedPrs > 0 && <div className="observed-courier"
+            title="Decorative response to observed open GitHub PRs, not an active worker">
+            <span className="courier-label">PRs OBSERVED</span><Star index={2} />
+          </div>}
           <div className="lounge-zone" aria-hidden="true">
             <span className="lounge-label">BREAK ROOM</span>
             <div className="couch-back">Φ <span className="couch-pillow" /></div>
@@ -160,7 +183,7 @@ function Office({ stations, floor, evidence, onSelect, hasPlan }) {
               <small>OPERATIONS • READ ONLY</small></div>
           </div>
           <div className="coffee-zone" aria-hidden="true">
-            <span className="coffee-label">COFFEE • 0 MERGES</span>
+            <span className="coffee-label">COFFEE • NO AUTO MERGES</span>
             <div className="arcade-roof">Φ ARCADE</div>
             <div className="arcade-screen">★<i>▣</i></div>
             <div className="arcade-bottom">● ●</div>
@@ -169,7 +192,8 @@ function Office({ stations, floor, evidence, onSelect, hasPlan }) {
         </div>
         <div className="desk-grid">
           {stations.slice(6, 12).map((repo, i) => <Desk key={repo?.id ?? "empty-" + (i + 6)}
-            repo={repo} position={i + 7} evidence={evidence[repo?.name]} onSelect={onSelect} />)}
+            repo={repo} position={i + 7} evidence={evidence[repo?.name]}
+            signal={signals[repo?.id]} onSelect={onSelect} />)}
         </div>
         <div className="office-rug" aria-hidden="true">Φ</div>
       </div>
@@ -187,6 +211,9 @@ function App() {
   const [audit, setAudit] = useState(null);
   const [plan, setPlan] = useState(null);
   const [message, setMessage] = useState("");
+  const [signals, setSignals] = useState({});
+  const [signalsBusy, setSignalsBusy] = useState({});
+  const [signalsError, setSignalsError] = useState({});
   const uploadRef = useRef(null);
   async function refreshCatalog() {
     setCatalogState("loading");
@@ -194,12 +221,13 @@ function App() {
       const discovered = await fetchPublicFleet();
       if (!discovered.length) throw new Error("EMPTY_PUBLIC_CATALOG");
       setRows(discovered);
+      setSignals({});
       setCatalogState("live");
       setMessage("Public GitHub inventory loaded: " + discovered.length + " repos.");
     } catch {
       setCatalogState("fallback");
       setRows(KNOWN_EXAMPLES);
-      setAudit(null); setPlan(null);
+      setAudit(null); setPlan(null); setSignals({});
       setMessage("Live public inventory unavailable. Showing twelve labeled examples only.");
     }
   }
@@ -207,20 +235,42 @@ function App() {
   const filtered = useMemo(() => rows.filter(repo =>
     (repo.name + " " + repo.description).toLowerCase().includes(query.toLowerCase().trim())
   ), [rows, query]);
-  const floors = floorsForCount(filtered.length);
+  const allFloors = useMemo(() => towerFloors(rows), [rows]);
+  const tower = useMemo(() => towerFloors(filtered, query), [filtered, query]);
+  const floors = tower.length;
   const activeFloor = Math.min(floor, floors);
-  const stations = floorStations(filtered, activeFloor);
+  const currentFloor = tower[activeFloor - 1];
+  const stations = currentFloor.stations;
   const selected = rows.find(repo => repo.id === selectedId) || null;
   const evidence = { ...(audit?.byRepo || {}), ...(plan?.byRepo || {}) };
   const auditCount = Object.values(evidence).filter(x =>
     x.completion === "UNVERIFIED").length;
   const taskCount = plan ? Object.values(plan.byRepo).reduce((n, x) =>
     n + (x.tasks?.length || 0), 0) : 0;
+  async function inspectLiveRepo(repo) {
+    if (!repo || repo.exampleOnly || signalsBusy[repo.id]) return;
+    setSignalsBusy(previous => ({ ...previous, [repo.id]: true }));
+    setSignalsError(previous => ({ ...previous, [repo.id]: "" }));
+    try {
+      const signal = await fetchRepoSignals(repo);
+      setSignals(previous => ({ ...previous, [repo.id]: signal }));
+      setMessage("Live GitHub observations refreshed for " + repo.name +
+        ". No work was executed.");
+    } catch (error) {
+      setSignalsError(previous => ({
+        ...previous, [repo.id]: error?.message === "GITHUB_REPOSITORY_MISMATCH" ?
+        "GitHub repository identity does not match this station." :
+        "Public GitHub signal unavailable; no status inferred."
+      }));
+    } finally {
+      setSignalsBusy(previous => ({ ...previous, [repo.id]: false }));
+    }
+  }
   function jumpToRepo(name) {
     const repo = rows.find(r => r.name.toLowerCase() === String(name).toLowerCase());
     if (!repo) return;
     setQuery("");
-    setFloor(floorOfRepo(rows, repo.id) || 1);
+    setFloor(floorForId(allFloors, repo.id) || 1);
     setSelectedId(repo.id);
   }
   async function importArtifact(e) {
@@ -255,7 +305,7 @@ function App() {
         </div>
         <div className="top-metrics" aria-label="Current catalog metrics">
           <div><small>PUBLIC REPOS</small><strong>{catalogState === "live" ? rows.length : "—"}</strong></div>
-          <div><small>FLOORS</small><strong>{catalogState === "live" ? floorsForCount(rows.length) : "—"}</strong></div>
+          <div><small>FLOORS</small><strong>{catalogState === "live" ? allFloors.length : "—"}</strong></div>
           <div><small>AUDIT RECORDS</small><strong>{auditCount}</strong></div>
           <div><small>REVIEW JOBS</small><strong>{taskCount}</strong></div>
         </div>
@@ -282,13 +332,15 @@ function App() {
             <div className="floor-directory">
               {Array.from({ length: floors }, (_, i) => {
                 const level = i + 1;
-                const occupied = Math.max(0, Math.min(12, filtered.length - i * 12));
+                const mapped = tower[i];
+                const occupied = mapped.count;
                 return <button type="button" key={level}
                   className={activeFloor === level ? "floor-link active" : "floor-link"}
                   aria-current={activeFloor === level ? "page" : undefined}
                   onClick={() => setFloor(level)}>
                   <span className="floor-number">{String(level).padStart(2, "0")}</span>
-                  <span>Deck {String(level).padStart(2, "0")}{level === 1 && !query ? " · Bridge" : ""}</span>
+                  <span className="floor-link-title">Deck {String(level).padStart(2, "0")}
+                    <em>{mapped.title}{mapped.section > 1 ? " " + mapped.section : ""}</em></span>
                   <small>{occupied}/12</small>
                 </button>;
               })}
@@ -300,6 +352,20 @@ function App() {
               <p><span className="signal-dot gold" /> Agentora R0.1 audit (optional)</p>
               <p><span className="signal-dot violet" /> Agentora R0.2 plan (optional)</p>
               <small>Signals are observations, not workers. No bot activity is simulated as real execution.</small>
+              <h3>Desk checks performed</h3>
+              {Object.values(signals).length === 0 ?
+                <p>No live desk inspections yet. Open a repository and select "Check current CI and PRs".</p> :
+                <div className="observed-feed">
+                  {Object.values(signals).sort((a, b) =>
+                    b.observedAt.localeCompare(a.observedAt)).map(signal => (
+                    <button type="button" key={signal.repositoryId}
+                      onClick={() => jumpToRepo(signal.repository.split("/")[1])}>
+                      <strong>{signal.repository.split("/")[1]}</strong>
+                      <span>{signal.ci.state.replaceAll("_", " ")}</span>
+                      <small>{signalsFresh(signal) ? "Recent observation" : "Stale observation"}</small>
+                    </button>
+                  ))}
+                </div>}
             </div>
           </>}
           <div className="sidebar-bottom">
@@ -318,7 +384,7 @@ function App() {
           <div className="elevator-bar">
             <div><small>ΦMADA PRIME / VIRTUAL OFFICE</small>
               <h1>Deck {String(activeFloor).padStart(2, "0")}
-                <span> · {activeFloor === 1 && !query ? "Command Bridge" : "Fleet Annex"}</span></h1>
+                <span> · {currentFloor.title}</span></h1>
             </div>
             <div className="elevator-controls" aria-label="Floor elevator">
               <button type="button" onClick={() => setFloor(Math.max(1, activeFloor - 1))}
@@ -336,19 +402,26 @@ function App() {
               "GitHub inventory unavailable. Curated examples only; no live statuses."}
             <span className="help-key">← → to change floors</span>
           </div>
-          <Office stations={stations} floor={activeFloor} evidence={evidence}
+          <WingRibbon current={currentFloor} floors={tower}
+            onSelect={setSelectedId} />
+          <ChiefOfStaff plan={plan} audit={audit} signals={signals} onJump={jumpToRepo} />
+          <Office stations={stations} floor={activeFloor} wing={currentFloor.wing}
+            evidence={evidence} signals={signals}
             hasPlan={Boolean(plan)} onSelect={setSelectedId} />
           <footer className="main-footer">
             <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
-            <span>ΦMADA PRIME R1 · OBSERVE ≠ VERIFY ≠ AUTHORIZE</span>
+            <span>ΦMADA PRIME R2 · DECORATIVE WORKERS / OBSERVED EVIDENCE ONLY</span>
           </footer>
           {message && <div className="toast" role="status">{message}
             <button type="button" onClick={() => setMessage("")} aria-label="Dismiss message">×</button></div>}
         </main>
       </div>
       {selected && <DetailPanel repo={selected} evidence={evidence[selected.name]}
-        audit={audit} plan={plan} onClose={() => setSelectedId(null)}
-        onJump={jumpToRepo} />}
+        audit={audit} plan={plan} signal={signals[selected.id]}
+        signalLoading={Boolean(signalsBusy[selected.id])}
+        signalError={signalsError[selected.id] || ""}
+        onCheckSignal={() => inspectLiveRepo(selected)}
+        onClose={() => setSelectedId(null)} onJump={jumpToRepo} />}
     </div>
   );
 }

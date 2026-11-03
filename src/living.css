@@ -1,0 +1,143 @@
+/* Rung 2: living-tower presentation. Decorative motion never implies real work. */
+.office{--wing-glow:#dca05f;--wing-wall:#704635;--wing-rug:#863c4b}
+.office-wing-vr{--wing-glow:#9de7f8;--wing-wall:#38576c;--wing-rug:#35576e}
+.office-wing-games{--wing-glow:#ffa3d1;--wing-wall:#633c65;--wing-rug:#744079}
+.office-wing-research{--wing-glow:#a3f7d1;--wing-wall:#386c5c;--wing-rug:#396a62}
+.office-wing-creative{--wing-glow:#efbdff;--wing-wall:#705070;--wing-rug:#864e76}
+.office-wing-infrastructure{--wing-glow:#86d5ff;--wing-wall:#375471;--wing-rug:#435d80}
+.office-wing-core{--wing-glow:#ffe79e;--wing-wall:#80604d;--wing-rug:#806349}
+.office-wing-tools{--wing-glow:#f8c484;--wing-wall:#7f5943;--wing-rug:#765d45}
+.office-wing-community{--wing-glow:#e0e6a7;--wing-wall:#5c6649;--wing-rug:#586448}
+.office-wing-other,.office-wing-search{--wing-glow:#f8c59b;--wing-wall:#65505a;--wing-rug:#765069}
+.office .office-wall{background-color:var(--wing-wall);background-image:linear-gradient(#201d2a26,#1b161322),repeating-linear-gradient(0deg,transparent 0 24px,#29242c88 24px 27px),repeating-linear-gradient(90deg,transparent 0 65px,#2d293180 66px 69px)}
+.office .wall-brand{color:var(--wing-glow);text-shadow:0 0 17px var(--wing-glow)}
+.office .office-rug{background:var(--wing-rug);color:var(--wing-glow);box-shadow:4px 5px #3d272c,0 0 20px #382028}
+.office .command-center{border-color:var(--wing-glow)}
+.office .command-screen.main-screen{color:var(--wing-glow)}
+.office .control-counter{color:var(--wing-glow)}
+.office .desk-filled:hover .desk-monitor{box-shadow:0 0 15px var(--wing-glow),3px 4px #271d20}
+
+/* A compact lobby ribbon, with real interactive twelve-station floor map. */
+.wing-ribbon{--wing-accent:#e4b26d;display:flex;gap:13px;align-items:center;padding:10px 15px;margin-bottom:8px;border:1px solid #8e6657;border-radius:8px;background:linear-gradient(120deg,#302536,#261f30);box-shadow:inset 0 -3px #19141f;min-height:78px}
+.ribbon-vr{--wing-accent:#84d2ee}.ribbon-games{--wing-accent:#f0a6cf}.ribbon-research{--wing-accent:#93e9bf}.ribbon-creative{--wing-accent:#e7b2f9}.ribbon-infrastructure{--wing-accent:#92c6f1}.ribbon-core{--wing-accent:#f7d58a}.ribbon-tools{--wing-accent:#eab980}.ribbon-community{--wing-accent:#d2e6ab}.ribbon-other{--wing-accent:#d8b2a1}
+.wing-icon{display:grid;place-items:center;width:51px;height:51px;flex:none;background:#1a1623;border:3px solid var(--wing-accent);box-shadow:3px 3px #15121d;color:var(--wing-accent);font:28px Georgia,serif}
+.wing-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:2px}.wing-copy small{font:9px monospace;letter-spacing:.1em;color:#a89aaa}.wing-copy strong{font:17px "Courier New",monospace;color:var(--wing-accent);font-weight:900;letter-spacing:.04em}.wing-copy span{font:11px/1.4 monospace;color:#e0cdd3}
+.wing-meta{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:85px}.wing-meta strong{font:17px monospace;color:#fff0c5}.wing-meta small{font:9px monospace;color:#c2afb5}.wing-meta span{font:10px monospace;color:#9b8d9d}
+.mini-map{display:grid;grid-template-columns:repeat(6,13px);gap:5px 4px;border:1px solid #725e69;background:#171522;padding:9px;border-radius:5px}
+.mini-map button{width:13px;height:13px;padding:0;border:1px solid #8d7c87;background:#3b3440;border-radius:1px}
+.mini-map button.map-occupied{background:var(--wing-accent);border-color:#e8dcd2;box-shadow:0 0 5px #d8cb9a55}
+.mini-map button.map-occupied:hover,.mini-map button.map-occupied:focus-visible{transform:scale(1.22);box-shadow:0 0 10px var(--wing-accent)}
+.mini-map button.map-vacant{opacity:.25}
+.floor-link-title{display:flex;flex-direction:column;gap:2px;min-width:0;line-height:1.2}.floor-link-title em{font:10px/1.25 monospace;color:#b2a5b6;font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:135px}
+.floor-link.active .floor-link-title em{color:#ffe5b5}.floor-link{min-height:43px}
+.floor-link small{white-space:nowrap}
+
+/* Real Chief of Staff: priority from imported Agentora proposal; never a fake worker. */
+.chief-report{display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:8px 15px;border:1px solid #816676;border-radius:8px;background:linear-gradient(90deg,#302533,#201d2c);min-height:76px}
+.chief-portrait{display:flex;flex:none;align-items:center;flex-direction:column;justify-content:end;width:49px;height:53px;background:#171523;border:2px solid #bc9374;border-radius:6px;padding-top:7px}
+.chief-face{width:26px;height:23px;background:#d9a87c;border-top:8px solid #251924;position:relative}.chief-glasses{position:absolute;top:5px;left:3px;width:8px;height:6px;border:2px solid #1a262b;background:#5da6c8;box-shadow:12px 0 0 -1px #5da6c8,12px 0 0 1px #1a262b}
+.chief-uniform{height:14px;width:35px;background:#315a73;color:#ffd9a1;text-align:center;font:bold 13px Georgia}
+.chief-message{display:flex;flex:1;flex-direction:column;min-width:0;gap:3px}.chief-message small{color:#d5ae77;font:bold 9px monospace;letter-spacing:.09em}.chief-message strong{font:bold 13px/1.3 monospace;color:#fff0cd}.chief-message span{color:#d9cbd6;font:11px/1.4 monospace}.chief-message em{font:10px monospace;font-style:normal;color:#b5a2b9}
+.chief-evidence{display:flex;flex:none;min-width:150px;flex-direction:column;align-items:flex-end;gap:4px}.chief-evidence strong{font:bold 12px monospace;color:#e8d5ae}.chief-evidence small{font:10px/1.3 monospace;color:#9ebdc7;max-width:190px;text-align:right}
+.chief-evidence button{background:#484061;border:1px solid #9e8da9;color:#f4e3ff;border-radius:4px;font:11px monospace;padding:5px 8px}
+
+/* Bigger, livelier pixel people. Their idle loops are explicitly decorative. */
+.office .desk-slot{min-height:190px}
+.office .desk-label{min-height:32px;font-size:clamp(9px,.75vw,13px);border-width:2px}
+.office .desk-scene{height:128px}
+.office .desk-monitor{top:21px;width:70px;height:46px;border-width:5px}
+.office .desk-table{top:62px;height:39px;width:90%;left:5%;box-shadow:0 5px #4b302a,inset 0 -4px #8b523b}
+.office .desk-avatar{top:86px;width:40px;height:41px;left:calc(50% - 20px);animation:worker-idle 2.9s ease-in-out infinite alternate;animation-delay:-1s}
+.office .avatar-head{width:25px;height:21px;border-top-width:6px}
+.office .avatar-eyes{top:8px;left:7px;width:3px;height:4px;box-shadow:9px 0 #2c3542}
+.office .avatar-shirt{width:38px;height:20px;border-width:4px}
+.office .desk-status{font-size:10px;padding:3px 6px}
+.office .desk-filled:nth-child(3n) .desk-avatar{animation-delay:-.7s;animation-duration:3.5s}
+.office .desk-filled:nth-child(4n) .desk-avatar{animation-delay:-1.7s;animation-duration:4s}
+.office .desk-ci-observed .desk-avatar{animation:worker-cheer .75s ease-in-out infinite alternate}
+.office .desk-ci-observed .status-light{background:#58eaa9;box-shadow:0 0 12px #65ffc7}
+.office .desk-ci-failed .status-light{background:#ed7171;box-shadow:0 0 12px #ff8e8e}
+.office .desk-ci-observed .desk-status{color:#a5f3c2}
+.office .desk-ci-failed .desk-status{color:#ffb6b6}
+.observed-speech{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:8;font:bold 9px monospace;color:#1e3325;background:#bdf4ce;border:2px solid #608b71;border-radius:7px;white-space:nowrap;padding:3px 5px;box-shadow:3px 3px #2d332b}
+.observed-speech.observed-fail{background:#ffd1c7;color:#712a2a;border-color:#af6b64}
+.office .middle-bay{min-height:175px}
+.office .command-center{min-height:175px;animation:control-glow 6s ease-in-out infinite alternate}
+.office .lounge-zone{transform:scale(1.04)}
+.office .coffee-zone{transform:scale(1.04)}
+.office .potted-plant{animation:plant-sway 4.7s ease-in-out infinite alternate;transform-origin:bottom}
+.office .light-string span{animation-duration:3.8s}
+
+/* On-demand observations, no fake claims or execution buttons. */
+.signal-inspector{margin:17px 0;padding:13px 12px;background:#1a1e2b;border:1px solid #567a8e;border-radius:7px}
+.signal-inspector h3{margin:0 0 10px;color:#a4e2fa;font:bold 13px monospace}
+.signal-inspector p{font:11px/1.5 monospace;color:#c0d0dd;margin:8px 0}
+.signal-button{display:block;width:100%;background:#315169;border:1px solid #83bfd5;color:#f0faff;border-radius:4px;padding:10px;font:bold 12px monospace}
+.signal-button:hover:not(:disabled){background:#406780}
+.signal-error{color:#ffcdba!important;border-left:2px solid #ef8e79;padding-left:8px}
+.signal-observed{display:flex;justify-content:space-between;gap:8px;margin-top:12px;font:10px monospace;color:#b6c6d6}
+.signal-observed strong{color:#f2d49a}
+.signal-ci{padding:10px 9px;margin-top:11px;border-radius:4px;background:#293540;border-left:4px solid #8bb8db}
+.signal-ci strong{font:bold 11px monospace;color:#d3eaff}.signal-ci p{margin-bottom:0}
+.signal-ci.ci-observed_green_at_head{border-color:#7de6ae}
+.signal-ci.ci-failed_at_head_observed{border-color:#f69a82}
+.live-pr-list{margin:9px 0;padding-left:20px;font:12px/1.6 monospace}
+.live-pr-list li{margin-bottom:7px}.live-pr-list a{overflow-wrap:anywhere}
+.live-pr-list small{display:inline;font-size:9px;margin-left:7px;color:#d9b4a4}
+.signal-inspector .signal-disclaimer{font:10px/1.5 monospace;color:#ac9ba8}
+.signal-inspector .details-list{margin:12px 0}
+.signal-inspector .details-list>div{grid-template-columns:105px minmax(0,1fr)}
+
+@keyframes worker-idle{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+@keyframes worker-cheer{0%{transform:translateY(0) rotate(-5deg)}100%{transform:translateY(-10px) rotate(5deg)}}
+@keyframes plant-sway{0%{transform:rotate(-2deg)}100%{transform:rotate(3deg)}}
+@keyframes control-glow{from{box-shadow:0 0 0 4px #4d2c32,inset 0 0 20px #3b20277a}to{box-shadow:0 0 0 4px #4d2c32,0 0 16px #ffda9855,inset 0 0 24px #a5705d55}}
+
+@media(max-width:1250px){
+  .wing-ribbon{padding:7px 9px}.mini-map{grid-template-columns:repeat(6,11px);gap:4px}
+  .mini-map button{width:11px;height:11px}
+  .office .desk-label{font-size:9px}.office .desk-scene{height:125px}
+}
+@media(max-width:950px){
+  .chief-report{flex-wrap:wrap}.chief-evidence{margin-left:61px;align-items:flex-start}
+  .chief-evidence small{text-align:left}.wing-meta{display:none}
+  .office .desk-slot{min-height:180px}
+}
+@media(max-width:680px){
+  .wing-ribbon{flex-wrap:wrap;gap:8px}.wing-copy{flex-basis:calc(100% - 68px)}
+  .mini-map{margin-left:auto}.wing-meta{display:flex;min-width:75px}
+  .wing-copy strong{font-size:15px}.wing-copy span{font-size:10px}
+  .chief-report{padding:9px}.chief-evidence{margin-left:0}
+  .office .desk-label{font-size:10px}.office .desk-slot{min-height:175px}
+  .office .desk-scene{height:119px}
+  .office .desk-monitor{width:60px;height:43px}
+  .office .desk-table{top:58px}
+  .office .desk-avatar{top:83px}
+  .observed-speech{font-size:8px;white-space:normal;min-width:85px;text-align:center;line-height:1.1}
+}
+@media(prefers-reduced-motion:reduce){
+  .office .desk-avatar,.office .desk-ci-observed .desk-avatar,
+  .office .command-center,.office .potted-plant,.office .light-string span{animation:none!important}
+}
+
+
+/* The courier appears only when a fresh explicit GitHub read found open PRs.
+   Motion is decorative, not a running agent or PR execution. */
+.office .middle-bay{position:relative}
+.observed-courier{position:absolute;bottom:4px;left:18%;height:49px;width:112px;
+  z-index:5;pointer-events:none;display:flex;align-items:center;gap:3px;
+  animation:courier-walk 8s linear infinite alternate}
+.observed-courier .desk-avatar{position:relative!important;top:auto!important;left:auto!important;
+  flex:none;animation:worker-idle .65s ease-in-out infinite alternate}
+.courier-label{background:#293d3a;color:#b5f4d9;border:1px solid #76cfaa;
+  padding:3px 5px;border-radius:4px;font:bold 8px monospace;white-space:nowrap}
+@keyframes courier-walk{from{transform:translateX(-20px)}to{transform:translateX(175px)}}
+.observed-feed{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.observed-feed button{background:#302b3d;border:1px solid #67546d;color:#f8e6d7;
+  border-radius:5px;padding:8px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.observed-feed button:hover{border-color:#d0a676;background:#44354b}
+.observed-feed button strong{font:bold 12px monospace}
+.observed-feed button span{font:10px monospace;color:#bfd4e2;overflow-wrap:anywhere}
+.observed-feed button small{font:9px monospace;color:#ad9caa;margin:0}
+@media(max-width:680px){.observed-courier{left:4%;bottom:0}}
+@media(prefers-reduced-motion:reduce){.observed-courier{animation:none!important}}
