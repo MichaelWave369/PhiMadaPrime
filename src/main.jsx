@@ -486,6 +486,7 @@ function App() {
                 setActiveTab("Directory");
                 setBoardOpen(false);
               }} />
+            {coverage && <TriageCoverage coverage={coverage} rows={rows} onJump={jumpToRepo} />}
           </> : activeTab === "Missions" ? <>
             <div className="signal-feed">
               <h3>Mission Control</h3>
@@ -596,7 +597,6 @@ function App() {
                 status={coverageStatus} error={coverageError?.message}
                 onRetry={retryPublishedCoverage} />
               <ChiefOfStaff plan={plan} audit={audit} signals={signals} onJump={jumpToRepo} />
-              {coverage && <TriageCoverage coverage={coverage} rows={rows} onJump={jumpToRepo} />}
               <Office stations={stations} floor={activeFloor} wing={currentFloor.wing}
                 evidence={evidence} signals={signals} coverage={coverage}
                 hasPlan={Boolean(plan)} onSelect={setSelectedId} />
