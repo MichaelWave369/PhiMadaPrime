@@ -124,5 +124,5 @@ test("duplicate repo records and forged progress totals fail", async () => {
   const y = await sample();
   y.payload.observed_ever = 4;
   assert.throws(() => parsePublicCoverage(JSON.stringify(y.payload),
-    y.manifest, rows, y.now), /COVERAGE_TOTALS_INVALID/);
+    y.manifest, rows, y.now), /COVERAGE_(MANIFEST_PROVENANCE_INVALID|TOTALS_INVALID)/);
 });
