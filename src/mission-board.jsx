@@ -50,8 +50,10 @@ export function MissionBoard({ queue, plan, reviewed, pinned,
         rel="noopener noreferrer">Open Agentora Actions ↗</a>
     </div> : <>
       <div className="mission-provenance">
-        <div><strong>Plan source: Agentora R0.2</strong>
-          <span>Created {plan.generated_utc} · {plan.freshness}</span></div>
+        <div><strong>Plan source: {plan.source === "PUBLIC_PAGES_PILOT" ?
+            "Published Agentora public pilot" : "Locally imported Agentora R0.2"}</strong>
+          <span>Created {plan.generated_utc} · {plan.freshness}</span>
+          <span>Read-only proposed checks only. Public pilot does not cover every repo.</span></div>
         <span className={plan.freshness === "RECENT" ?
           "mission-plan-fresh" : "mission-plan-stale"}>
           {plan.freshness === "RECENT" ? "Recent snapshot" : "Stale / unverified age"}
