@@ -80,7 +80,8 @@ export function a11yReceipt({
       Number.isSafeInteger(v.passed_rules) && v.passed_rules >= 0 &&
       Array.isArray(v.violations) && typeof v.findings_truncated === "boolean"),
     "A11Y_VIEWS_INVALID");
-  const expectedKeyboard = ["desk_keyboard_open", "inspector_escape_close",
+  const expectedKeyboard = ["desk_keyboard_open", "inspector_tab_contained",
+    "inspector_escape_close", "inspector_focus_return",
     "mission_board_keyboard_open", "evidence_details_keyboard_toggle"];
   requireValue(keyboard && typeof keyboard === "object" &&
     !Array.isArray(keyboard) && Object.keys(keyboard).every(k =>
