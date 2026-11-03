@@ -20,6 +20,15 @@ test("real header and office workspace are inert only when an inspector is selec
     /<\/main>\s*<\/div>\s*$/);
 });
 
+test("inspector opener is captured before background inertness takes effect", () => {
+  assert.match(app, /const inspectorOpenerRef = useRef\(null\)/);
+  assert.match(app, /function selectDesk\(id\) \{\s*\/\/[^\n]*\n\s*inspectorOpenerRef\.current = document\.activeElement;\s*setSelectedId\(id\);/);
+  assert.equal((app.match(/onSelect=\{selectDesk\}/g) || []).length, 2);
+  assert.match(app, /originalOpener=\{inspectorOpenerRef\.current\}/);
+  assert.match(app, /const opener = originalOpener/);
+  assert.doesNotMatch(app, /const opener = document\.activeElement/);
+});
+
 test("modal has a keyboard focus trap and restores the original desk focus", () => {
   assert.match(app, /document\.addEventListener\("keydown", onKey\)/);
   assert.match(app, /document\.addEventListener\("focusin", onFocus\)/);
