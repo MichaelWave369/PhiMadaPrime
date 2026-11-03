@@ -211,11 +211,8 @@ class R13ReviewTests(unittest.TestCase):
         raw = pack()
         gh = GitHub(raw)
         for value in (True, -1, 0, "41710656371", 10**20):
-            self.assertHeld(raw, gh) if value != RUN else None
-            try:
+            with self.assertRaisesRegex(mod.Held, "RUN_ID_INVALID"):
                 mod.review(value, raw, get=gh, now=NOW)
-            except mod.Held as e:
-                self.assertIn("RUN_ID_INVALID", str(e))
         self.assertEqual(gh.calls, [])
 
     def test_write_new_without_clobber_and_private_permissions(self):
