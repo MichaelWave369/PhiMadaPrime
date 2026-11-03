@@ -119,3 +119,25 @@
   .office .desk-avatar,.office .desk-ci-observed .desk-avatar,
   .office .command-center,.office .potted-plant,.office .light-string span{animation:none!important}
 }
+
+
+/* The courier appears only when a fresh explicit GitHub read found open PRs.
+   Motion is decorative, not a running agent or PR execution. */
+.office .middle-bay{position:relative}
+.observed-courier{position:absolute;bottom:4px;left:18%;height:49px;width:112px;
+  z-index:5;pointer-events:none;display:flex;align-items:center;gap:3px;
+  animation:courier-walk 8s linear infinite alternate}
+.observed-courier .desk-avatar{position:relative!important;top:auto!important;left:auto!important;
+  flex:none;animation:worker-idle .65s ease-in-out infinite alternate}
+.courier-label{background:#293d3a;color:#b5f4d9;border:1px solid #76cfaa;
+  padding:3px 5px;border-radius:4px;font:bold 8px monospace;white-space:nowrap}
+@keyframes courier-walk{from{transform:translateX(-20px)}to{transform:translateX(175px)}}
+.observed-feed{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.observed-feed button{background:#302b3d;border:1px solid #67546d;color:#f8e6d7;
+  border-radius:5px;padding:8px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.observed-feed button:hover{border-color:#d0a676;background:#44354b}
+.observed-feed button strong{font:bold 12px monospace}
+.observed-feed button span{font:10px monospace;color:#bfd4e2;overflow-wrap:anywhere}
+.observed-feed button small{font:9px monospace;color:#ad9caa;margin:0}
+@media(max-width:680px){.observed-courier{left:4%;bottom:0}}
+@media(prefers-reduced-motion:reduce){.observed-courier{animation:none!important}}
