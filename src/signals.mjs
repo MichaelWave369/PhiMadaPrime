@@ -26,13 +26,13 @@ function validSha(value) {
   return typeof value === "string" && /^[0-9a-f]{40}$/.test(value);
 }
 
-function safePr(pr) {
+function safePr(pr, repo) {
   if (!pr || !Number.isSafeInteger(pr.number) || pr.number < 1) return null;
   return {
     number: pr.number,
     title: typeof pr.title === "string" ? pr.title.slice(0, 150) : "Untitled PR",
     draft: pr.draft === true,
-    url: typeof pr.html_url === "string" ? pr.html_url : "",
+    url: "https://github.com/" + OWNER + "/" + repo.name + "/pull/" + pr.number,
     state: pr.state === "open" ? "open" : "unknown"
   };
 }
@@ -86,7 +86,7 @@ export async function fetchRepoSignals(repo, fetcher = fetch, now = () => Date.n
   const sha = head?.commit?.sha;
   const ci = classifyHeadRuns(workflows?.workflow_runs, sha);
   if (!Array.isArray(prs) || prs.length > 10) throw new Error("GITHUB_PR_RESPONSE_INVALID");
-  const openPrs = prs.map(safePr).filter(Boolean);
+  const openPrs = prs.map(pr => safePr(pr, repo)).filter(Boolean);
   const observedAt = new Date(now()).toISOString();
   return {
     repository: repo.full_name, repositoryId: repo.id, observedAt,
