@@ -137,7 +137,7 @@ async function smoke(sha) {
       await bay.locator("summary").click();
       if (!(await bay.evaluate(el => el.open)))
         throw new Error("EVIDENCE_BAY_NOT_EXPANDED");
-      if (await bay.locator('input[type="file"]').count() !== 2)
+      if (await bay.locator('.evidence-bay-upload input[type="file"]').count() !== 2)
         throw new Error("EVIDENCE_UPLOAD_FIELDS_MISSING");
       if (await bay.locator(".evidence-bay-coverage").count() !== 0)
         throw new Error("UNVERIFIED_COVERAGE_DISPLAYED_WITHOUT_RECEIPT");
