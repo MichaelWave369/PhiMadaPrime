@@ -28,11 +28,11 @@ function receipt(changes = {}) {
 }
 test("manual opt-in demands exact SHA and phrase", () => {
   assert.equal(requireManualBrowserPilot(SHA, BROWSER_CONFIRM), SHA);
-  for (const sha of ("main", SHA.slice(0, -1), SHA.toUpperCase(), true)) {
+  for (const sha of ["main", SHA.slice(0, -1), SHA.toUpperCase(), true]) {
     assert.throws(() => requireManualBrowserPilot(sha, BROWSER_CONFIRM),
       /EXACT_SOURCE_SHA_REQUIRED/);
   }
-  for (const confirm of ("", "YES", "RUN_PHI_MADA_TESTS", true)) {
+  for (const confirm of ["", "YES", "RUN_PHI_MADA_TESTS", true]) {
     assert.throws(() => requireManualBrowserPilot(SHA, confirm),
       /EXPLICIT_OPERATOR_CONFIRMATION_REQUIRED/);
   }
