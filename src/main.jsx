@@ -7,6 +7,7 @@ import { towerFloors, floorForId } from "./tower.mjs";
 import { fetchRepoSignals, signalsFresh } from "./signals.mjs";
 import { ChiefOfStaff, SignalInspector, WingRibbon } from "./office-parts.jsx";
 import { MissionBoard } from "./mission-board.jsx";
+import { fetchPublicSnapshot } from "./public-feed.mjs";
 import { missionQueue } from "./missions.mjs";
 import { MAX_ARTIFACT_BYTES, parseOfficeArtifact, safeTime } from "./audit.mjs";
 import "./office.css";
@@ -220,6 +221,8 @@ function App() {
   const [boardOpen, setBoardOpen] = useState(false);
   const [reviewedJobs, setReviewedJobs] = useState({});
   const [pinnedJobs, setPinnedJobs] = useState({});
+  const [publishedMeta, setPublishedMeta] = useState(null);
+  const [publishedStatus, setPublishedStatus] = useState("waiting");
   const uploadRef = useRef(null);
   async function refreshCatalog() {
     setCatalogState("loading");
@@ -228,16 +231,53 @@ function App() {
       if (!discovered.length) throw new Error("EMPTY_PUBLIC_CATALOG");
       setRows(discovered);
       setSignals({});
+      setPublishedMeta(null);
+      setPublishedStatus("waiting");
       setCatalogState("live");
       setMessage("Public GitHub inventory loaded: " + discovered.length + " repos.");
     } catch {
       setCatalogState("fallback");
       setRows(KNOWN_EXAMPLES);
       setAudit(null); setPlan(null); setSignals({});
+      setPublishedMeta(null); setPublishedStatus("unavailable");
       setMessage("Live public inventory unavailable. Showing twelve labeled examples only.");
     }
   }
   useEffect(() => { refreshCatalog(); }, []);
+  useEffect(() => {
+    if (catalogState !== "live") return;
+    let cancelled = false;
+    setPublishedStatus("loading");
+    fetchPublicSnapshot(rows).then(snapshot => {
+      if (cancelled) return;
+      // A user-selected local report must not be silently replaced by the feed.
+      setAudit(existing => existing?.source === "LOCAL_IMPORT" ? existing : snapshot.audit);
+      setPlan(existing => existing?.source === "LOCAL_IMPORT" ? existing : snapshot.plan);
+      setPublishedMeta(snapshot.manifest);
+      setPublishedStatus("ready");
+    }).catch(() => {
+      if (cancelled) return;
+      setPublishedStatus("unavailable");
+    });
+    return () => { cancelled = true; };
+  }, [catalogState, rows]);
+  async function reloadPublishedPilot() {
+    if (catalogState !== "live" || publishedStatus === "loading") return;
+    setPublishedStatus("loading");
+    try {
+      const snapshot = await fetchPublicSnapshot(rows);
+      setAudit(snapshot.audit);
+      setPlan(snapshot.plan);
+      setPublishedMeta(snapshot.manifest);
+      setReviewedJobs({});
+      setPinnedJobs({});
+      setPublishedStatus("ready");
+      setMessage("Published public pilot loaded. Review proposals only; no work executed.");
+    } catch {
+      setPublishedStatus("unavailable");
+      setMessage("Published public pilot unavailable or stale. Existing local evidence was not changed.");
+    }
+  }
   const filtered = useMemo(() => rows.filter(repo =>
     (repo.name + " " + repo.description).toLowerCase().includes(query.toLowerCase().trim())
   ), [rows, query]);
@@ -290,9 +330,9 @@ function App() {
     try {
       if (file.size > MAX_ARTIFACT_BYTES) throw new Error("FILE_TOO_LARGE");
       const result = parseOfficeArtifact(await file.text(), rows);
-      if (result.type === "audit") setAudit(result);
+      if (result.type === "audit") setAudit({ ...result, source: "LOCAL_IMPORT" });
       else {
-        setPlan(result);
+        setPlan({ ...result, source: "LOCAL_IMPORT" });
         setReviewedJobs({});
         setPinnedJobs({});
       }
@@ -321,7 +361,7 @@ function App() {
           <div><small>PUBLIC REPOS</small><strong>{catalogState === "live" ? rows.length : "—"}</strong></div>
           <div><small>FLOORS</small><strong>{catalogState === "live" ? allFloors.length : "—"}</strong></div>
           <div><small>AUDIT RECORDS</small><strong>{auditCount}</strong></div>
-          <div><small>REVIEW JOBS</small><strong>{taskCount}</strong></div>
+          <div><small>PROPOSED JOBS</small><strong>{taskCount}</strong></div>
         </div>
         <div className={"feed-state feed-" + catalogState}>
           <span className="feed-light" />{catalogState === "live" ? "GITHUB PUBLIC" :
@@ -378,7 +418,11 @@ function App() {
               <p><span className="signal-dot blue" /> Public GitHub metadata</p>
               <p><span className="signal-dot gold" /> Agentora R0.1 audit (optional)</p>
               <p><span className="signal-dot violet" /> Agentora R0.2 plan (optional)</p>
+              <p><span className="signal-dot gold" /> Published public pilot: {publishedStatus}</p>
               <small>Signals are observations, not workers. No bot activity is simulated as real execution.</small>
+              {publishedMeta && <p className="feed-coverage">Published pilot coverage:
+                {publishedMeta.deep_audited_count} of {publishedMeta.inventory_count} public repos.
+                Generated {safeTime(publishedMeta.generated_utc)}. No completed software certified.</p>}
               <h3>Desk checks performed</h3>
               {Object.values(signals).length === 0 ?
                 <p>No live desk inspections yet. Open a repository and select "Check current CI and PRs".</p> :
@@ -403,8 +447,13 @@ function App() {
               disabled={catalogState !== "live"} onClick={() => uploadRef.current?.click()}>
               ＋ Import Fleet JSON
             </button>
+            <button type="button" className="refresh-button" onClick={reloadPublishedPilot}
+              disabled={catalogState !== "live" || publishedStatus === "loading"}>
+              {publishedStatus === "loading" ? "Checking published pilot…" : "↻ Load published pilot"}
+            </button>
             <button type="button" className="refresh-button" onClick={refreshCatalog}>↻ Refresh catalog</button>
-            <small>Reports stay in this browser session. No write tokens, tracking, or GitHub mutations.</small>
+            <small>Public pilot is published by GitHub Pages (not a live 222-repo audit).
+              Local report imports are session-only and take precedence until you reload the pilot.</small>
           </div>
         </aside>
         <main className="main-area">
@@ -430,7 +479,14 @@ function App() {
           <div className="banner-status" role="status" aria-live="polite">
             <span className={catalogState === "live" ? "status-dot-live" : "status-dot-muted"} />
             {catalogState === "live" ?
-              "Public catalog online. Click any desk to inspect the repository." :
+              publishedStatus === "ready" && publishedMeta ?
+                "Public catalog online · pilot observations: " +
+                publishedMeta.deep_audited_count + "/" + publishedMeta.inventory_count +
+                " audited · " + publishedMeta.review_only_tasks +
+                " review proposals · no work dispatched." :
+                publishedStatus === "loading" ?
+                "Public catalog online. Checking the published Agentora pilot snapshot…" :
+                "Public catalog online. Published pilot unavailable or stale; local import remains available." :
               catalogState === "loading" ? "Checking the public GitHub directory…" :
               "GitHub inventory unavailable. Curated examples only; no live statuses."}
             <span className="help-key">← → to change floors</span>
@@ -451,7 +507,7 @@ function App() {
             </>}
           <footer className="main-footer">
             <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
-            <span>ΦMADA PRIME R3 · READ-ONLY MISSIONS / NO AUTOMATED DISPATCH</span>
+            <span>ΦMADA PRIME R4 · PUBLIC PILOT FEED / NO AUTOMATED DISPATCH</span>
           </footer>
           {message && <div className="toast" role="status">{message}
             <button type="button" onClick={() => setMessage("")} aria-label="Dismiss message">×</button></div>}
