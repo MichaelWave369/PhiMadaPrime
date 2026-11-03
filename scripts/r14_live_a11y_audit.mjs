@@ -101,7 +101,7 @@ async function audit(sha) {
       capture("PAGE_BOOT: " + sanitize(e));
     }
     const opened = await check("desk_keyboard_open", async () => {
-      const desk = page.locator('button.desk-filled[aria-label="Inspect PhiMadaPrime"]');
+      const desk = page.getByRole("button", { name: /Inspect repository:\s*PhiMadaPrime/ });
       await desk.waitFor({ timeout: 15000 });
       await desk.focus();
       await page.keyboard.press("Enter");
@@ -109,10 +109,31 @@ async function audit(sha) {
         .waitFor({timeout: 10000});
     });
     if (opened) await axeView("inspector");
+    await check("inspector_tab_contained", async () => {
+      if (!opened) throw new Error("INSPECTOR_NOT_OPEN");
+      const lastLink = page.locator(".inspector-actions a").last();
+      await lastLink.waitFor({timeout:10000});
+      await lastLink.focus();
+      await page.keyboard.press("Tab");
+      const wrappedForward = await page.locator(".close-inspector")
+        .evaluate(node => node === document.activeElement);
+      if (!wrappedForward) throw new Error("FORWARD_TAB_ESCAPED_MODAL");
+      await page.keyboard.press("Shift+Tab");
+      const wrappedBackward = await lastLink
+        .evaluate(node => node === document.activeElement);
+      if (!wrappedBackward) throw new Error("REVERSE_TAB_ESCAPED_MODAL");
+    });
     await check("inspector_escape_close", async () => {
       if (!opened) throw new Error("INSPECTOR_WAS_NOT_OPENED");
       await page.keyboard.press("Escape");
       await page.locator(".inspector-backdrop").waitFor({ state:"hidden", timeout: 10000 });
+    });
+    await check("inspector_focus_return", async () => {
+      if (!opened) throw new Error("INSPECTOR_WAS_NOT_OPENED");
+      const restored = await page.getByRole("button", {
+        name: /Inspect repository:\s*PhiMadaPrime/
+      }).evaluate(node => node === document.activeElement);
+      if (!restored) throw new Error("OPENER_FOCUS_NOT_RESTORED");
     });
     const boardOpened = await check("mission_board_keyboard_open", async () => {
       const button = page.locator(".mission-open-button");
