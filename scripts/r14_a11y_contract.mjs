@@ -38,7 +38,7 @@ export function summarizeAxeView(name, scan) {
     const selectorHints = [...new Set(v.nodes.slice(0, 12).flatMap(node =>
       (Array.isArray(node.target) ? node.target : []).flatMap(target =>
         typeof target === "string" ?
-          (target.match(/\\.[a-zA-Z][a-zA-Z0-9_-]{0,47}/g) || []) : [])))].slice(0, 12);
+          (target.match(/\.[a-zA-Z][a-zA-Z0-9_-]{0,47}/g) || []) : [])))].slice(0, 12);
     return {
       id: v.id, impact: v.impact,
       affected_nodes: v.nodes.length,
