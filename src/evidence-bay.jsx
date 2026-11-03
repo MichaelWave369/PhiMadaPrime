@@ -3,6 +3,7 @@ import {
   parseEvidenceReview, corroborateEvidence,
   EVIDENCE_MAX_REVIEW_BYTES, EVIDENCE_MAX_ZIP_BYTES
 } from "./evidence-bay.mjs";
+import { BrowserEvidence } from "./browser-evidence.jsx";
 import { pilotCoverage } from "./pilot-coverage.mjs";
 
 // All files remain in this browser tab. This is a review console,
@@ -162,6 +163,7 @@ export function EvidenceBay({ catalog, contracts, onVisit }) {
           independently replay its tests. An exit-zero report is not
           functional/browser acceptance, product completion or merge approval.</small>
       </section>}
+      <BrowserEvidence catalog={catalog} contract={localContract} />
       <p className="evidence-bay-warning">
         An imported review is operator-supplied, not authenticated by this browser.
         Hashing its original ZIP and checking GitHub corroborates artifact integrity
