@@ -8,13 +8,16 @@ import { fetchRepoSignals, signalsFresh } from "./signals.mjs";
 import { ChiefOfStaff, SignalInspector, WingRibbon } from "./office-parts.jsx";
 import { MissionBoard } from "./mission-board.jsx";
 import { fetchPublicSnapshot } from "./public-feed.mjs";
+import { fetchPublicCoverage } from "./coverage.mjs";
+import { CoverageStrip, CoverageSidebar, CoverageInspector } from "./coverage-parts.jsx";
 import { missionQueue } from "./missions.mjs";
 import { MAX_ARTIFACT_BYTES, parseOfficeArtifact, safeTime } from "./audit.mjs";
 import "./office.css";
 import "./living.css";
 import "./mission-board.css";
+import "./coverage.css";
 
-const TABS = ["Directory", "Signals", "Missions"];
+const TABS = ["Directory", "Signals", "Coverage", "Missions"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
 
 function Star({ index }) {
@@ -24,17 +27,23 @@ function Star({ index }) {
   </span>;
 }
 
-function deriveState(repo, report) {
+function deriveState(repo, report, cohort) {
   if (!repo) return { label: "AVAILABLE", kind: "empty" };
   if (repo.exampleOnly) return { label: "EXAMPLE", kind: "example" };
   if (repo.archived) return { label: "ARCHIVED", kind: "archived" };
-  if (report?.completion === "UNVERIFIED") return { label: "AUDIT FOUND", kind: "review" };
+  if (report?.completion === "UNVERIFIED") return { label: "PILOT AUDIT", kind: "review" };
+  if (cohort?.state === "RECENT_OBSERVATION_NOT_PRODUCT_VERIFIED")
+    return { label: "METADATA OBSERVED", kind: "observed" };
+  if (cohort?.state === "RECENT_LIMITED_OBSERVATION")
+    return { label: "LIMITED OBSERVATION", kind: "limited" };
+  if (cohort?.state === "STALE_AFTER_PUSH" || cohort?.state === "STALE_BY_AGE")
+    return { label: "STALE OBSERVATION", kind: "stale" };
   if (report?.completion === "NOT_AUDITED") return { label: "NOT AUDITED", kind: "unknown" };
   return { label: "UNVERIFIED", kind: "unknown" };
 }
 
-function Desk({ repo, position, evidence, signal, onSelect }) {
-  const state = deriveState(repo, evidence);
+function Desk({ repo, position, evidence, signal, cohort, onSelect }) {
+  const state = deriveState(repo, evidence, cohort);
   const fresh = signalsFresh(signal);
   const ciGreen = fresh && signal?.ci?.state === "OBSERVED_GREEN_AT_HEAD";
   const ciFailed = fresh && signal?.ci?.state === "FAILED_AT_HEAD_OBSERVED";
@@ -64,7 +73,7 @@ function Desk({ repo, position, evidence, signal, onSelect }) {
   );
 }
 
-function DetailPanel({ repo, evidence, plan, audit, signal,
+function DetailPanel({ repo, evidence, plan, audit, signal, cohort,
   signalLoading, signalError, onCheckSignal, onClose, onJump }) {
   const closeRef = useRef(null);
   useEffect(() => {
@@ -73,7 +82,7 @@ function DetailPanel({ repo, evidence, plan, audit, signal,
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
-  const state = deriveState(repo, evidence);
+  const state = deriveState(repo, evidence, cohort);
   return (
     <div className="inspector-backdrop" onMouseDown={e => {
       if (e.target === e.currentTarget) onClose();
@@ -92,6 +101,7 @@ function DetailPanel({ repo, evidence, plan, audit, signal,
         <p>{repo.description || "No public project description provided."}</p>
         <SignalInspector repo={repo} signal={signal} loading={signalLoading}
           error={signalError} onCheck={onCheckSignal} />
+        <CoverageInspector record={cohort} />
         {repo.exampleOnly ? (
           <p className="caution">This is a curated example while GitHub is unavailable. No live repository information has been verified.</p>
         ) : (
@@ -134,7 +144,7 @@ function DetailPanel({ repo, evidence, plan, audit, signal,
   );
 }
 
-function Office({ stations, floor, evidence, signals, onSelect, hasPlan, wing }) {
+function Office({ stations, floor, evidence, signals, coverage, onSelect, hasPlan, wing }) {
   const count = stations.filter(Boolean).length;
   const observedPrs = stations.reduce((total, repo) => {
     const signal = signals[repo?.id];
@@ -163,7 +173,8 @@ function Office({ stations, floor, evidence, signals, onSelect, hasPlan, wing })
         <div className="desk-grid">
           {stations.slice(0, 6).map((repo, i) => <Desk key={repo?.id ?? "empty-" + i}
             repo={repo} position={i + 1} evidence={evidence[repo?.name]}
-            signal={signals[repo?.id]} onSelect={onSelect} />)}
+            signal={signals[repo?.id]} cohort={coverage?.byRepo[repo?.name]}
+            onSelect={onSelect} />)}
         </div>
         <div className="middle-bay">
           {observedPrs > 0 && <div className="observed-courier"
@@ -197,7 +208,8 @@ function Office({ stations, floor, evidence, signals, onSelect, hasPlan, wing })
         <div className="desk-grid">
           {stations.slice(6, 12).map((repo, i) => <Desk key={repo?.id ?? "empty-" + (i + 6)}
             repo={repo} position={i + 7} evidence={evidence[repo?.name]}
-            signal={signals[repo?.id]} onSelect={onSelect} />)}
+            signal={signals[repo?.id]} cohort={coverage?.byRepo[repo?.name]}
+            onSelect={onSelect} />)}
         </div>
         <div className="office-rug" aria-hidden="true">Φ</div>
       </div>
@@ -223,6 +235,8 @@ function App() {
   const [pinnedJobs, setPinnedJobs] = useState({});
   const [publishedMeta, setPublishedMeta] = useState(null);
   const [publishedStatus, setPublishedStatus] = useState("waiting");
+  const [coverage, setCoverage] = useState(null);
+  const [coverageStatus, setCoverageStatus] = useState("waiting");
   const uploadRef = useRef(null);
   async function refreshCatalog() {
     setCatalogState("loading");
@@ -233,6 +247,8 @@ function App() {
       setSignals({});
       setPublishedMeta(null);
       setPublishedStatus("waiting");
+      setCoverage(null);
+      setCoverageStatus("waiting");
       setCatalogState("live");
       setMessage("Public GitHub inventory loaded: " + discovered.length + " repos.");
     } catch {
@@ -240,6 +256,7 @@ function App() {
       setRows(KNOWN_EXAMPLES);
       setAudit(null); setPlan(null); setSignals({});
       setPublishedMeta(null); setPublishedStatus("unavailable");
+      setCoverage(null); setCoverageStatus("unavailable");
       setMessage("Live public inventory unavailable. Showing twelve labeled examples only.");
     }
   }
@@ -248,16 +265,31 @@ function App() {
     if (catalogState !== "live") return;
     let cancelled = false;
     setPublishedStatus("loading");
-    fetchPublicSnapshot(rows).then(snapshot => {
+    setCoverageStatus("loading");
+    fetchPublicSnapshot(rows).then(async snapshot => {
       if (cancelled) return;
       // A user-selected local report must not be silently replaced by the feed.
       setAudit(existing => existing?.source === "LOCAL_IMPORT" ? existing : snapshot.audit);
       setPlan(existing => existing?.source === "LOCAL_IMPORT" ? existing : snapshot.plan);
       setPublishedMeta(snapshot.manifest);
       setPublishedStatus("ready");
+      try {
+        const observed = await fetchPublicCoverage(rows, snapshot.manifest);
+        if (!cancelled) {
+          setCoverage(observed);
+          setCoverageStatus("ready");
+        }
+      } catch {
+        if (!cancelled) {
+          setCoverage(null);
+          setCoverageStatus("unavailable");
+        }
+      }
     }).catch(() => {
       if (cancelled) return;
       setPublishedStatus("unavailable");
+      setCoverage(null);
+      setCoverageStatus("unavailable");
     });
     return () => { cancelled = true; };
   }, [catalogState, rows]);
@@ -272,7 +304,15 @@ function App() {
       setReviewedJobs({});
       setPinnedJobs({});
       setPublishedStatus("ready");
-      setMessage("Published public pilot loaded. Review proposals only; no work executed.");
+      setCoverageStatus("loading");
+      try {
+        setCoverage(await fetchPublicCoverage(rows, snapshot.manifest));
+        setCoverageStatus("ready");
+      } catch {
+        setCoverage(null);
+        setCoverageStatus("unavailable");
+      }
+      setMessage("Published pilot and available rolling coverage loaded; no work executed.");
     } catch {
       setPublishedStatus("unavailable");
       setMessage("Published public pilot unavailable or stale. Existing local evidence was not changed.");
@@ -360,7 +400,8 @@ function App() {
         <div className="top-metrics" aria-label="Current catalog metrics">
           <div><small>PUBLIC REPOS</small><strong>{catalogState === "live" ? rows.length : "—"}</strong></div>
           <div><small>FLOORS</small><strong>{catalogState === "live" ? allFloors.length : "—"}</strong></div>
-          <div><small>AUDIT RECORDS</small><strong>{auditCount}</strong></div>
+          <div><small>{coverage ? "REPOS OBSERVED" : "PILOT AUDIT"}</small>
+            <strong>{coverage ? coverage.stats.observed : auditCount}</strong></div>
           <div><small>PROPOSED JOBS</small><strong>{taskCount}</strong></div>
         </div>
         <div className={"feed-state feed-" + catalogState}>
@@ -402,6 +443,13 @@ function App() {
                 </button>;
               })}
             </div>
+          </> : activeTab === "Coverage" ? <>
+            <CoverageSidebar coverage={coverage} status={coverageStatus}
+              floors={allFloors} onVisitFloor={level => {
+                setFloor(level);
+                setActiveTab("Directory");
+                setBoardOpen(false);
+              }} />
           </> : activeTab === "Missions" ? <>
             <div className="signal-feed">
               <h3>Mission Control</h3>
@@ -419,6 +467,7 @@ function App() {
               <p><span className="signal-dot gold" /> Agentora R0.1 audit (optional)</p>
               <p><span className="signal-dot violet" /> Agentora R0.2 plan (optional)</p>
               <p><span className="signal-dot gold" /> Published public pilot: {publishedStatus}</p>
+              <p><span className="signal-dot blue" /> Rolling cohort ledger: {coverageStatus}</p>
               <small>Signals are observations, not workers. No bot activity is simulated as real execution.</small>
               {publishedMeta && <p className="feed-coverage">Published pilot coverage:
                 {publishedMeta.deep_audited_count} of {publishedMeta.inventory_count} public repos.
@@ -452,8 +501,8 @@ function App() {
               {publishedStatus === "loading" ? "Checking published pilot…" : "↻ Load published pilot"}
             </button>
             <button type="button" className="refresh-button" onClick={refreshCatalog}>↻ Refresh catalog</button>
-            <small>Public pilot is published by GitHub Pages (not a live 222-repo audit).
-              Local report imports are session-only and take precedence until you reload the pilot.</small>
+            <small>Public pilot and rolling cohort observations are published by GitHub Pages.
+              Local report imports are session-only. No automatic job dispatch or completed-product claims.</small>
           </div>
         </aside>
         <main className="main-area">
@@ -500,14 +549,15 @@ function App() {
             <>
               <WingRibbon current={currentFloor} floors={tower}
                 onSelect={setSelectedId} />
+              <CoverageStrip coverage={coverage} stations={stations} />
               <ChiefOfStaff plan={plan} audit={audit} signals={signals} onJump={jumpToRepo} />
               <Office stations={stations} floor={activeFloor} wing={currentFloor.wing}
-                evidence={evidence} signals={signals}
+                evidence={evidence} signals={signals} coverage={coverage}
                 hasPlan={Boolean(plan)} onSelect={setSelectedId} />
             </>}
           <footer className="main-footer">
             <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
-            <span>ΦMADA PRIME R4 · PUBLIC PILOT FEED / NO AUTOMATED DISPATCH</span>
+            <span>ΦMADA PRIME R5 · ROLLING PUBLIC COVERAGE / NO AUTOMATED DISPATCH</span>
           </footer>
           {message && <div className="toast" role="status">{message}
             <button type="button" onClick={() => setMessage("")} aria-label="Dismiss message">×</button></div>}
@@ -515,6 +565,7 @@ function App() {
       </div>
       {selected && <DetailPanel repo={selected} evidence={evidence[selected.name]}
         audit={audit} plan={plan} signal={signals[selected.id]}
+        cohort={coverage?.byRepo[selected.name]}
         signalLoading={Boolean(signalsBusy[selected.id])}
         signalError={signalsError[selected.id] || ""}
         onCheckSignal={() => inspectLiveRepo(selected)}

@@ -131,3 +131,35 @@ The sidebar shows actual pilot coverage and publication time. A locally imported
 - PR CI also performs a **real public pilot audit** with the pinned Agentora code before testing the publication gate.
 - After merging, verify the Pages deployment, visible pilot coverage, Mission Board proposals without manual JSON upload, manual override and explicit stale/unavailable behavior.
 - Broader fleet-wide public evidence needs separate rate-limit and privacy review. Do not publish private data or infer that an old CI result proves functionality.
+
+## Rung 5: Rolling Public Fleet Coverage
+
+The six-project Agentora pilot remains the **completion-planning** source. Rung 5 adds a separate, progressively growing **whole-public-fleet metadata observation ledger**.
+
+### Operating schedule and coverage
+
+- Each successful Pages publication runs an additional bounded cohort of **24 public repositories**, selected oldest-observed-first. Public inventory is fully enumerated first, but metadata deep checks are limited to 24 per publication. A PR CI test uses **8 public repos** for bounded validation.
+- Observations use the pinned, public Agentora R0.1 scanner. This is not a new merge engine, and neither scanner nor office acquires write credentials.
+- Previous public observations are carried forward from the existing published coverage ledger, but only for repository IDs and names that still appear in the **current public owner inventory**. Anything missing from the current public inventory is dropped from the newly published ledger.
+- Recently changed repos, observations older than 14 days, and partial API observations are distinctly marked **stale**, **age-expired**, or **limited**. 90-day-old history is discarded. A repository with no valid observation is **never observed**, not broken.
+- At 24 unique projects per successful daily run, an unchanged set of 222 public repos could be observed over roughly **10 daily publications**. GitHub schedule delays, API limits, new repos, failures and edits change actual coverage. The counter is earned, not forecast as completed.
+
+### Browser view
+
+The **Coverage** sidebar tab shows total public repos, ever inspected, recent clean observations, limited/stale and never scanned. It also includes floor-by-floor observation coverage and links back into the tower elevator. Individual desks show a separate rolling scanner record, exact observed commit and metadata evidence. The floor ribbon has a coverage progress meter.
+
+The existing **Mission Board remains sourced from the six-repo Agentora R0.2 pilot**. Scanning a repo in the rolling cohort does not automatically create a task, trigger CI, or indicate product completion. The pilot and rolling coverage are separate data layers.
+
+### Security and correctness
+
+- The coverage JSON is validated and distributed as a **public Pages asset** with SHA-256 integrity metadata added to the existing public pilot manifest. No private repos, tokens, secret artifacts or authenticated browser session data enter the site.
+- The browser trusts only same-origin published JSON and rechecks freshness against the current public inventory where available; changed projects are not called recently verified.
+- The prior coverage ledger is fetched only from the exact allowlisted public PhiMada Pages path. If the ledger is absent (first deployment), a new scan begins. Other fetch failures halt publication rather than falsely claiming accumulated history.
+- All displayed statuses are **metadata observations, not functional release verification**. No CI pass or site HTML response can mark a repository complete.
+- CI runs Node tests, Python coverage retention/privilege tests, and an actual 8-repo public cohort against the pinned scanner.
+
+### Field acceptance
+
+After PR merge and Pages deployment, open **Coverage** to verify a scan of up to 24 public repositories on the first run and view explicit never-observed desks. Verify the next successful scheduled publication carries forward prior observations. Check one known recently changed repo to confirm stale evidence is not labeled healthy.
+
+GitHub Pages is a public site. A repository made private after publication can have historical public data cached until the next successful update; do not publish any sensitive information in the first place.
