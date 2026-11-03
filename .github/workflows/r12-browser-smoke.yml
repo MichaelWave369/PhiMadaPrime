@@ -1,0 +1,60 @@
+name: PhiMada R12 Live Browser Smoke (Manual)
+
+# Real public site only. Never run as part of push/PR/schedule.
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: "Exact 40-character SHA of CURRENT PhiMadaPrime main HEAD / deployed build"
+        type: string
+        required: true
+      confirmation:
+        description: "Type RUN_PHI_MADA_BROWSER_SMOKE to explicitly authorize read-only Chromium UI smoke"
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phimada-r12-live-browser-smoke
+  cancel-in-progress: false
+
+jobs:
+  browser-smoke:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout trusted PhiMada verifier from selected branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned dependencies without lifecycle scripts
+        run: npm install --no-audit --no-fund --ignore-scripts
+      - name: Install Chromium and required browser libraries
+        run: npx playwright install --with-deps chromium
+      - name: Run exact-source read-only browser acceptance checks
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RUN_SHA: ${{ inputs.source_sha }}
+          RUN_CONFIRM: ${{ inputs.confirmation }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/r12_browser_smoke.mjs \
+            --sha "$RUN_SHA" \
+            --confirm "$RUN_CONFIRM" \
+            --output r12-artifacts/browser-smoke.json
+      - name: Upload bounded metadata receipt, including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phimada-r12-browser-${{ github.run_id }}
+          path: r12-artifacts/browser-smoke.json
+          if-no-files-found: warn
+          retention-days: 7
