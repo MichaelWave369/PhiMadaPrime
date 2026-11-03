@@ -38,3 +38,32 @@
 @media(max-width:720px){.evidence-bay-upload{grid-template-columns:1fr}
   .evidence-bay>summary{align-items:flex-start;flex-direction:column}
   .evidence-bay-status{white-space:normal}}
+
+/* R11: visible coverage gaps without green product-completion badges. */
+.evidence-bay-coverage{display:flex;flex-direction:column;gap:10px;padding:14px;
+  border:1px solid #777083;border-radius:6px;background:#232a36}
+.evidence-bay-coverage header{display:flex;justify-content:space-between;
+  align-items:center;gap:12px;flex-wrap:wrap}
+.evidence-bay-coverage header strong{font:bold 12px monospace;color:#efca94}
+.evidence-bay-coverage header span{font:10px monospace;color:#c4cce2}
+.evidence-bay-coverage p{font:11px/1.6 monospace;color:#ddd1d9}
+.evidence-bay-coverage-alert{border-left:3px solid #d0a27b;padding:8px;
+  background:#43343a}
+.evidence-bay-coverage-rows{display:flex;flex-direction:column;gap:6px}
+.evidence-bay-coverage-rows>div{display:flex;justify-content:space-between;
+  align-items:center;gap:12px;padding:9px 10px;border:1px solid #4a5062;
+  background:#1c2330;border-radius:4px}
+.evidence-bay-coverage-rows>div>span{display:flex;flex-direction:column;gap:4px;
+  min-width:0;overflow-wrap:anywhere}
+.evidence-bay-coverage-rows strong{font:bold 11px monospace;color:#e8dfd5}
+.evidence-bay-coverage-rows small{font:10px/1.5 monospace;color:#b6b9c9}
+.evidence-bay-coverage-rows em{flex-shrink:0;text-align:center;font:bold 10px monospace;
+  font-style:normal;border:1px solid #665e70;border-radius:4px;padding:7px;
+  color:#c7c5db}
+.evidence-bay-coverage-rows .evidence-coverage-reported{border-color:#ad916f;color:#f0d0a0}
+.evidence-bay-coverage>button{align-self:flex-start;background:#4d3b54;
+  border:1px solid #c69a77;border-radius:5px;padding:10px;
+  font:11px monospace;color:#f4deb9}
+.evidence-bay-coverage>small{font:10px/1.6 monospace;color:#c3b5c4}
+@media(max-width:700px){.evidence-bay-coverage-rows>div{align-items:flex-start;
+  flex-direction:column}.evidence-bay-coverage-rows em{flex-shrink:1}}
