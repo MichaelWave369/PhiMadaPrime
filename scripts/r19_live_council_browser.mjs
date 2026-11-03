@@ -108,8 +108,10 @@ async function browse(expectedSha) {
       await inspect.click();
     }
     async function refused() {
-      await status.getByText("Council receipt held:",{exact:false})
-        .waitFor({state:"visible",timeout:10000});
+      await page.waitForFunction(() =>
+        document.querySelector(".council-evidence [role=status]")
+          ?.textContent?.includes("Council receipt held:"),
+        null,{timeout:10000});
       if(await result.count())throw new Error("REFUSAL_LEAKED_PREVIOUS_REVIEW");
     }
     await check("page_deployed_sha",async()=>{
