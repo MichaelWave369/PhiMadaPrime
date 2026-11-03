@@ -100,3 +100,34 @@ The module `src/missions.mjs` has deterministic queue IDs, public-repository bin
 After merging, validate in the deployed browser: open the Mission Board with no plan loaded, import a public R0.2 plan, inspect the full job list, filter by department, pin and mark locally reviewed, copy a review-only handoff, visit the correct project desk, and confirm browser refresh clears local annotations.
 
 **No job is verified complete** by any of the R0.1, R0.2 or R0.3 views. Verification and governed dispatch remain separate Agentora work.
+
+## Rung 4: Automatic Public Pilot Evidence Feed
+
+The living office no longer requires a manual JSON import to see **a small, explicitly bounded Agentora pilot**. After this rung is merged and GitHub Pages successfully publishes, the static site automatically loads a **public-only, read-only, SHA-256-checked** Agentora R0.1 audit and R0.2 review plan. The pilot covers six named Agentora projects, not the entire public fleet, even though the directory includes every public repo.
+
+### Source-of-truth and deployment
+
+The Publish PhiMada Prime GitHub Actions workflow now:
+
+1. Builds PhiMada Prime and runs safety tests.
+2. Checks out public Agentora at the **pinned immutable commit** 502115508421eb1c98a6c05a79d04a9e432b8b27, not an unreviewed future main revision.
+3. Runs Agentora's original public-only **pilot** scanner and review-only planner using an Actions token with read permission.
+4. Runs scripts/verify_public_fleet.py to reject private rows, incomplete catalog coverage, stale reports, forged completion, unsupported schemas and any executable or merge-authorized plans. Its validated JSON is copied into dist/fleet with an SHA-256 integrity manifest.
+5. Publishes the static app and public pilot together via GitHub Pages.
+
+The workflow runs on pushes to main, manual dispatch, and daily at **16:35 UTC**. GitHub scheduled workflows may be delayed or skipped. This is a periodic refresh attempt, not continuous monitoring. A scan or validation failure stops deployment, leaving the prior successful Pages site as-is.
+
+### Browser behavior
+
+The browser reads only three relative same-origin files: ./fleet/manifest.json, ./fleet/fleet-audit.json and ./fleet/fleet-plan.json. It checks their hashes, applies the existing public-only Agentora schema checks and rejects snapshots older than 30 hours. No private repo API, access token or GitHub mutation is involved.
+
+The sidebar shows actual pilot coverage and publication time. A locally imported Agentora report takes precedence for the current session. **Load published pilot** explicitly switches back to the snapshot; it does not launch a new scan or workflow. The Mission Board distinguishes the published pilot from manual imports. Local review flags reset only on explicit reload/reimport.
+
+**Status boundaries:** The public inventory may contain 222+ repositories, while the pilot deeply audits only six. An unscanned desk is NOT AUDITED, not healthy or complete. Neither published snapshot nor Mission Board dispatches agents, merges PRs, runs CI, alters Agentora or certifies that a release functions.
+
+### Acceptance
+
+- Run npm test, the Python unittest suite in tests/test_public_snapshot.py and npm run build.
+- PR CI also performs a **real public pilot audit** with the pinned Agentora code before testing the publication gate.
+- After merging, verify the Pages deployment, visible pilot coverage, Mission Board proposals without manual JSON upload, manual override and explicit stale/unavailable behavior.
+- Broader fleet-wide public evidence needs separate rate-limit and privacy review. Do not publish private data or infer that an old CI result proves functionality.
