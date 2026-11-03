@@ -100,7 +100,7 @@ function checksFor(types) {
 }
 export function selectSurfaces(types) {
   if (!Array.isArray(types) || types.length < 1 || types.length > 10 ||
-      types.some(t => typeof t !== "string" || !(t in CONTRACT_TYPES)) ||
+      types.some(t => typeof t !== "string" || !Object.hasOwn(CONTRACT_TYPES, t)) ||
       new Set(types).size !== types.length) {
     throw new Error("CONTRACT_TYPES_INVALID");
   }
