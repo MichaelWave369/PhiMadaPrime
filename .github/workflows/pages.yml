@@ -5,6 +5,9 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    # Daily public-only pilot snapshot; Github schedules may run late or be skipped.
+    - cron: "35 16 * * *"
 
 permissions:
   contents: read
@@ -18,18 +21,50 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout PhiMada app
+        uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v4
+      - name: Checkout pinned public Agentora Fleet scanners (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/Agentora
+          ref: 502115508421eb1c98a6c05a79d04a9e432b8b27
+          path: agentora-fleet
+          persist-credentials: false
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm install --no-audit --no-fund
-      - run: npm test
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned frontend dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run app and publication safety tests
+        run: |
+          npm test
+          python -m unittest discover -s tests -p 'test_public_snapshot.py' -v
+      - name: Build browser application
+        run: npm run build
+      - name: Generate fresh public-owner Agentora pilot audit
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python agentora-fleet/scripts/fleet_r01_audit.py --scope pilot --output-dir fleet-artifacts
+      - name: Generate non-dispatchable public completion plan
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python agentora-fleet/scripts/fleet_r02_plan.py --input fleet-artifacts/fleet-audit.json --output-dir fleet-artifacts
+      - name: Validate public-only evidence and attach integrity manifest
+        run: |
+          python scripts/verify_public_fleet.py --source fleet-artifacts --out dist/fleet --agentora-sha 502115508421eb1c98a6c05a79d04a9e432b8b27
+      - name: Upload Pages artifact with only validated public pilot evidence
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
   deploy:
