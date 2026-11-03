@@ -559,6 +559,8 @@ function App() {
                 setBoardOpen(false);
               }} />
             {coverage && <TriageCoverage coverage={coverage} rows={rows} onJump={jumpToRepo} />}
+          </> : activeTab === "Contracts" ? <>
+            <ContractDirectory contracts={contracts} rows={rows} onVisit={jumpToRepo} />
           </> : activeTab === "Missions" ? <>
             <div className="signal-feed">
               <h3>Mission Control</h3>
@@ -600,6 +602,20 @@ function App() {
             </div>
           </>}
           <div className="sidebar-bottom">
+            <div className="contract-export-controls">
+              <button type="button" className="refresh-button"
+                onClick={exportLocalContracts} disabled={!savedContracts.length}>
+                ↓ Export {savedContracts.length} contract{savedContracts.length === 1 ? "" : "s"}
+              </button>
+              <input className="sr-only" ref={contractUploadRef}
+                id="import-contracts" type="file" accept=".json,application/json"
+                disabled={catalogState !== "live"} onChange={importLocalContracts} />
+              <button type="button" className="refresh-button"
+                disabled={catalogState !== "live"}
+                onClick={() => contractUploadRef.current?.click()}>
+                ↑ Import local contracts
+              </button>
+            </div>
             <input className="sr-only" ref={uploadRef} id="import-evidence"
               type="file" accept=".json,application/json" onChange={importArtifact}
               disabled={catalogState !== "live"} />
@@ -675,15 +691,26 @@ function App() {
             </>}
           <footer className="main-footer">
             <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
-            <span>ΦMADA PRIME R6 · EVIDENCE TRIAGE / NO AUTOMATED DISPATCH</span>
+            <span>ΦMADA PRIME R7 · LOCAL COMPLETION CONTRACTS / NO AUTOMATED DISPATCH</span>
           </footer>
           {message && <div className="toast" role="status">{message}
             <button type="button" onClick={() => setMessage("")} aria-label="Dismiss message">×</button></div>}
         </main>
       </div>
-      {selected && <DetailPanel repo={selected} evidence={evidence[selected.name]}
+      {selected && <DetailPanel key={selected.id} repo={selected}
+        evidence={evidence[selected.name]}
         audit={audit} plan={plan} signal={signals[selected.id]}
         cohort={coverage?.byRepo[selected.name]}
+        contract={contracts[selected.id]}
+        sourceSha={observedSourceSha(signals[selected.id],
+          coverage?.byRepo[selected.name], plan?.byRepo?.[selected.name])}
+        onCreateContract={types => createLocalContract(selected, types)}
+        onToggleContract={(checkId, checked) => patchLocalContract(selected, checkId,
+          { locally_reviewed: checked })}
+        onNoteContract={(checkId, note) => patchLocalContract(selected, checkId,
+          { note })}
+        onRebaseContract={sha => rebindLocalContract(selected, sha)}
+        onDeleteContract={() => discardLocalContract(selected)}
         signalLoading={Boolean(signalsBusy[selected.id])}
         signalError={signalsError[selected.id] || ""}
         onCheckSignal={() => inspectLiveRepo(selected)}
