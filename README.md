@@ -187,3 +187,36 @@ No automation permissions, repository writes, CI dispatch, PR merges, private da
 In GitHub CI, run `npm test`, Python snapshot and rolling scanner tests, and `npm run build`. Following Pages deployment, confirm Coverage loads 24/222 or a later valid cohort; if it fails, the diagnostic and Refresh coverage button should explain the failure without falsely reporting green or complete. Test a desk whose latest observation includes missing CI, and another with a reachable Pages URL. Check that the office view still starts with the 12 desks visible, rather than being pushed below a large triage panel.
 
 The next major technical milestone is source-backed per-repository completion contracts and governed worker dispatch inside Agentora. R6 does not short-circuit that verification step.
+
+## Rung 7: Source-Bound Completion Contracts
+
+PhiMada's next step toward finishing real repositories is asking a concrete question at each desk: **what must be demonstrated before this particular project is fit for its stated purpose?**
+
+### Per-desk acceptance contract
+
+Open a repository station and find **Project Completion Contract**. Pick one or more applicable surface types. For six initial Agentora pilot projects, candidate surfaces from the published R0.2 plan are preselected but still require human confirmation. All other repos start with an explicit manual-classification choice, never an invented web-app type.
+
+Built-in contract types cover web/React apps, WebXR, static websites, Python packages, Node services, Android, desktop applications, OS images, reproducible research, and unclassified projects. A multi-surface repo can require several acceptance contracts simultaneously; overlapping checks are deduplicated.
+
+The checklist covers relevant acceptance such as a production build, automated tests, interactive browser smoke, Quest device controls, clean install, API behavior, VM boot/recovery, negative controls and limitations review. A reviewed checkbox means **operator review only**. It does not assert a test passed, a release functions, or a repo is complete.
+
+### Revision discipline
+
+Each contract is bound to an **observed source commit SHA** where available, preferring a fresh on-demand GitHub HEAD, then recent rolling public cohort evidence, then an Agentora candidate source SHA. If the observed HEAD changes, the inspector explicitly flags **SOURCE CHANGED**. The optional rebind action resets local reviewed checkboxes, while preserving notes. Contracts without a confirmed source SHA are labeled **HEAD NOT CONFIRMED**.
+
+Even when every box is locally reviewed and the observed SHA matches, completion certification remains zero. An independent execution/verification pipeline inside Agentora will be required in a later rung.
+
+### Persistence and privacy
+
+- The **Contracts** sidebar tab shows projects with local checklists and direct desk navigation.
+- **Export contracts** downloads a JSON backup containing only the user's local scope decisions, annotations and public repo identifiers.
+- **Import local contracts** accepts that same schema with public repository ID/name checks, size limits, exact allowed check identifiers, bounded notes and explicitly false execution/completion/merge authority flags.
+- Contract data remains only in this browser session unless the operator chooses to export it. It is never written to the GitHub Pages server or synced to Agentora automatically. Browser refresh clears unsaved changes.
+
+Do not enter secrets, authentication tokens or private information into checklist notes, since exported files are under the user's control and could be shared accidentally. No private or vanished repositories can be imported into the active public catalog.
+
+### Acceptance
+
+CI must pass Node tests and Vite production build. Following deployment, inspect a WebXR desk, create a WebXR checklist, mark one item reviewed and add a note, export it, refresh, reimport, and confirm the note returns with **zero verified completion**. Switch to a research or OS project and confirm different acceptance checks. Check source rebinding resets review ticks. A green CI job alone does not establish browser functionality.
+
+**Future Agentora step:** accept operator-reviewed contract manifests with a separate authentication and approval gate, run the correct checks against immutable source revisions, verify receipts independently, then and only then authorize controlled execution/merge.
