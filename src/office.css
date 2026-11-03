@@ -80,11 +80,11 @@ button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #ffe7
 .inspector h2{font-size:28px;line-height:1.2;color:#ffe0a8;margin:18px 0 8px;overflow-wrap:anywhere}.inspector h3{margin-top:24px;color:#f1ca8f;font-size:15px}.inspector p{font-size:13px;line-height:1.65;color:#d6c7d0}
 .inspector-signal{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border:1px solid #827080;border-radius:5px;font:bold 11px monospace;background:#292536}
 .status-orb{width:9px;height:9px;border-radius:50%;background:#9ac4e6}.inspector-signal.review .status-orb{background:#f4c67e}.inspector-signal.archived .status-orb{background:#999}.inspector-signal.example .status-orb{background:#ba8de4}
-.details-list{display:grid;gap:8px;margin:18px 0}.details-list>div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;border-bottom:1px solid #483844;padding:8px 0}.details-list dt{font:bold 11px monospace;color:#a99db0}.details-list dd{margin:0;font:12px/1.5 monospace;word-break:break-word;color:#e7e2dc}
+.details-list{display:grid;gap:8px;margin:18px 0}.details-list>div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;border-bottom:1px solid #483844;padding:8px 0}.details-list dt{font:bold 11px monospace;color:#e4d9e8}.details-list dd{margin:0;font:12px/1.5 monospace;word-break:break-word;color:#e7e2dc}
 .caution{background:#382a34;border-left:3px solid #d9a86c;padding:10px 12px!important;color:#efd2ad!important}
 .tag-row{display:flex;flex-wrap:wrap;gap:7px}.role-tag,.link-chip{border:1px solid #8a6895;background:#33293f;border-radius:5px;padding:6px 8px;font:11px monospace;color:#e9cafa}
 .link-chip{cursor:pointer;text-align:left}.task-list{padding-left:23px;font:12px/1.7 monospace;color:#e5d4ca}.task-list li{margin-bottom:6px}
-.inspector small{display:block;color:#9b90a3;font:11px/1.6 monospace;margin-top:15px}
+.inspector small{display:block;color:#e7deed;font:11px/1.6 monospace;margin-top:15px}
 .inspector-actions{display:flex;flex-direction:column;gap:10px;margin-top:30px}.primary-link,.secondary-link{padding:12px;text-align:center;border-radius:5px;font:bold 13px monospace;text-decoration:none}.primary-link{background:#9b6647;color:#fff2df}.secondary-link{background:#3f3553;color:#f9e6d6}
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important}
 @keyframes glimmer{from{opacity:.8}to{opacity:1;box-shadow:0 0 20px #ffcd64}}

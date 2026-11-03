@@ -68,7 +68,8 @@ function Desk({ repo, position, evidence, signal, cohort, onSelect }) {
   return (
     <button type="button" className={"desk-slot desk-filled desk-" + state.kind +
       (ciGreen ? " desk-ci-observed" : "") + (ciFailed ? " desk-ci-failed" : "")}
-      onClick={() => onSelect(repo.id)} aria-label={"Inspect " + displayName(repo.name)}>
+      onClick={() => onSelect(repo.id)}>
+      <span className="sr-only">Inspect repository: </span>
       <span className="desk-label"><i className="status-light" />{displayName(repo.name)}</span>
       <span className="desk-scene">
         {ciGreen && <span className="observed-speech">CI observed green ✓</span>}
@@ -634,7 +635,7 @@ function App() {
                 ↓ Export {savedContracts.length} contract{savedContracts.length === 1 ? "" : "s"}
               </button>
               <input className="sr-only" ref={contractUploadRef}
-                id="import-contracts" type="file" accept=".json,application/json"
+                id="import-contracts" type="file" aria-label="Import local completion contracts JSON" accept=".json,application/json"
                 disabled={catalogState !== "live"} onChange={importLocalContracts} />
               <button type="button" className="refresh-button"
                 disabled={catalogState !== "live"}
@@ -643,7 +644,7 @@ function App() {
               </button>
             </div>
             <input className="sr-only" ref={uploadRef} id="import-evidence"
-              type="file" accept=".json,application/json" onChange={importArtifact}
+              type="file" aria-label="Import fleet evidence JSON" accept=".json,application/json" onChange={importArtifact}
               disabled={catalogState !== "live"} />
             <button type="button" className="import-button"
               disabled={catalogState !== "live"} onClick={() => uploadRef.current?.click()}>

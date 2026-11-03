@@ -23,10 +23,11 @@
 .wing-icon{display:grid;place-items:center;width:51px;height:51px;flex:none;background:#1a1623;border:3px solid var(--wing-accent);box-shadow:3px 3px #15121d;color:var(--wing-accent);font:28px Georgia,serif}
 .wing-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:2px}.wing-copy small{font:9px monospace;letter-spacing:.1em;color:#a89aaa}.wing-copy strong{font:17px "Courier New",monospace;color:var(--wing-accent);font-weight:900;letter-spacing:.04em}.wing-copy span{font:11px/1.4 monospace;color:#e0cdd3}
 .wing-meta{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:85px}.wing-meta strong{font:17px monospace;color:#fff0c5}.wing-meta small{font:9px monospace;color:#c2afb5}.wing-meta span{font:10px monospace;color:#9b8d9d}
-.mini-map{display:grid;grid-template-columns:repeat(6,13px);gap:5px 4px;border:1px solid #725e69;background:#171522;padding:9px;border-radius:5px}
-.mini-map button{width:13px;height:13px;padding:0;border:1px solid #8d7c87;background:#3b3440;border-radius:1px}
+.mini-map{display:grid;grid-template-columns:repeat(6,28px);gap:5px 4px;border:1px solid #725e69;background:#171522;padding:7px;border-radius:5px}
+.mini-map button{width:28px;height:28px;padding:0;border:1px solid #8d7c87;background:#3b3440;border-radius:3px;cursor:pointer}
 .mini-map button.map-occupied{background:var(--wing-accent);border-color:#e8dcd2;box-shadow:0 0 5px #d8cb9a55}
-.mini-map button.map-occupied:hover,.mini-map button.map-occupied:focus-visible{transform:scale(1.22);box-shadow:0 0 10px var(--wing-accent)}
+.mini-map button.map-occupied:hover{box-shadow:0 0 10px var(--wing-accent)}
+.mini-map button.map-occupied:focus-visible{outline:3px solid #fff4cd;outline-offset:2px;box-shadow:0 0 10px var(--wing-accent)}
 .mini-map button.map-vacant{opacity:.25}
 .floor-link-title{display:flex;flex-direction:column;gap:2px;min-width:0;line-height:1.2}.floor-link-title em{font:10px/1.25 monospace;color:#b2a5b6;font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:135px}
 .floor-link.active .floor-link-title em{color:#ffe5b5}.floor-link{min-height:43px}
@@ -94,8 +95,8 @@
 @keyframes control-glow{from{box-shadow:0 0 0 4px #4d2c32,inset 0 0 20px #3b20277a}to{box-shadow:0 0 0 4px #4d2c32,0 0 16px #ffda9855,inset 0 0 24px #a5705d55}}
 
 @media(max-width:1250px){
-  .wing-ribbon{padding:7px 9px}.mini-map{grid-template-columns:repeat(6,11px);gap:4px}
-  .mini-map button{width:11px;height:11px}
+  .wing-ribbon{padding:7px 9px}.mini-map{grid-template-columns:repeat(6,28px);gap:4px}
+  .mini-map button{width:28px;height:28px}
   .office .desk-label{font-size:9px}.office .desk-scene{height:125px}
 }
 @media(max-width:950px){
