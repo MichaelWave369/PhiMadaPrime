@@ -564,7 +564,7 @@ function App() {
   }, [selected, boardOpen, activeFloor, floors]);
   return (
     <div className="shell">
-      <header className="topbar">
+      <header className="topbar" inert={Boolean(selected)}>
         <div className="brand"><span className="brand-mark">Φ</span>
           <span><strong>ΦMADA PRIME</strong><small>THE LIVING FLEET OFFICE</small></span>
         </div>
@@ -580,7 +580,7 @@ function App() {
             catalogState === "loading" ? "CONNECTING" : "EXAMPLE MODE"}
         </div>
       </header>
-      <div className="workspace">
+      <div className="workspace" inert={Boolean(selected)}>
         <aside className="sidebar">
           <div className="sidebar-head"><strong>FLEET TRANSMISSIONS</strong>
             <small>COMMAND TOWER</small></div>
