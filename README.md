@@ -56,3 +56,25 @@ This visual application is **not a CI orchestrator, agent runtime or work dispat
 - **R5:** optional shared VR/XR tower via PhiOS XR and Gen.E-Wrist, without silently inheriting merge authority.
 
 **Build outward. Circle back. Compile forward.**
+
+
+## Rung 2: The Living Tower
+
+Rung 2 adds **editorial themed office departments**, not source-certified dependency groups. The first floor still contains the twelve flagship projects. Remaining public repositories are assigned exactly once to ΦOS Systems, XR Workshop, Arcade Foundry, Research Observatory, Creative Studio, Network Operations, Workshop & Utilities, Infinite Commons, or Discovery Annex. Every department uses dedicated floors with exactly twelve physical desk slots, so incomplete floors can have vacancies and the total floor count can exceed the minimal ceiling of repository_count / 12.
+
+### Explore
+
+- Elevator directory lists real departments and how many desks are occupied on each level.
+- The floor ribbon includes a clickable twelve-desk minimap.
+- Pixel workers are bigger, and the office has color-themed rooms, decorations, idle animation and an actual Chief of Staff briefing.
+- The Chief displays the **first review-only priority** from an imported Agentora R0.2 plan. Without an imported plan, it explicitly says that no actual jobs have been queued.
+- On a repository inspector, choose **Check current CI and PRs** to read live public GitHub metadata: repository identity, the default-branch head SHA, up to twelve recent workflow runs, and up to ten open PRs.
+- A worker visibly celebrates **only when an on-demand observation of recent workflows matching the exact branch head reports success**. This is a decorative notification of partial CI evidence, not proof that all required checks passed or that the product actually runs.
+- Live observations expire for display purposes after fifteen minutes. Refresh from the desk inspector to update. GitHub API failures result in an unknown state, not a green status.
+- Browser accessibility includes keyboard controls, strong focus indicators, motion reduction and a scrollable inspector.
+
+**Rung 2 safety contract:** The app still has no GitHub write token or ability to push code, create issues, merge PRs, dispatch workers or run CI. Live reads are on demand for one selected public repo, never a 222-repo uncontrolled fetch. The Chief is a read-only reviewer, not an executor. Every repository remains visible even when its editorial category is uncertain. Private repository names, imported private reports and claim-of-authority fields are rejected.
+
+### Acceptance
+
+Run `npm test` and `npm run build`. Test changing several floors, clicking map locations, importing an Agentora plan, inspecting live GitHub CI on one desk, and reduced-motion mode in a browser. A green CI build of this code alone is **not** confirmation that the deployed interface has passed a manual browser check.
