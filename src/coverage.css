@@ -1,0 +1,45 @@
+/* PhiMada R5: true rolling metadata coverage, never product completion. */
+.side-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+.coverage-strip{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 13px;
+  margin-bottom:10px;border:1px solid #63878f;background:#1c2e37;border-radius:7px}
+.coverage-strip>span{font:bold 10px monospace;letter-spacing:.07em;color:#a7dcf0}
+.coverage-strip strong{font:bold 12px monospace;color:#f4e6d2}
+.coverage-strip small{font:10px/1.4 monospace;color:#9eb9c9}
+.coverage-meter{position:relative;flex:1;min-width:90px;max-width:230px;height:11px;
+  border-radius:10px;border:1px solid #708c90;background:#111e28;overflow:hidden}
+.coverage-meter i{display:block;height:100%;background:linear-gradient(90deg,#4e9bbb,#90d5e8);
+  border-right:1px solid #cefcf5}
+.coverage-meter.wide{min-width:0;max-width:none;height:15px;width:100%;margin:12px 0}
+.coverage-unavailable{background:#2a2933;border-color:#6b596b}
+.coverage-summary{padding:12px 10px;border:1px solid #655c71;border-radius:7px;
+  background:linear-gradient(135deg,#292439,#202330);min-height:160px}
+.coverage-summary h3{font:bold 13px monospace;color:#e6cb98;margin:5px 0 13px}
+.coverage-summary p{font:11px/1.65 monospace;color:#c6b9c6}
+.coverage-summary p strong{color:#b3dff1}
+.coverage-summary small{font:10px/1.6 monospace;color:#a99cae;display:block;margin-top:11px}
+.coverage-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.coverage-stats>div{display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:#1c1c2b;border:1px solid #5a5668;border-radius:4px;padding:10px 3px}
+.coverage-stats strong{font:bold 22px monospace;color:#b9e3f1}
+.coverage-stats span{font:9px monospace;color:#a59eaa;text-align:center}
+.coverage-floor-list{max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:5px}
+.coverage-floor-list button{display:flex;align-items:center;justify-content:space-between;
+  background:#272b37;border:1px solid #545f6c;border-radius:4px;padding:8px;
+  color:#f0e5df;font:11px monospace}
+.coverage-floor-list button:hover{border-color:#9acbdf;background:#354253}
+.coverage-floor-list button strong{color:#9edaf1}
+.coverage-inspector{margin:14px 0;padding:12px;background:#252b35;border:1px solid #697f8b;
+  border-radius:7px}
+.coverage-inspector h3{margin:0 0 12px;color:#a6dbea;font:bold 13px monospace}
+.coverage-inspector strong{font:bold 11px monospace;overflow-wrap:anywhere;display:block}
+.coverage-recent{color:#a9e0f7}.coverage-neutral{color:#f1caab}
+.coverage-inspector p{font:11px/1.55 monospace;color:#b6cad3}
+.coverage-inspector .details-list{margin:10px 0}
+.coverage-inspector .details-list>div{grid-template-columns:105px minmax(0,1fr)}
+.office .desk-observed .status-light{background:#92d7ef;box-shadow:0 0 9px #69b7d3}
+.office .desk-observed .desk-status{color:#b6e8fa}
+.office .desk-stale .status-light{background:#e4ad72;box-shadow:0 0 9px #d89c57}
+.office .desk-stale .desk-status{color:#e5cba9}
+.office .desk-limited .status-light{background:#c6a97e;box-shadow:0 0 9px #c0aa83}
+.office .desk-limited .desk-status{color:#f1ce9b}
+@media(max-width:800px){.coverage-strip{gap:7px}.coverage-meter{min-width:95px}.coverage-strip small{width:100%}}
