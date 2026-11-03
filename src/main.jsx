@@ -10,6 +10,8 @@ import { MissionBoard } from "./mission-board.jsx";
 import { fetchPublicSnapshot } from "./public-feed.mjs";
 import { fetchPublicCoverage, coverageFailureReason } from "./coverage.mjs";
 import { TriageCoverage, TriageForDesk } from "./triage-parts.jsx";
+import { ContractDesk, ContractDirectory } from "./contract-parts.jsx";
+import { newContract, updateContract, rebaseContract, observedSourceSha, serializeContracts, parseContracts, MAX_CONTRACT_FILE_BYTES } from "./contracts.mjs";
 import { CoverageStrip, CoverageSidebar, CoverageInspector } from "./coverage-parts.jsx";
 import { missionQueue } from "./missions.mjs";
 import { MAX_ARTIFACT_BYTES, parseOfficeArtifact, safeTime } from "./audit.mjs";
@@ -18,8 +20,9 @@ import "./living.css";
 import "./mission-board.css";
 import "./coverage.css";
 import "./triage.css";
+import "./contracts.css";
 
-const TABS = ["Directory", "Signals", "Coverage", "Missions"];
+const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
 
 function Star({ index }) {
@@ -76,6 +79,8 @@ function Desk({ repo, position, evidence, signal, cohort, onSelect }) {
 }
 
 function DetailPanel({ repo, evidence, plan, audit, signal, cohort,
+  contract, sourceSha, onCreateContract, onToggleContract, onNoteContract,
+  onRebaseContract, onDeleteContract,
   signalLoading, signalError, onCheckSignal, onClose, onJump }) {
   const closeRef = useRef(null);
   useEffect(() => {
@@ -104,6 +109,11 @@ function DetailPanel({ repo, evidence, plan, audit, signal, cohort,
         <SignalInspector repo={repo} signal={signal} loading={signalLoading}
           error={signalError} onCheck={onCheckSignal} />
         <CoverageInspector record={cohort} />
+        <ContractDesk key={repo.id} repo={repo} contract={contract}
+          suggestedTypes={evidence?.surfaces} sourceSha={sourceSha}
+          onCreate={onCreateContract} onToggle={onToggleContract}
+          onSetNote={onNoteContract} onRebase={onRebaseContract}
+          onDelete={onDeleteContract} />
         <TriageForDesk repo={repo} record={cohort} />
         {repo.exampleOnly ? (
           <p className="caution">This is a curated example while GitHub is unavailable. No live repository information has been verified.</p>
@@ -241,7 +251,9 @@ function App() {
   const [coverage, setCoverage] = useState(null);
   const [coverageStatus, setCoverageStatus] = useState("waiting");
   const [coverageError, setCoverageError] = useState(null);
+  const [contracts, setContracts] = useState({});
   const uploadRef = useRef(null);
+  const contractUploadRef = useRef(null);
   async function refreshCatalog() {
     setCatalogState("loading");
     try {
@@ -368,6 +380,66 @@ function App() {
     x.completion === "UNVERIFIED").length;
   const missions = useMemo(() => missionQueue(plan, rows), [plan, rows]);
   const taskCount = missions.length;
+  const savedContracts = Object.values(contracts).filter(c =>
+    rows.some(r => !r.exampleOnly && r.id === c.repository_id &&
+      r.full_name === c.repository));
+  function createLocalContract(repo, types) {
+    const sha = observedSourceSha(signals[repo.id], coverage?.byRepo[repo.name],
+      (plan?.freshness === "RECENT" ? plan.byRepo?.[repo.name] : null));
+    const contract = newContract(repo, types, sha);
+    setContracts(previous => ({ ...previous, [repo.id]: contract }));
+    setMessage("Local completion checklist prepared for " + repo.name +
+      ". No independent evidence has been verified.");
+  }
+  function patchLocalContract(repo, checkId, patch) {
+    setContracts(previous => {
+      const contract = previous[repo.id];
+      if (!contract) return previous;
+      return { ...previous, [repo.id]: updateContract(contract, checkId, patch) };
+    });
+  }
+  function rebindLocalContract(repo, sha) {
+    setContracts(previous => previous[repo.id] ?
+      { ...previous, [repo.id]: rebaseContract(previous[repo.id], sha) } : previous);
+    setMessage("Contract rebound to observed SHA; local review ticks reset.");
+  }
+  function discardLocalContract(repo) {
+    setContracts(previous => {
+      const next = { ...previous };
+      delete next[repo.id];
+      return next;
+    });
+  }
+  function exportLocalContracts() {
+    try {
+      const raw = serializeContracts(contracts, rows);
+      const url = URL.createObjectURL(new Blob([raw], { type: "application/json" }));
+      const element = document.createElement("a");
+      element.href = url;
+      element.download = "phimada-local-completion-contracts.json";
+      document.body.appendChild(element);
+      element.click();
+      element.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+      setMessage("Local contracts exported to JSON. No data was uploaded.");
+    } catch {
+      setMessage("Contract export refused. Check current public catalog identity.");
+    }
+  }
+  async function importLocalContracts(event) {
+    const file = event.target.files?.[0];
+    if (contractUploadRef.current) contractUploadRef.current.value = "";
+    if (!file) return;
+    try {
+      if (file.size > MAX_CONTRACT_FILE_BYTES) throw Error("CONTRACT_FILE_TOO_LARGE");
+      const imported = parseContracts(await file.text(), rows);
+      setContracts(imported);
+      setMessage("Imported " + Object.keys(imported).length +
+        " local completion contracts. None certified or dispatched.");
+    } catch (error) {
+      setMessage("Local contract import refused: " + (error?.message || "Invalid file"));
+    }
+  }
   const markReviewed = id => setReviewedJobs(prev => ({ ...prev, [id]: !prev[id] }));
   const togglePinned = id => setPinnedJobs(prev => ({ ...prev, [id]: !prev[id] }));
   async function inspectLiveRepo(repo) {
@@ -487,6 +559,8 @@ function App() {
                 setBoardOpen(false);
               }} />
             {coverage && <TriageCoverage coverage={coverage} rows={rows} onJump={jumpToRepo} />}
+          </> : activeTab === "Contracts" ? <>
+            <ContractDirectory contracts={contracts} rows={rows} onVisit={jumpToRepo} />
           </> : activeTab === "Missions" ? <>
             <div className="signal-feed">
               <h3>Mission Control</h3>
@@ -528,6 +602,20 @@ function App() {
             </div>
           </>}
           <div className="sidebar-bottom">
+            <div className="contract-export-controls">
+              <button type="button" className="refresh-button"
+                onClick={exportLocalContracts} disabled={!savedContracts.length}>
+                ↓ Export {savedContracts.length} contract{savedContracts.length === 1 ? "" : "s"}
+              </button>
+              <input className="sr-only" ref={contractUploadRef}
+                id="import-contracts" type="file" accept=".json,application/json"
+                disabled={catalogState !== "live"} onChange={importLocalContracts} />
+              <button type="button" className="refresh-button"
+                disabled={catalogState !== "live"}
+                onClick={() => contractUploadRef.current?.click()}>
+                ↑ Import local contracts
+              </button>
+            </div>
             <input className="sr-only" ref={uploadRef} id="import-evidence"
               type="file" accept=".json,application/json" onChange={importArtifact}
               disabled={catalogState !== "live"} />
@@ -603,15 +691,27 @@ function App() {
             </>}
           <footer className="main-footer">
             <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
-            <span>ΦMADA PRIME R6 · EVIDENCE TRIAGE / NO AUTOMATED DISPATCH</span>
+            <span>ΦMADA PRIME R7 · LOCAL COMPLETION CONTRACTS / NO AUTOMATED DISPATCH</span>
           </footer>
           {message && <div className="toast" role="status">{message}
             <button type="button" onClick={() => setMessage("")} aria-label="Dismiss message">×</button></div>}
         </main>
       </div>
-      {selected && <DetailPanel repo={selected} evidence={evidence[selected.name]}
+      {selected && <DetailPanel key={selected.id} repo={selected}
+        evidence={evidence[selected.name]}
         audit={audit} plan={plan} signal={signals[selected.id]}
         cohort={coverage?.byRepo[selected.name]}
+        contract={contracts[selected.id]}
+        sourceSha={observedSourceSha(signals[selected.id],
+          coverage?.byRepo[selected.name],
+          plan?.freshness === "RECENT" ? plan.byRepo?.[selected.name] : null)}
+        onCreateContract={types => createLocalContract(selected, types)}
+        onToggleContract={(checkId, checked) => patchLocalContract(selected, checkId,
+          { locally_reviewed: checked })}
+        onNoteContract={(checkId, note) => patchLocalContract(selected, checkId,
+          { note })}
+        onRebaseContract={sha => rebindLocalContract(selected, sha)}
+        onDeleteContract={() => discardLocalContract(selected)}
         signalLoading={Boolean(signalsBusy[selected.id])}
         signalError={signalsError[selected.id] || ""}
         onCheckSignal={() => inspectLiveRepo(selected)}
