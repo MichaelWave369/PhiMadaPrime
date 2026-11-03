@@ -1,0 +1,41 @@
+/* PhiMada Prime R6: conservative metadata triage and recoverable coverage. */
+.coverage-retry{background:#3b5364;border:1px solid #8ccbdd;color:#e5f6ff;
+  font:11px monospace;border-radius:4px;padding:7px 9px;cursor:pointer}
+.coverage-retry:hover:not(:disabled){background:#507288}
+.coverage-retry:disabled{opacity:.55;cursor:not-allowed}
+.coverage-error{border-left:3px solid #eaa778;background:#3d3033;
+  color:#ffd7b5!important;padding:9px;font:10px/1.6 monospace!important}
+.coverage-strip .coverage-retry{margin-left:auto}
+.triage-board{background:#211f2f;border:1px solid #63536c;border-radius:7px;
+  padding:10px;display:flex;flex-direction:column;gap:9px}
+.triage-board .triage-header{display:flex;flex-direction:column;gap:3px}
+.triage-board h3,.triage-desk h3{font:bold 13px monospace;color:#e9c792;margin:2px 0}
+.triage-board p{font:10px/1.5 monospace;color:#bba9bc;margin:0}
+.triage-board small{font:9px/1.5 monospace;color:#af9db0}
+.triage-filters{display:flex;flex-direction:column;gap:7px}
+.triage-filters label{display:flex;flex-direction:column;gap:3px;
+  font:bold 10px monospace;color:#e7c897}
+.triage-filters input,.triage-filters select{min-width:0;width:100%;background:#151625;
+  border:1px solid #6b5e70;color:#faecdd;padding:8px;border-radius:4px;font:11px monospace}
+.triage-rows{display:flex;flex-direction:column;gap:6px}
+.triage-rows button{display:flex;flex-direction:column;gap:3px;
+  background:#302939;border:1px solid #786575;padding:9px;border-radius:5px;
+  color:#e9dbd2;text-align:left;max-width:100%;min-width:0}
+.triage-rows button:hover{background:#49334d;border-color:#e3bd94}
+.triage-rows button strong{font:bold 12px monospace;color:#f5d2a2;
+  overflow-wrap:anywhere}
+.triage-rows button span{font:11px/1.4 monospace;color:#e2d2e0}
+.triage-rows button small{color:#ae9eac}
+.triage-more{background:#3a3450;border:1px solid #897da1;border-radius:4px;
+  padding:7px;color:#e8d6f3;font:bold 11px monospace}
+.triage-board .triage-note{color:#c4a6a3;font:10px/1.5 monospace}
+.triage-desk{background:#242333;border:1px solid #6b6078;padding:12px;
+  margin:15px 0;border-radius:6px}
+.triage-desk>p{font:11px/1.6 monospace;color:#bcb2ca}
+.triage-desk-list{display:flex;flex-direction:column;gap:9px}
+.triage-desk-list article{border:1px solid #595169;border-left:3px solid #d8b47c;
+  border-radius:4px;padding:10px;background:#2d2a3b;
+  display:flex;flex-direction:column;gap:5px}
+.triage-desk-list article strong{font:12px/1.4 monospace;color:#f8dca6}
+.triage-desk-list article small{font:11px/1.5 monospace;color:#c6b9c9;margin:0}
+.triage-desk-list article span{font:11px/1.5 monospace;color:#b3d6e4}
