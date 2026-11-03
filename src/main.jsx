@@ -6,11 +6,14 @@ import {
 import { towerFloors, floorForId } from "./tower.mjs";
 import { fetchRepoSignals, signalsFresh } from "./signals.mjs";
 import { ChiefOfStaff, SignalInspector, WingRibbon } from "./office-parts.jsx";
+import { MissionBoard } from "./mission-board.jsx";
+import { missionQueue } from "./missions.mjs";
 import { MAX_ARTIFACT_BYTES, parseOfficeArtifact, safeTime } from "./audit.mjs";
 import "./office.css";
 import "./living.css";
+import "./mission-board.css";
 
-const TABS = ["Directory", "Signals"];
+const TABS = ["Directory", "Signals", "Missions"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
 
 function Star({ index }) {
@@ -214,6 +217,9 @@ function App() {
   const [signals, setSignals] = useState({});
   const [signalsBusy, setSignalsBusy] = useState({});
   const [signalsError, setSignalsError] = useState({});
+  const [boardOpen, setBoardOpen] = useState(false);
+  const [reviewedJobs, setReviewedJobs] = useState({});
+  const [pinnedJobs, setPinnedJobs] = useState({});
   const uploadRef = useRef(null);
   async function refreshCatalog() {
     setCatalogState("loading");
@@ -245,8 +251,10 @@ function App() {
   const evidence = { ...(audit?.byRepo || {}), ...(plan?.byRepo || {}) };
   const auditCount = Object.values(evidence).filter(x =>
     x.completion === "UNVERIFIED").length;
-  const taskCount = plan ? Object.values(plan.byRepo).reduce((n, x) =>
-    n + (x.tasks?.length || 0), 0) : 0;
+  const missions = useMemo(() => missionQueue(plan, rows), [plan, rows]);
+  const taskCount = missions.length;
+  const markReviewed = id => setReviewedJobs(prev => ({ ...prev, [id]: !prev[id] }));
+  const togglePinned = id => setPinnedJobs(prev => ({ ...prev, [id]: !prev[id] }));
   async function inspectLiveRepo(repo) {
     if (!repo || repo.exampleOnly || signalsBusy[repo.id]) return;
     setSignalsBusy(previous => ({ ...previous, [repo.id]: true }));
@@ -267,6 +275,8 @@ function App() {
     }
   }
   function jumpToRepo(name) {
+    setBoardOpen(false);
+    setActiveTab("Directory");
     const repo = rows.find(r => r.name.toLowerCase() === String(name).toLowerCase());
     if (!repo) return;
     setQuery("");
@@ -281,7 +291,11 @@ function App() {
       if (file.size > MAX_ARTIFACT_BYTES) throw new Error("FILE_TOO_LARGE");
       const result = parseOfficeArtifact(await file.text(), rows);
       if (result.type === "audit") setAudit(result);
-      else setPlan(result);
+      else {
+        setPlan(result);
+        setReviewedJobs({});
+        setPinnedJobs({});
+      }
       setMessage("Loaded " + result.type + " locally (" + result.freshness +
         "). No files were uploaded and no actions were dispatched.");
     } catch (error) {
@@ -290,13 +304,13 @@ function App() {
   }
   useEffect(() => {
     function keypress(e) {
-      if (selected || ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+      if (selected || boardOpen || ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
       if (e.key === "ArrowRight" && activeFloor < floors) setFloor(f => Math.min(floors, f + 1));
       if (e.key === "ArrowLeft" && activeFloor > 1) setFloor(f => Math.max(1, f - 1));
     }
     window.addEventListener("keydown", keypress);
     return () => window.removeEventListener("keydown", keypress);
-  }, [selected, activeFloor, floors]);
+  }, [selected, boardOpen, activeFloor, floors]);
   return (
     <div className="shell">
       <header className="topbar">
@@ -320,7 +334,10 @@ function App() {
             <small>COMMAND TOWER</small></div>
           <nav className="side-tabs" aria-label="Side panel">
             {TABS.map(tab => <button type="button" key={tab} aria-pressed={activeTab === tab}
-              className={activeTab === tab ? "selected" : ""} onClick={() => setActiveTab(tab)}>{tab}</button>)}
+              className={activeTab === tab ? "selected" : ""} onClick={() => {
+                setActiveTab(tab);
+                setBoardOpen(tab === "Missions");
+              }}>{tab}</button>)}
           </nav>
           {activeTab === "Directory" ? <>
             <label className="search-label" htmlFor="fleet-search">FIND A REPOSITORY</label>
@@ -344,6 +361,16 @@ function App() {
                   <small>{occupied}/12</small>
                 </button>;
               })}
+            </div>
+          </> : activeTab === "Missions" ? <>
+            <div className="signal-feed">
+              <h3>Mission Control</h3>
+              <p>{taskCount} proposed review jobs from Agentora.</p>
+              <p>{Object.values(reviewedJobs).filter(Boolean).length} locally reviewed;
+                {Object.values(pinnedJobs).filter(Boolean).length} pinned.</p>
+              <small>No task is dispatched or completed by these controls.</small>
+              <button type="button" className="import-button"
+                onClick={() => setBoardOpen(true)}>Open Mission Board</button>
             </div>
           </> : <>
             <div className="signal-feed">
@@ -383,15 +410,21 @@ function App() {
         <main className="main-area">
           <div className="elevator-bar">
             <div><small>ΦMADA PRIME / VIRTUAL OFFICE</small>
-              <h1>Deck {String(activeFloor).padStart(2, "0")}
-                <span> · {currentFloor.title}</span></h1>
+              <h1>{boardOpen ? "Fleet Mission Board" : "Deck " + String(activeFloor).padStart(2, "0")}
+                {!boardOpen && <span> · {currentFloor.title}</span>}</h1>
             </div>
+            <div className="mission-top-actions">
+              <button type="button" className="mission-open-button"
+                onClick={() => { setBoardOpen(open => !open); setActiveTab(boardOpen ? "Directory" : "Missions"); }}>
+                {boardOpen ? "← Return to desks" : "✦ Mission Board (" + taskCount + ")"}
+              </button>
             <div className="elevator-controls" aria-label="Floor elevator">
               <button type="button" onClick={() => setFloor(Math.max(1, activeFloor - 1))}
-                disabled={activeFloor <= 1} aria-label="Previous floor">↑</button>
+                disabled={activeFloor <= 1 || boardOpen} aria-label="Previous floor">↑</button>
               <span>FLOOR {activeFloor} / {floors}</span>
               <button type="button" onClick={() => setFloor(Math.min(floors, activeFloor + 1))}
-                disabled={activeFloor >= floors} aria-label="Next floor">↓</button>
+                disabled={activeFloor >= floors || boardOpen} aria-label="Next floor">↓</button>
+            </div>
             </div>
           </div>
           <div className="banner-status" role="status" aria-live="polite">
@@ -402,15 +435,23 @@ function App() {
               "GitHub inventory unavailable. Curated examples only; no live statuses."}
             <span className="help-key">← → to change floors</span>
           </div>
-          <WingRibbon current={currentFloor} floors={tower}
-            onSelect={setSelectedId} />
-          <ChiefOfStaff plan={plan} audit={audit} signals={signals} onJump={jumpToRepo} />
-          <Office stations={stations} floor={activeFloor} wing={currentFloor.wing}
-            evidence={evidence} signals={signals}
-            hasPlan={Boolean(plan)} onSelect={setSelectedId} />
+          {boardOpen ?
+            <MissionBoard queue={missions} plan={plan}
+              reviewed={reviewedJobs} pinned={pinnedJobs}
+              onReview={markReviewed} onPin={togglePinned}
+              onVisit={jumpToRepo}
+              onClose={() => { setBoardOpen(false); setActiveTab("Directory"); }} /> :
+            <>
+              <WingRibbon current={currentFloor} floors={tower}
+                onSelect={setSelectedId} />
+              <ChiefOfStaff plan={plan} audit={audit} signals={signals} onJump={jumpToRepo} />
+              <Office stations={stations} floor={activeFloor} wing={currentFloor.wing}
+                evidence={evidence} signals={signals}
+                hasPlan={Boolean(plan)} onSelect={setSelectedId} />
+            </>}
           <footer className="main-footer">
             <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
-            <span>ΦMADA PRIME R2 · DECORATIVE WORKERS / OBSERVED EVIDENCE ONLY</span>
+            <span>ΦMADA PRIME R3 · READ-ONLY MISSIONS / NO AUTOMATED DISPATCH</span>
           </footer>
           {message && <div className="toast" role="status">{message}
             <button type="button" onClick={() => setMessage("")} aria-label="Dismiss message">×</button></div>}

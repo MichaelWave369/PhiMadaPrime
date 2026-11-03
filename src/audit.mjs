@@ -109,7 +109,7 @@ export function parseOfficeArtifact(source, catalogRows) {
       byRepo[known.name].tasks.push(safeText(task.summary, 180));
     }
     for (const value of Object.values(byRepo)) value.tasks = value.tasks.slice(0, 30);
-    const priorityQueue = data.tasks.slice(0, 200).map(task => ({
+    const priorityQueue = data.tasks.map(task => ({
       repository: task.repository,
       summary: safeText(task.summary, 180),
       check_id: safeText(task.check_id, 60),
