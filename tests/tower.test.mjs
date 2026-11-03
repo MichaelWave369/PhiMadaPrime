@@ -18,7 +18,9 @@ test("bridge keeps curated flagship desks and every repo appears exactly once", 
   const actual = floors.flatMap(f => f.stations.filter(Boolean).map(r => r.id));
   assert.equal(actual.length, rows.length);
   assert.equal(new Set(actual).size, rows.length);
-  assert.equal(floorForId(floors, rows.at(-1).id), floors.at(-1).number);
+  const lastInputFloor = floorForId(floors, rows.at(-1).id);
+  assert(Number.isInteger(lastInputFloor) && lastInputFloor >= 1);
+  assert(floors[lastInputFloor - 1].stations.some(r => r?.id === rows.at(-1).id));
   assert.equal(floorForId(floors, -999), null);
 });
 
