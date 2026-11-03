@@ -108,11 +108,11 @@ async function smoke(sha) {
     });
     await check("search_repo", async () => {
       await page.locator("#fleet-search").fill("PhiMadaPrime");
-      await page.locator('button.desk-filled[aria-label="Inspect PhiMadaPrime"]')
+      await page.getByRole("button", { name: /Inspect repository:\s*PhiMadaPrime/ })
         .waitFor({ timeout: 12000 });
     });
     await check("inspect_desk", async () => {
-      await page.locator('button.desk-filled[aria-label="Inspect PhiMadaPrime"]')
+      await page.getByRole("button", { name: /Inspect repository:\s*PhiMadaPrime/ })
         .click();
       await page.getByRole("dialog",
         { name: "Repository inspector: PhiMadaPrime" }).waitFor({ timeout: 10000 });
@@ -120,6 +120,10 @@ async function smoke(sha) {
     await check("close_inspector", async () => {
       await page.keyboard.press("Escape");
       await page.locator(".inspector-backdrop").waitFor({ state: "hidden" });
+      const restored = await page.getByRole("button", {
+        name: /Inspect repository:\s*PhiMadaPrime/
+      }).evaluate(node => node === document.activeElement);
+      if (!restored) throw new Error("INSPECTOR_DID_NOT_RESTORE_OPENER_FOCUS");
     });
     await check("open_mission_board", async () => {
       await page.locator("button.mission-open-button").click();

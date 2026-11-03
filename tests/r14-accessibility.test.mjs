@@ -9,7 +9,8 @@ import {
 const SHA = "a".repeat(40), OTHER = "b".repeat(40);
 const NOW = "2026-11-03T20:40:00.000Z";
 const KEYBOARD = {
-  desk_keyboard_open: "PASS", inspector_escape_close: "PASS",
+  desk_keyboard_open: "PASS", inspector_tab_contained: "PASS",
+  inspector_escape_close: "PASS", inspector_focus_return: "PASS",
   mission_board_keyboard_open: "PASS",
   evidence_details_keyboard_toggle: "PASS"
 };

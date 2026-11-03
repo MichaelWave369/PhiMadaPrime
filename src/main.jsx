@@ -7,6 +7,7 @@ import { towerFloors, floorForId } from "./tower.mjs";
 import { fetchRepoSignals, signalsFresh } from "./signals.mjs";
 import { ChiefOfStaff, SignalInspector, WingRibbon } from "./office-parts.jsx";
 import { MissionBoard } from "./mission-board.jsx";
+import { dialogFocusableElements, wrappedTabTarget, restoreFocusToOpener } from "./dialog-focus.mjs";
 import { fetchPublicSnapshot } from "./public-feed.mjs";
 import { fetchPublicCoverage, coverageFailureReason } from "./coverage.mjs";
 import { TriageCoverage, TriageForDesk } from "./triage-parts.jsx";
@@ -91,18 +92,54 @@ function DetailPanel({ repo, evidence, plan, audit, signal, cohort,
   onRebaseContract, onDeleteContract,
   signalLoading, signalError, onCheckSignal, onClose, onJump }) {
   const closeRef = useRef(null);
+  const dialogRef = useRef(null);
+  // The parent passes a new callback on re-render. Don't restart focus
+  // management (or lose the original opener) when live data refreshes.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   useEffect(() => {
+    const opener = document.activeElement;
     closeRef.current?.focus();
-    const onKey = event => { if (event.key === "Escape") onClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+    const onKey = event => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onCloseRef.current();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+      const focusables = dialogFocusableElements(dialog);
+      const destination = wrappedTabTarget(
+        focusables, document.activeElement, event.shiftKey);
+      if (destination) {
+        event.preventDefault();
+        destination.focus();
+      } else if (focusables.length === 0) {
+        event.preventDefault();
+        dialog.focus();
+      }
+    };
+    // If focus is moved programmatically to the background, return it.
+    const onFocus = event => {
+      const dialog = dialogRef.current;
+      if (dialog && !dialog.contains(event.target))
+        closeRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("focusin", onFocus);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("focusin", onFocus);
+      restoreFocusToOpener(opener);
+    };
+  }, []);
   const state = deriveState(repo, evidence, cohort);
   return (
     <div className="inspector-backdrop" onMouseDown={e => {
       if (e.target === e.currentTarget) onClose();
     }}>
-      <aside className="inspector" role="dialog" aria-modal="true"
+      <aside ref={dialogRef} tabIndex={-1} className="inspector" role="dialog" aria-modal="true"
         aria-label={"Repository inspector: " + displayName(repo.name)}>
         <div className="inspector-top">
           <span className="inspector-eyebrow">ΦMADA PRIME / STATION INSPECTOR</span>
