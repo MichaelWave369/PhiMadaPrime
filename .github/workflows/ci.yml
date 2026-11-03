@@ -1,0 +1,30 @@
+name: PhiMada Prime CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned frontend dependencies
+        run: npm install --no-audit --no-fund
+      - name: Test public catalog, office floors, and audit trust boundary
+        run: npm test
+      - name: Build GitHub Pages site
+        run: npm run build
+      - name: Verify built HTML and JS assets exist
+        run: |
+          test -s dist/index.html
+          test -n "$(find dist/assets -name '*.js' -size +0c -print -quit)"

@@ -1,0 +1,356 @@
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
+import {
+  DESKS_PER_FLOOR, KNOWN_EXAMPLES, fetchPublicFleet, floorOfRepo,
+  floorsForCount, floorStations, displayName
+} from "./fleet.mjs";
+import { MAX_ARTIFACT_BYTES, parseOfficeArtifact, safeTime } from "./audit.mjs";
+import "./office.css";
+
+const TABS = ["Directory", "Signals"];
+const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
+
+function Star({ index }) {
+  return <span className={"desk-avatar " + COLORS[index % COLORS.length]} aria-hidden="true">
+    <span className="avatar-head"><span className="avatar-eyes" /></span>
+    <span className="avatar-shirt" />
+  </span>;
+}
+
+function deriveState(repo, report) {
+  if (!repo) return { label: "AVAILABLE", kind: "empty" };
+  if (repo.exampleOnly) return { label: "EXAMPLE", kind: "example" };
+  if (repo.archived) return { label: "ARCHIVED", kind: "archived" };
+  if (report?.completion === "UNVERIFIED") return { label: "AUDIT FOUND", kind: "review" };
+  if (report?.completion === "NOT_AUDITED") return { label: "NOT AUDITED", kind: "unknown" };
+  return { label: "UNVERIFIED", kind: "unknown" };
+}
+
+function Desk({ repo, position, evidence, onSelect }) {
+  const state = deriveState(repo, evidence);
+  if (!repo) return (
+    <div className="desk-slot desk-vacant" aria-label="Unused station, reserved for future repository">
+      <div className="desk-label">VACANT {String(position).padStart(2, "0")}</div>
+      <div className="desk-monitor vacant-monitor"><span>＋</span></div>
+      <div className="desk-table vacant-table" />
+    </div>
+  );
+  return (
+    <button type="button" className={"desk-slot desk-filled desk-" + state.kind}
+      onClick={() => onSelect(repo.id)} aria-label={"Inspect " + displayName(repo.name)}>
+      <span className="desk-label"><i className="status-light" />{displayName(repo.name)}</span>
+      <span className="desk-scene">
+        <span className="desk-monitor"><span className="screen-lines">
+          <i /><i /><i /><i /></span><span className="screen-small">Φ</span></span>
+        <span className="desk-table"><span className="desk-drawer" /><span className="desk-lamp" /></span>
+        <Star index={position} />
+      </span>
+      <span className="desk-status">{state.label}</span>
+    </button>
+  );
+}
+
+function DetailPanel({ repo, evidence, plan, audit, onClose, onJump }) {
+  const closeRef = useRef(null);
+  useEffect(() => {
+    closeRef.current?.focus();
+    const onKey = event => { if (event.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+  const state = deriveState(repo, evidence);
+  return (
+    <div className="inspector-backdrop" onMouseDown={e => {
+      if (e.target === e.currentTarget) onClose();
+    }}>
+      <aside className="inspector" role="dialog" aria-modal="true"
+        aria-label={"Repository inspector: " + displayName(repo.name)}>
+        <div className="inspector-top">
+          <span className="inspector-eyebrow">ΦMADA PRIME / STATION INSPECTOR</span>
+          <button type="button" ref={closeRef} className="close-inspector"
+            aria-label="Close inspector" onClick={onClose}>×</button>
+        </div>
+        <h2>{displayName(repo.name)}</h2>
+        <div className={"inspector-signal " + state.kind}>
+          <span className="status-orb" /> {state.label}
+        </div>
+        <p>{repo.description || "No public project description provided."}</p>
+        {repo.exampleOnly ? (
+          <p className="caution">This is a curated example while GitHub is unavailable. No live repository information has been verified.</p>
+        ) : (
+          <dl className="details-list">
+            <div><dt>Language</dt><dd>{repo.language || "Unspecified"}</dd></div>
+            <div><dt>Last pushed</dt><dd>{safeTime(repo.pushed_at)}</dd></div>
+            <div><dt>Audit</dt><dd>{evidence?.completion || "Not loaded"}</dd></div>
+            <div><dt>CI evidence</dt><dd>{evidence?.ci || "Not loaded"}</dd></div>
+            <div><dt>Pages evidence</dt><dd>{evidence?.pages || "Not loaded"}</dd></div>
+            <div><dt>Release evidence</dt><dd>{evidence?.release || "Not loaded"}</dd></div>
+          </dl>
+        )}
+        {evidence && <>
+          <h3>Completion review</h3>
+          <p className="caution">An observed CI result, published release or HTML page does not establish that software works. All completion claims remain unverified.</p>
+          {evidence.surfaces?.length > 0 &&
+            <div className="tag-row">{evidence.surfaces.map(s => <span key={s} className="role-tag">{s}</span>)}</div>}
+          <h3>Suggested next jobs</h3>
+          {evidence.tasks?.length ? <ol className="task-list">{evidence.tasks.map((t, i) =>
+            <li key={i}>{t}</li>)}</ol> : <p>Import a completion plan to see review-only work proposals.</p>}
+          {evidence.relationships?.length > 0 && <>
+            <h3>README references</h3>
+            <div className="tag-row">{evidence.relationships.map(name =>
+              <button type="button" key={name} className="link-chip"
+                onClick={() => onJump(name)}>{name}</button>)}</div>
+            <small>References are not verified executable integrations.</small>
+          </>}
+        </>}
+        {!evidence && <p className="caution">No Agentora audit or plan loaded for this repository. Status is unknown, not healthy or failed.</p>}
+        {(plan || audit) && <small>Loaded evidence: {plan?.freshness || audit?.freshness}. Public-only local files, never uploaded.</small>}
+        <div className="inspector-actions">
+          <a href={repo.html_url} target="_blank" rel="noopener noreferrer" className="primary-link">
+            Open GitHub repository ↗
+          </a>
+          {repo.homepage && <a href={repo.homepage} target="_blank"
+            rel="noopener noreferrer" className="secondary-link">Project website ↗</a>}
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+function Office({ stations, floor, evidence, onSelect, hasPlan }) {
+  const count = stations.filter(Boolean).length;
+  return (
+    <section className="office" aria-label={"Virtual fleet office, floor " + floor}>
+      <div className="office-wall">
+        <div className="light-string" aria-hidden="true">
+          {Array.from({ length: 22 }, (_, n) =>
+            <span key={n} style={{ animationDelay: n * 0.12 + "s" }} />)}
+        </div>
+        <div className="wall-brand" aria-hidden="true">Φ</div>
+        <div className="priority-board">
+          <div className="board-title">✦ COMMAND BULLETIN ✦</div>
+          <div className="board-message">{hasPlan
+            ? "Review proposals available. Select a desk for next jobs."
+            : "Import Agentora audit + plan for evidence-backed job proposals."}</div>
+        </div>
+        <div className="wall-framed" aria-hidden="true"><span>Φ</span><small>ENTER THE FIELD</small></div>
+      </div>
+      <div className="office-floor">
+        <div className="deck-caption"><span>DECK {String(floor).padStart(2, "0")}</span>
+          <span>{count} OCCUPIED / {DESKS_PER_FLOOR} STATIONS</span></div>
+        <div className="desk-grid">
+          {stations.slice(0, 6).map((repo, i) => <Desk key={repo?.id ?? "empty-" + i}
+            repo={repo} position={i + 1} evidence={evidence[repo?.name]} onSelect={onSelect} />)}
+        </div>
+        <div className="middle-bay">
+          <div className="lounge-zone" aria-hidden="true">
+            <span className="lounge-label">BREAK ROOM</span>
+            <div className="couch-back">Φ <span className="couch-pillow" /></div>
+            <div className="couch-bottom" />
+            <div className="coffee-table">☕</div>
+          </div>
+          <div className="command-center">
+            <div className="command-screens">
+              <div className="command-screen"><span>STATUS</span><i /><i /><i /></div>
+              <div className="command-screen main-screen">Φ</div>
+              <div className="command-screen"><span>VERIFY</span><i /><i /><i /></div>
+            </div>
+            <div className="chief-avatar" aria-hidden="true"><i /><b /></div>
+            <div className="control-counter">Φ &nbsp; FLEET CONTROL &nbsp; Φ
+              <small>OPERATIONS • READ ONLY</small></div>
+          </div>
+          <div className="coffee-zone" aria-hidden="true">
+            <span className="coffee-label">COFFEE • 0 MERGES</span>
+            <div className="arcade-roof">Φ ARCADE</div>
+            <div className="arcade-screen">★<i>▣</i></div>
+            <div className="arcade-bottom">● ●</div>
+            <div className="potted-plant">♣</div>
+          </div>
+        </div>
+        <div className="desk-grid">
+          {stations.slice(6, 12).map((repo, i) => <Desk key={repo?.id ?? "empty-" + (i + 6)}
+            repo={repo} position={i + 7} evidence={evidence[repo?.name]} onSelect={onSelect} />)}
+        </div>
+        <div className="office-rug" aria-hidden="true">Φ</div>
+      </div>
+    </section>
+  );
+}
+
+function App() {
+  const [rows, setRows] = useState(KNOWN_EXAMPLES);
+  const [catalogState, setCatalogState] = useState("loading");
+  const [floor, setFloor] = useState(1);
+  const [query, setQuery] = useState("");
+  const [activeTab, setActiveTab] = useState(TABS[0]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [audit, setAudit] = useState(null);
+  const [plan, setPlan] = useState(null);
+  const [message, setMessage] = useState("");
+  const uploadRef = useRef(null);
+  async function refreshCatalog() {
+    setCatalogState("loading");
+    try {
+      const discovered = await fetchPublicFleet();
+      if (!discovered.length) throw new Error("EMPTY_PUBLIC_CATALOG");
+      setRows(discovered);
+      setCatalogState("live");
+      setMessage("Public GitHub inventory loaded: " + discovered.length + " repos.");
+    } catch {
+      setCatalogState("fallback");
+      setRows(KNOWN_EXAMPLES);
+      setAudit(null); setPlan(null);
+      setMessage("Live public inventory unavailable. Showing twelve labeled examples only.");
+    }
+  }
+  useEffect(() => { refreshCatalog(); }, []);
+  const filtered = useMemo(() => rows.filter(repo =>
+    (repo.name + " " + repo.description).toLowerCase().includes(query.toLowerCase().trim())
+  ), [rows, query]);
+  const floors = floorsForCount(filtered.length);
+  const activeFloor = Math.min(floor, floors);
+  const stations = floorStations(filtered, activeFloor);
+  const selected = rows.find(repo => repo.id === selectedId) || null;
+  const evidence = { ...(audit?.byRepo || {}), ...(plan?.byRepo || {}) };
+  const auditCount = Object.values(evidence).filter(x =>
+    x.completion === "UNVERIFIED").length;
+  const taskCount = plan ? Object.values(plan.byRepo).reduce((n, x) =>
+    n + (x.tasks?.length || 0), 0) : 0;
+  function jumpToRepo(name) {
+    const repo = rows.find(r => r.name.toLowerCase() === String(name).toLowerCase());
+    if (!repo) return;
+    setQuery("");
+    setFloor(floorOfRepo(rows, repo.id) || 1);
+    setSelectedId(repo.id);
+  }
+  async function importArtifact(e) {
+    const file = e.target.files?.[0];
+    if (uploadRef.current) uploadRef.current.value = "";
+    if (!file) return;
+    try {
+      if (file.size > MAX_ARTIFACT_BYTES) throw new Error("FILE_TOO_LARGE");
+      const result = parseOfficeArtifact(await file.text(), rows);
+      if (result.type === "audit") setAudit(result);
+      else setPlan(result);
+      setMessage("Loaded " + result.type + " locally (" + result.freshness +
+        "). No files were uploaded and no actions were dispatched.");
+    } catch (error) {
+      setMessage("Import refused: " + (error?.message || "Invalid report"));
+    }
+  }
+  useEffect(() => {
+    function keypress(e) {
+      if (selected || ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+      if (e.key === "ArrowRight" && activeFloor < floors) setFloor(f => Math.min(floors, f + 1));
+      if (e.key === "ArrowLeft" && activeFloor > 1) setFloor(f => Math.max(1, f - 1));
+    }
+    window.addEventListener("keydown", keypress);
+    return () => window.removeEventListener("keydown", keypress);
+  }, [selected, activeFloor, floors]);
+  return (
+    <div className="shell">
+      <header className="topbar">
+        <div className="brand"><span className="brand-mark">Φ</span>
+          <span><strong>ΦMADA PRIME</strong><small>THE LIVING FLEET OFFICE</small></span>
+        </div>
+        <div className="top-metrics" aria-label="Current catalog metrics">
+          <div><small>PUBLIC REPOS</small><strong>{catalogState === "live" ? rows.length : "—"}</strong></div>
+          <div><small>FLOORS</small><strong>{catalogState === "live" ? floorsForCount(rows.length) : "—"}</strong></div>
+          <div><small>AUDIT RECORDS</small><strong>{auditCount}</strong></div>
+          <div><small>REVIEW JOBS</small><strong>{taskCount}</strong></div>
+        </div>
+        <div className={"feed-state feed-" + catalogState}>
+          <span className="feed-light" />{catalogState === "live" ? "GITHUB PUBLIC" :
+            catalogState === "loading" ? "CONNECTING" : "EXAMPLE MODE"}
+        </div>
+      </header>
+      <div className="workspace">
+        <aside className="sidebar">
+          <div className="sidebar-head"><strong>FLEET TRANSMISSIONS</strong>
+            <small>COMMAND TOWER</small></div>
+          <nav className="side-tabs" aria-label="Side panel">
+            {TABS.map(tab => <button type="button" key={tab} aria-pressed={activeTab === tab}
+              className={activeTab === tab ? "selected" : ""} onClick={() => setActiveTab(tab)}>{tab}</button>)}
+          </nav>
+          {activeTab === "Directory" ? <>
+            <label className="search-label" htmlFor="fleet-search">FIND A REPOSITORY</label>
+            <input id="fleet-search" className="search-box" value={query}
+              onChange={e => { setQuery(e.target.value); setFloor(1); }}
+              placeholder="Search the fleet..." />
+            <div className="sidebar-section-label">ELEVATOR DIRECTORY
+              <small>{floors} {floors === 1 ? "FLOOR" : "FLOORS"}</small></div>
+            <div className="floor-directory">
+              {Array.from({ length: floors }, (_, i) => {
+                const level = i + 1;
+                const occupied = Math.max(0, Math.min(12, filtered.length - i * 12));
+                return <button type="button" key={level}
+                  className={activeFloor === level ? "floor-link active" : "floor-link"}
+                  aria-current={activeFloor === level ? "page" : undefined}
+                  onClick={() => setFloor(level)}>
+                  <span className="floor-number">{String(level).padStart(2, "0")}</span>
+                  <span>Deck {String(level).padStart(2, "0")}{level === 1 && !query ? " · Bridge" : ""}</span>
+                  <small>{occupied}/12</small>
+                </button>;
+              })}
+            </div>
+          </> : <>
+            <div className="signal-feed">
+              <h3>Observation sources</h3>
+              <p><span className="signal-dot blue" /> Public GitHub metadata</p>
+              <p><span className="signal-dot gold" /> Agentora R0.1 audit (optional)</p>
+              <p><span className="signal-dot violet" /> Agentora R0.2 plan (optional)</p>
+              <small>Signals are observations, not workers. No bot activity is simulated as real execution.</small>
+            </div>
+          </>}
+          <div className="sidebar-bottom">
+            <input className="sr-only" ref={uploadRef} id="import-evidence"
+              type="file" accept=".json,application/json" onChange={importArtifact}
+              disabled={catalogState !== "live"} />
+            <button type="button" className="import-button"
+              disabled={catalogState !== "live"} onClick={() => uploadRef.current?.click()}>
+              ＋ Import Fleet JSON
+            </button>
+            <button type="button" className="refresh-button" onClick={refreshCatalog}>↻ Refresh catalog</button>
+            <small>Reports stay in this browser session. No write tokens, tracking, or GitHub mutations.</small>
+          </div>
+        </aside>
+        <main className="main-area">
+          <div className="elevator-bar">
+            <div><small>ΦMADA PRIME / VIRTUAL OFFICE</small>
+              <h1>Deck {String(activeFloor).padStart(2, "0")}
+                <span> · {activeFloor === 1 && !query ? "Command Bridge" : "Fleet Annex"}</span></h1>
+            </div>
+            <div className="elevator-controls" aria-label="Floor elevator">
+              <button type="button" onClick={() => setFloor(Math.max(1, activeFloor - 1))}
+                disabled={activeFloor <= 1} aria-label="Previous floor">↑</button>
+              <span>FLOOR {activeFloor} / {floors}</span>
+              <button type="button" onClick={() => setFloor(Math.min(floors, activeFloor + 1))}
+                disabled={activeFloor >= floors} aria-label="Next floor">↓</button>
+            </div>
+          </div>
+          <div className="banner-status" role="status" aria-live="polite">
+            <span className={catalogState === "live" ? "status-dot-live" : "status-dot-muted"} />
+            {catalogState === "live" ?
+              "Public catalog online. Click any desk to inspect the repository." :
+              catalogState === "loading" ? "Checking the public GitHub directory…" :
+              "GitHub inventory unavailable. Curated examples only; no live statuses."}
+            <span className="help-key">← → to change floors</span>
+          </div>
+          <Office stations={stations} floor={activeFloor} evidence={evidence}
+            hasPlan={Boolean(plan)} onSelect={setSelectedId} />
+          <footer className="main-footer">
+            <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
+            <span>ΦMADA PRIME R1 · OBSERVE ≠ VERIFY ≠ AUTHORIZE</span>
+          </footer>
+          {message && <div className="toast" role="status">{message}
+            <button type="button" onClick={() => setMessage("")} aria-label="Dismiss message">×</button></div>}
+        </main>
+      </div>
+      {selected && <DetailPanel repo={selected} evidence={evidence[selected.name]}
+        audit={audit} plan={plan} onClose={() => setSelectedId(null)}
+        onJump={jumpToRepo} />}
+    </div>
+  );
+}
+
+createRoot(document.getElementById("root")).render(<App />);
