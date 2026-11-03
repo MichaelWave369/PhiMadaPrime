@@ -109,8 +109,16 @@ export function parseOfficeArtifact(source, catalogRows) {
       byRepo[known.name].tasks.push(safeText(task.summary, 180));
     }
     for (const value of Object.values(byRepo)) value.tasks = value.tasks.slice(0, 30);
+    const priorityQueue = data.tasks.slice(0, 200).map(task => ({
+      repository: task.repository,
+      summary: safeText(task.summary, 180),
+      check_id: safeText(task.check_id, 60),
+      priority: Number.isFinite(task.priority) ? task.priority : null,
+      state: "REVIEW_ONLY_NOT_DISPATCHABLE",
+      head_sha: safeText(task.head_sha, 40)
+    }));
     return { type: "plan", generated_utc: data.generated_utc,
-      freshness: dateState(data.generated_utc), byRepo,
+      freshness: dateState(data.generated_utc), byRepo, priorityQueue,
       note: "Review proposals only. No worker dispatch or merge authority." };
   }
   throw new Error("UNSUPPORTED_ARTIFACT_SCHEMA");
