@@ -5,6 +5,7 @@ import {
 } from "./evidence-bay.mjs";
 import { BrowserEvidence } from "./browser-evidence.jsx";
 import { CouncilEvidence } from "./council-evidence.jsx";
+import { R20CouncilBrowserEvidence } from "./r20-council-browser-evidence.jsx";
 import "./council-evidence.css";
 import { pilotCoverage } from "./pilot-coverage.mjs";
 
@@ -167,6 +168,7 @@ export function EvidenceBay({ catalog, contracts, onVisit }) {
       </section>}
       <BrowserEvidence catalog={catalog} contract={localContract} />
       <CouncilEvidence />
+      <R20CouncilBrowserEvidence catalog={catalog} />
       <p className="evidence-bay-warning">
         An imported review is operator-supplied, not authenticated by this browser.
         Hashing its original ZIP and checking GitHub corroborates artifact integrity
