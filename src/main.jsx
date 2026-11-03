@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import {
   DESKS_PER_FLOOR, KNOWN_EXAMPLES, fetchPublicFleet, displayName
 } from "./fleet.mjs";
-import { towerFloors, floorForId, WINGS } from "./tower.mjs";
+import { towerFloors, floorForId } from "./tower.mjs";
 import { fetchRepoSignals, signalsFresh } from "./signals.mjs";
 import { ChiefOfStaff, SignalInspector, WingRibbon } from "./office-parts.jsx";
 import { MAX_ARTIFACT_BYTES, parseOfficeArtifact, safeTime } from "./audit.mjs";
@@ -132,6 +132,10 @@ function DetailPanel({ repo, evidence, plan, audit, signal,
 
 function Office({ stations, floor, evidence, signals, onSelect, hasPlan, wing }) {
   const count = stations.filter(Boolean).length;
+  const observedPrs = stations.reduce((total, repo) => {
+    const signal = signals[repo?.id];
+    return total + (signalsFresh(signal) ? signal.openPrs?.length || 0 : 0);
+  }, 0);
   return (
     <section className={"office office-wing-" + wing}
       aria-label={"Virtual fleet office, floor " + floor}>
@@ -158,6 +162,10 @@ function Office({ stations, floor, evidence, signals, onSelect, hasPlan, wing })
             signal={signals[repo?.id]} onSelect={onSelect} />)}
         </div>
         <div className="middle-bay">
+          {observedPrs > 0 && <div className="observed-courier"
+            title="Decorative response to observed open GitHub PRs, not an active worker">
+            <span className="courier-label">PRs OBSERVED</span><Star index={2} />
+          </div>}
           <div className="lounge-zone" aria-hidden="true">
             <span className="lounge-label">BREAK ROOM</span>
             <div className="couch-back">Φ <span className="couch-pillow" /></div>
@@ -175,7 +183,7 @@ function Office({ stations, floor, evidence, signals, onSelect, hasPlan, wing })
               <small>OPERATIONS • READ ONLY</small></div>
           </div>
           <div className="coffee-zone" aria-hidden="true">
-            <span className="coffee-label">COFFEE • 0 MERGES</span>
+            <span className="coffee-label">COFFEE • NO AUTO MERGES</span>
             <div className="arcade-roof">Φ ARCADE</div>
             <div className="arcade-screen">★<i>▣</i></div>
             <div className="arcade-bottom">● ●</div>
@@ -344,6 +352,20 @@ function App() {
               <p><span className="signal-dot gold" /> Agentora R0.1 audit (optional)</p>
               <p><span className="signal-dot violet" /> Agentora R0.2 plan (optional)</p>
               <small>Signals are observations, not workers. No bot activity is simulated as real execution.</small>
+              <h3>Desk checks performed</h3>
+              {Object.values(signals).length === 0 ?
+                <p>No live desk inspections yet. Open a repository and select "Check current CI and PRs".</p> :
+                <div className="observed-feed">
+                  {Object.values(signals).sort((a, b) =>
+                    b.observedAt.localeCompare(a.observedAt)).map(signal => (
+                    <button type="button" key={signal.repositoryId}
+                      onClick={() => jumpToRepo(signal.repository.split("/")[1])}>
+                      <strong>{signal.repository.split("/")[1]}</strong>
+                      <span>{signal.ci.state.replaceAll("_", " ")}</span>
+                      <small>{signalsFresh(signal) ? "Recent observation" : "Stale observation"}</small>
+                    </button>
+                  ))}
+                </div>}
             </div>
           </>}
           <div className="sidebar-bottom">
