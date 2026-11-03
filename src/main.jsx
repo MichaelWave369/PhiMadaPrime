@@ -10,6 +10,8 @@ import { MissionBoard } from "./mission-board.jsx";
 import { fetchPublicSnapshot } from "./public-feed.mjs";
 import { fetchPublicCoverage, coverageFailureReason } from "./coverage.mjs";
 import { TriageCoverage, TriageForDesk } from "./triage-parts.jsx";
+import { ContractDesk, ContractDirectory } from "./contract-parts.jsx";
+import { newContract, updateContract, rebaseContract, observedSourceSha, serializeContracts, parseContracts, MAX_CONTRACT_FILE_BYTES } from "./contracts.mjs";
 import { CoverageStrip, CoverageSidebar, CoverageInspector } from "./coverage-parts.jsx";
 import { missionQueue } from "./missions.mjs";
 import { MAX_ARTIFACT_BYTES, parseOfficeArtifact, safeTime } from "./audit.mjs";
@@ -18,8 +20,9 @@ import "./living.css";
 import "./mission-board.css";
 import "./coverage.css";
 import "./triage.css";
+import "./contracts.css";
 
-const TABS = ["Directory", "Signals", "Coverage", "Missions"];
+const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
 
 function Star({ index }) {
@@ -76,6 +79,8 @@ function Desk({ repo, position, evidence, signal, cohort, onSelect }) {
 }
 
 function DetailPanel({ repo, evidence, plan, audit, signal, cohort,
+  contract, sourceSha, onCreateContract, onToggleContract, onNoteContract,
+  onRebaseContract, onDeleteContract,
   signalLoading, signalError, onCheckSignal, onClose, onJump }) {
   const closeRef = useRef(null);
   useEffect(() => {
@@ -104,6 +109,11 @@ function DetailPanel({ repo, evidence, plan, audit, signal, cohort,
         <SignalInspector repo={repo} signal={signal} loading={signalLoading}
           error={signalError} onCheck={onCheckSignal} />
         <CoverageInspector record={cohort} />
+        <ContractDesk key={repo.id} repo={repo} contract={contract}
+          suggestedTypes={evidence?.surfaces} sourceSha={sourceSha}
+          onCreate={onCreateContract} onToggle={onToggleContract}
+          onSetNote={onNoteContract} onRebase={onRebaseContract}
+          onDelete={onDeleteContract} />
         <TriageForDesk repo={repo} record={cohort} />
         {repo.exampleOnly ? (
           <p className="caution">This is a curated example while GitHub is unavailable. No live repository information has been verified.</p>
@@ -241,7 +251,9 @@ function App() {
   const [coverage, setCoverage] = useState(null);
   const [coverageStatus, setCoverageStatus] = useState("waiting");
   const [coverageError, setCoverageError] = useState(null);
+  const [contracts, setContracts] = useState({});
   const uploadRef = useRef(null);
+  const contractUploadRef = useRef(null);
   async function refreshCatalog() {
     setCatalogState("loading");
     try {
