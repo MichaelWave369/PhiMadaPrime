@@ -102,7 +102,7 @@ async function smoke(sha) {
       await page.waitForFunction(() => {
         const text = document.querySelector(".feed-state")?.textContent || "";
         return /GITHUB PUBLIC|EXAMPLE MODE/.test(text);
-      }, { timeout: 40000 });
+      }, null, { timeout: 40000 });
       if (!((await signal.textContent()) || "").includes("GITHUB PUBLIC"))
         throw new Error("PUBLIC_CATALOG_UNAVAILABLE");
     });
