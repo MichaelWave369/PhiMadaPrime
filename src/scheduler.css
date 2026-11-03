@@ -1,0 +1,41 @@
+/* R9 read-only causal concurrency planner; no independent execution surface. */
+.scheduler-preview{border:1px solid #6c8c95;border-left:4px solid #cba86d;
+  border-radius:7px;background:linear-gradient(130deg,#1a303b,#242735);
+  padding:15px;margin:17px 0;color:#e9e7e3}
+.scheduler-header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.scheduler-header small{font:bold 10px monospace;color:#d7b77a;letter-spacing:.08em}
+.scheduler-header h3{font:bold 19px monospace;color:#ffe1a4;margin:6px 0}
+.scheduler-header p,.scheduler-caution{font:11px/1.6 monospace;color:#bfd1d6;margin:6px 0}
+.scheduler-header button,.scheduler-settings button{color:#ffe7b7;background:#3c4b54;
+  border:1px solid #b9a47d;border-radius:4px;padding:9px 12px;
+  font:bold 11px monospace;cursor:pointer}
+.scheduler-settings{display:grid;grid-template-columns:1fr 2fr auto;gap:10px;
+  align-items:end;margin-top:15px}
+.scheduler-settings label{display:flex;flex-direction:column;gap:6px;
+  color:#f4d49c;font:bold 11px monospace}
+.scheduler-settings select,.scheduler-settings textarea{width:100%;min-width:0;
+  border:1px solid #79939d;border-radius:4px;background:#131c2a;
+  color:#f1f1ed;padding:9px;font:12px/1.5 monospace}
+.scheduler-settings textarea{resize:vertical}
+.scheduler-error{background:#4a2c33;color:#ffe0dc;border:1px solid #ba7881;
+  padding:9px;border-radius:4px;font:11px/1.5 monospace}
+.scheduler-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:15px 0}
+.scheduler-stats span{background:#13252c;border:1px solid #47626d;border-radius:5px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:9px;text-align:center;font:10px monospace}
+.scheduler-stats strong{font:bold 21px monospace;color:#ffdea6}
+.scheduler-columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.scheduler-columns h4{font:bold 13px monospace;color:#ffd99a}
+.scheduler-columns p{font:12px/1.6 monospace;color:#d8ccd4}
+.scheduler-slots,.scheduler-held{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.scheduler-slots li,.scheduler-held li{display:flex;flex-direction:column;gap:5px;
+  background:#142631;border:1px solid #567580;border-radius:4px;padding:10px;
+  overflow-wrap:anywhere}
+.scheduler-held li{background:#302b39;border-color:#685b6f}
+.scheduler-slots strong,.scheduler-held strong{font:bold 12px monospace;color:#fce4b5}
+.scheduler-slots span,.scheduler-held span,.scheduler-slots small,.scheduler-held small{
+  font:11px/1.5 monospace;color:#bdd0d2}
+@media(max-width:900px){.scheduler-settings{grid-template-columns:1fr}
+  .scheduler-columns{grid-template-columns:1fr}}
+@media(max-width:620px){.scheduler-header{align-items:stretch;flex-direction:column}
+  .scheduler-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}

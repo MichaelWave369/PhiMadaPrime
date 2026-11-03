@@ -21,6 +21,7 @@ import "./mission-board.css";
 import "./coverage.css";
 import "./triage.css";
 import "./contracts.css";
+import "./scheduler.css";
 
 const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
@@ -673,7 +674,7 @@ function App() {
             <span className="help-key">← → to change floors</span>
           </div>
           {boardOpen ?
-            <MissionBoard queue={missions} plan={plan}
+            <MissionBoard queue={missions} plan={plan} catalog={rows}
               reviewed={reviewedJobs} pinned={pinnedJobs}
               onReview={markReviewed} onPin={togglePinned}
               onVisit={jumpToRepo}
