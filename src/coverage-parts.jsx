@@ -1,11 +1,15 @@
 import React from "react";
 import { safeTime } from "./audit.mjs";
 
-export function CoverageStrip({ coverage, stations }) {
+export function CoverageStrip({ coverage, stations, status, error, onRetry }) {
   if (!coverage) return <div className="coverage-strip coverage-unavailable">
     <span>FLEET COVERAGE</span>
-    <strong>Awaiting published rolling scan</strong>
-    <small>Repository metadata is visible; deep coverage remains unknown.</small>
+    <strong>{status === "loading" ? "Loading published coverage…" :
+      status === "unavailable" ? "Coverage unavailable, pilot still available" :
+      "Awaiting published rolling scan"}</strong>
+    <small>{error ? "Reason: " + error : "Repository metadata is visible; deep coverage remains unknown."}</small>
+    {status === "unavailable" && <button type="button" className="coverage-retry"
+      onClick={onRetry}>Retry coverage</button>}
   </div>;
   const assigned = stations.filter(Boolean);
   const observed = assigned.filter(row => coverage.byRepo[row.name] &&
@@ -24,12 +28,17 @@ export function CoverageStrip({ coverage, stations }) {
   </div>;
 }
 
-export function CoverageSidebar({ coverage, status, floors, onVisitFloor }) {
+export function CoverageSidebar({ coverage, status, error, onRetry, floors, onVisitFloor }) {
   if (!coverage) return <div className="coverage-summary">
     <h3>Fleet Audit Coverage</h3>
     <p>{status === "loading" ? "Reading published rolling coverage…" :
-      "No validated rolling coverage available yet. The initial release must complete its first cohort scan."}</p>
-    <small>The six-repository Agentora pilot remains separate. Unobserved is not broken, and green CI is not a functional acceptance result.</small>
+      status === "unavailable" ?
+      "Published cohort data could not be validated or loaded. No scan status will be guessed." :
+      "Waiting for the published cohort ledger."}</p>
+    {error && <p className="coverage-error" role="status">{error}</p>}
+    <button type="button" className="coverage-retry" onClick={onRetry}
+      disabled={status === "loading"}>Retry published coverage</button>
+    <small>The six-repository Agentora pilot remains separate. An unavailable ledger is not a failed project or a product status.</small>
   </div>;
   const stats = coverage.stats;
   return <div className="coverage-summary">
@@ -46,7 +55,7 @@ export function CoverageSidebar({ coverage, status, floors, onVisitFloor }) {
       <i style={{ width: (stats.inventory ? stats.observed / stats.inventory * 100 : 0) + "%" }} />
     </div>
     <p><strong>{stats.observed}/{stats.inventory}</strong> public repos have historical metadata observations.</p>
-    <p>The most recent scheduled publication inspected up to {stats.cohortScanned} repositories. This is rolling coverage, **not** proof that software is complete.</p>
+    <p>The most recent successful publication inspected {stats.cohortScanned} repositories. This is rolling metadata coverage, not proof that software is complete.</p>
     <h3>Floor observation directory</h3>
     <div className="coverage-floor-list">
       {floors.map(f => {
@@ -61,6 +70,9 @@ export function CoverageSidebar({ coverage, status, floors, onVisitFloor }) {
         </button>;
       })}
     </div>
+    <button type="button" className="coverage-retry" onClick={onRetry}>
+      Refresh published coverage
+    </button>
     <small>Counts can decrease if repos change, become private, disappear from public inventory, or their observation history expires. No automatic PR actions occur.</small>
   </div>;
 }
