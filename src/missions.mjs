@@ -93,6 +93,7 @@ export function handoffText(mission, plan) {
   const lines = [
     "ΦMADA PRIME — PROPOSED REVIEW HANDOFF",
     "NOT DISPATCHED · NOT APPROVED · NOT VERIFIED COMPLETE",
+    "MANUAL REVIEW REQUIRED BEFORE ANY EXECUTION",
     "Repository: " + mission.repository,
     "Check: " + mission.check,
     "Proposed work: " + mission.summary,
