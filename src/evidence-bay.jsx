@@ -3,15 +3,18 @@ import {
   parseEvidenceReview, corroborateEvidence,
   EVIDENCE_MAX_REVIEW_BYTES, EVIDENCE_MAX_ZIP_BYTES
 } from "./evidence-bay.mjs";
+import { pilotCoverage } from "./pilot-coverage.mjs";
 
 // All files remain in this browser tab. This is a review console,
 // not an approval workflow or a substitute for Agentora R0.7.
-export function EvidenceBay({ catalog }) {
+export function EvidenceBay({ catalog, contracts, onVisit }) {
   const [review, setReview] = useState(null);
   const [archive, setArchive] = useState(null);
   const [result, setResult] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const localContract = contracts?.[1443845098] ?? null;
+  const coverage = result ? pilotCoverage(result, localContract) : null;
   async function importReview(event) {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -113,6 +116,52 @@ export function EvidenceBay({ catalog }) {
         <span>Product complete: <strong>NO</strong> · Merge authorized:
           <strong> NO</strong> · Browser acceptance: <strong>NOT RUN</strong></span>
       </div>}
+      {coverage && <section className="evidence-bay-coverage"
+        aria-label="Pilot acceptance contract coverage">
+        <header>
+          <strong>R11 / CONTRACT COVERAGE MATRIX</strong>
+          <span>{coverage.sourceState.replaceAll("_", " ")}</span>
+        </header>
+        {coverage.isPreview ?
+          <p>No matching web-app completion contract is bound to this pilot SHA.
+            The five rows below are a <strong>suggested web-app checklist only</strong>,
+            not a signed-off local contract.</p> :
+          <p>Current local contract aligns with this pilot SHA.
+            The pilot reports <strong>{coverage.reportedAutomatedChecks} automated
+            check outcomes</strong> for review. Independently certified:
+            <strong> 0</strong>. Product completed: <strong>NO</strong>.</p>}
+        {coverage.sourceState === "CONTRACT_SHA_MISMATCH" &&
+          <p className="evidence-bay-coverage-alert">
+            The contract targets a different commit. Old evidence cannot
+            be credited to the current contract. Reinspect the desk SHA and
+            rebind locally if appropriate.</p>}
+        {coverage.sourceState === "PILOT_SOURCE_OR_METADATA_NOT_CURRENT" &&
+          <p className="evidence-bay-coverage-alert">
+            This review is historical or its source/metadata is no longer
+            confirmed. No current contract check can be credited.</p>}
+        <div className="evidence-bay-coverage-rows">
+          {coverage.rows.map(item => <div key={item.id}>
+            <span><strong>{item.id.replaceAll("_", " ")}</strong>
+              <small>{item.label}</small></span>
+            <em className={item.status === "PILOT_EXIT_ZERO_REPORTED_FOR_SHA" ?
+              "evidence-coverage-reported" : "evidence-coverage-pending"}>
+              {item.status === "PILOT_EXIT_ZERO_REPORTED_FOR_SHA" ?
+                "R0.6 EXIT 0 REPORTED" :
+                item.status === "POTENTIAL_AUTOMATED_COVERAGE_NO_CONTRACT" ?
+                  "POTENTIAL / NO CONTRACT" :
+                  item.status === "SOURCE_OR_CONTRACT_NOT_ALIGNED" ?
+                    "SOURCE NOT ALIGNED" : "NOT COVERED"}
+            </em>
+          </div>)}
+        </div>
+        {(!localContract || coverage.sourceState === "INCOMPATIBLE_LOCAL_CONTRACT") &&
+          <button type="button" onClick={() => onVisit?.("PhiMadaPrime")}>
+            Visit PhiMada desk to prepare a local web-app contract
+          </button>}
+        <small>This matrix does not parse the artifact's internal JSON or
+          independently replay its tests. An exit-zero report is not
+          functional/browser acceptance, product completion or merge approval.</small>
+      </section>}
       <p className="evidence-bay-warning">
         An imported review is operator-supplied, not authenticated by this browser.
         Hashing its original ZIP and checking GitHub corroborates artifact integrity
