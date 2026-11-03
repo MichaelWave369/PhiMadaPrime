@@ -23,6 +23,7 @@ import "./coverage.css";
 import "./triage.css";
 import "./contracts.css";
 import "./scheduler.css";
+import "./evidence-bay.css";
 
 const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
@@ -713,7 +714,7 @@ function App() {
             </>}
           <footer className="main-footer">
             <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
-            <span>ΦMADA PRIME R8 · SOURCE-BOUND AGENTORA INTAKE / NO AUTOMATED DISPATCH</span>
+            <span>ΦMADA PRIME R10 · SHA-BOUND EVIDENCE BAY / NO AUTOMATED MERGES</span>
           </footer>
           {message && <div className="toast" role="status">{message}
             <button type="button" onClick={() => setMessage("")} aria-label="Dismiss message">×</button></div>}
