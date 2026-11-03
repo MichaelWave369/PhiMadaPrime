@@ -22,8 +22,26 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Test public catalog, office floors, and audit trust boundary
         run: npm test
+      - name: Test publication fail-closed boundaries
+        run: python3 -m unittest discover -s tests -p 'test_public_snapshot.py' -v
       - name: Build GitHub Pages site
         run: npm run build
+      - name: Checkout immutable public Agentora Fleet source (read only)
+        uses: actions/checkout@v4
+        with:
+          repository: MichaelWave369/Agentora
+          ref: 502115508421eb1c98a6c05a79d04a9e432b8b27
+          path: agentora-fleet
+          persist-credentials: false
+      - name: Real public pilot audit (CI smoke)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 agentora-fleet/scripts/fleet_r01_audit.py --scope pilot --output-dir fleet-artifacts
+          python3 agentora-fleet/scripts/fleet_r02_plan.py --input fleet-artifacts/fleet-audit.json --output-dir fleet-artifacts
+      - name: Validate live snapshot before any future public deployment
+        run: |
+          python3 scripts/verify_public_fleet.py --source fleet-artifacts --out dist/fleet --agentora-sha 502115508421eb1c98a6c05a79d04a9e432b8b27
       - name: Verify built HTML and JS assets exist
         run: |
           test -s dist/index.html
