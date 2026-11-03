@@ -1,0 +1,60 @@
+name: PhiMada R14 Live Accessibility Audit (Manual)
+
+# Never an automatic deployment or merge gate. Report findings, do not hide them.
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: "Exact current 40-character PhiMada Prime main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Type RUN_PHI_MADA_A11Y_AUDIT to authorize read-only Chromium axe scans"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phimada-r14-live-a11y
+  cancel-in-progress: false
+
+jobs:
+  accessibility-audit:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout trusted PhiMada scanner
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned scanner dependencies without lifecycle scripts
+        run: npm install --no-audit --no-fund --ignore-scripts
+      - name: Install Chromium browser dependencies
+        run: npx playwright install --with-deps chromium
+      - name: Audit exact deployed source in Chromium with axe
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RUN_SHA: ${{ inputs.source_sha }}
+          RUN_CONFIRM: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          node scripts/r14_live_a11y_audit.mjs \
+            --sha "$RUN_SHA" \
+            --confirm "$RUN_CONFIRM" \
+            --output r14-artifacts/accessibility.json
+      - name: Upload accessibility findings even when audit reports issues
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phimada-r14-accessibility-${{ github.run_id }}
+          path: r14-artifacts/accessibility.json
+          retention-days: 7
+          if-no-files-found: warn
