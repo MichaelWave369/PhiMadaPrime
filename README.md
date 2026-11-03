@@ -163,3 +163,27 @@ The existing **Mission Board remains sourced from the six-repo Agentora R0.2 pil
 After PR merge and Pages deployment, open **Coverage** to verify a scan of up to 24 public repositories on the first run and view explicit never-observed desks. Verify the next successful scheduled publication carries forward prior observations. Check one known recently changed repo to confirm stale evidence is not labeled healthy.
 
 GitHub Pages is a public site. A repository made private after publication can have historical public data cached until the next successful update; do not publish any sensitive information in the first place.
+
+## Rung 6: Coverage Recovery and Evidence Triage
+
+Rung 6 responds to a field observation: the public rolling ledger had successfully published its first **24/222** cohort, but the browser still displayed a generic *Awaiting published rolling scan* message. The exact client-side failure reason was not exposed by R5, so this rung adds a visible diagnostic and a targeted recovery path rather than making an unsupported guess about the cause.
+
+### Operator experience
+
+- **Refresh coverage** in the left sidebar re-fetches the published pilot manifest and validates the rolling coverage ledger again. It does **not** reset manually imported Agentora plans, start a GitHub workflow, execute a job, or change PR status.
+- The Coverage tab and current floor strip show loading, unavailable, and validated data as separate states. An unavailable snapshot now includes a safe error code and a concise explanation of common failure types (invalid hash, mismatched manifest, stale data, missing public file).
+- A retry re-checks the manifest as well as the ledger, which can recover from a Pages deployment race or temporary stale browser/CDN response.
+- The Coverage tab includes an **Evidence Triage** list. It separates evidence gaps in already inspected repos from routine projects awaiting their first scan, and links directly to the relevant desk.
+- The repository inspector shows **What Should We Check Next?** with conditional prompts based on observed CI, public HTML, release metadata, or stale data.
+
+### Trust boundary
+
+These are **metadata-based suggestions, not Agentora jobs**. Missing Pages or a GitHub release might be perfectly appropriate for a library, OS, experiment or command-line tool. A green CI observation remains merely evidence that observed workflow runs passed, not proof of full required checks or functionality.
+
+No automation permissions, repository writes, CI dispatch, PR merges, private data access, or completion flags have been added. The six-repository Agentora planning pilot remains distinct from the rolling public metadata scan. Coverage records are always held to the existing public manifest, SHA-256, source identity, expiry and current catalog checks.
+
+### Acceptance
+
+In GitHub CI, run `npm test`, Python snapshot and rolling scanner tests, and `npm run build`. Following Pages deployment, confirm Coverage loads 24/222 or a later valid cohort; if it fails, the diagnostic and Refresh coverage button should explain the failure without falsely reporting green or complete. Test a desk whose latest observation includes missing CI, and another with a reachable Pages URL. Check that the office view still starts with the 12 desks visible, rather than being pushed below a large triage panel.
+
+The next major technical milestone is source-backed per-repository completion contracts and governed worker dispatch inside Agentora. R6 does not short-circuit that verification step.
