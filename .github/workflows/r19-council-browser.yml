@@ -1,0 +1,60 @@
+name: PhiMada R19 Live Council Browser Acceptance (Manual)
+
+# Operator-only live Chromium test. No automatic PR/push/scheduled run.
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: "Exact 40-character CURRENT PhiMadaPrime main SHA / deployed build"
+        required: true
+        type: string
+      confirmation:
+        description: "Type RUN_PHI_MADA_COUNCIL_BROWSER to authorize read-only live site tests"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phimada-r19-live-council
+  cancel-in-progress: false
+
+jobs:
+  council-browser:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact selected trusted PhiMada verifier
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned browser dependencies without scripts
+        run: npm install --no-audit --no-fund --ignore-scripts
+      - name: Install Chromium and browser dependencies
+        run: npx playwright install --with-deps chromium
+      - name: Live deployed Council acceptance at exact current source SHA
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          RUN_SHA: ${{ inputs.source_sha }}
+          RUN_CONFIRM: ${{ inputs.confirmation }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/r19_live_council_browser.mjs \
+            --sha "$RUN_SHA" \
+            --confirm "$RUN_CONFIRM" \
+            --output r19-artifacts/council-browser.json
+      - name: Upload bounded browser acceptance receipt even when red
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phimada-r19-council-${{ github.run_id }}
+          path: r19-artifacts/council-browser.json
+          if-no-files-found: warn
+          retention-days: 7
