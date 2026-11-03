@@ -4,11 +4,21 @@ import {
 } from "./contracts.mjs";
 
 export function ContractDesk({ repo, contract, suggestedTypes, sourceSha,
-  onCreate, onToggle, onSetNote, onRebase, onDelete }) {
+  liveSignal, onExportVerification, onCreate, onToggle, onSetNote,
+  onRebase, onDelete }) {
   const initial = suggestedTypes?.filter(t => Object.hasOwn(CONTRACT_TYPES, t)) || [];
   const [types, setTypes] = useState(initial.length ? [...new Set(initial)] : ["manual_review"]);
   const isPublic = !repo.exampleOnly;
   const progress = contract ? contractProgress(contract, sourceSha) : null;
+  const observedMs = Date.parse(liveSignal?.observedAt || "");
+  const requestReady = Boolean(contract && liveSignal &&
+    liveSignal.from === "LIVE_PUBLIC_GITHUB_API_READ_ONLY" &&
+    liveSignal.repository === repo.full_name && liveSignal.repositoryId === repo.id &&
+    liveSignal.headSha === contract.source_sha &&
+    liveSignal.functionallyVerified === false &&
+    liveSignal.mergeAuthorized === false &&
+    Number.isFinite(observedMs) && observedMs <= Date.now() + 300000 &&
+    Date.now() - observedMs <= 15 * 60000);
   const typeItems = Object.entries(CONTRACT_TYPES);
   const toggleType = type => {
     setTypes(previous => previous.includes(type) ?
@@ -62,6 +72,21 @@ export function ContractDesk({ repo, contract, suggestedTypes, sourceSha,
               onChange={e => onSetNote(item.id, e.target.value)}
               placeholder="Local notes or evidence references. Not a certified result." />
           </div>)}
+        </div>
+        <div className="verification-handoff">
+          <strong>AGENTORA VERIFICATION HANDOFF</strong>
+          <p>A private file download, not a submitted job. Export only after
+            inspecting live public GitHub signals for this exact source revision.</p>
+          <button type="button" className="contract-action"
+            disabled={!requestReady} onClick={onExportVerification}>
+            ↓ Download Agentora verification request
+          </button>
+          {!requestReady && <small>To enable: use "Check current CI and PRs" above.
+            The observed HEAD must match this contract within 15 minutes.
+            If the code changed, rebind the contract first.</small>}
+          <small>Includes repository, immutable SHA and required checks.
+            Excludes your local operator notes. Does not run tests or authorize
+            a merge. Agentora imports it offline for review.</small>
         </div>
         <div className="contract-action-row">
           {sourceSha && sourceSha !== contract.source_sha &&
