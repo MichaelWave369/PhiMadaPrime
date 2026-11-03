@@ -17,7 +17,7 @@ const BAD_STATES = new Set([
 
 export function triageForRecord(repo, record) {
   if (!repo || repo.exampleOnly || !record) return [{
-    code: "WAIT_FOR_OBSERVATION", level: "pending", weight: 110,
+    code: "WAIT_FOR_OBSERVATION", level: "pending", weight: 20,
     title: "Await scheduled public metadata scan",
     why: "No valid rolling observation has been loaded for this repository.",
     action: "Revisit after the next successful cohort publication."
@@ -27,22 +27,22 @@ export function triageForRecord(repo, record) {
     prompts.push({ code, level, weight, title, why, action });
   const state = record.state;
   if (state === "NEVER_OBSERVED") {
-    add("WAIT_FOR_OBSERVATION", "pending", 110,
+    add("WAIT_FOR_OBSERVATION", "pending", 20,
       "Await scheduled public metadata scan",
       "The current public cohort ledger has not inspected this repository.",
       "The rolling scanner chooses older/unobserved projects first.");
   } else if (state === "STALE_AFTER_PUSH") {
-    add("RECHECK_CHANGED_REPO", "stale", 115,
+    add("RECHECK_CHANGED_REPO", "stale", 91,
       "Reinspect changes since the last observation",
       "The repository was pushed after the recorded metadata inspection.",
       "Confirm HEAD and run required project-specific acceptance checks.");
   } else if (state === "STALE_BY_AGE") {
-    add("RECHECK_AGED_REPO", "stale", 105,
+    add("RECHECK_AGED_REPO", "stale", 75,
       "Refresh expired metadata evidence",
       "The recorded observation is older than the freshness window.",
       "Run a fresh observation before relying on any CI or release metadata.");
   } else if (state === "RECENT_LIMITED_OBSERVATION") {
-    add("REVIEW_SCAN_LIMITS", "limited", 112,
+    add("REVIEW_SCAN_LIMITS", "limited", 97,
       "Resolve incomplete metadata observation",
       "The scanner reported API or read limitations.",
       "Inspect scanner limitations and rerun the affected evidence check.");
