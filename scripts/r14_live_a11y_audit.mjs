@@ -108,7 +108,24 @@ async function audit(sha) {
       await page.getByRole("dialog", {name:"Repository inspector: PhiMadaPrime"})
         .waitFor({timeout: 10000});
     });
-    if (opened) await axeView("inspector");
+    if (opened) {
+      // The inspector is a modal. Hidden background desks should not be
+      // tab-reachable or part of this modal's accessibility scan.
+      // Check the actual live DOM; never turn off axe rules to hide findings.
+      try {
+        const isolated = await page.evaluate(() => {
+          const header = document.querySelector("header.topbar");
+          const workspace = document.querySelector(".workspace");
+          const dialog = document.querySelector('.inspector[role="dialog"]');
+          return Boolean(header?.inert && workspace?.inert && dialog &&
+            !dialog.closest("[inert]"));
+        });
+        if (!isolated) throw new Error("MODAL_BACKGROUND_NOT_INERT");
+      } catch (e) {
+        capture("MODAL_ISOLATION: " + sanitize(e));
+      }
+      await axeView("inspector");
+    }
     await check("inspector_tab_contained", async () => {
       if (!opened) throw new Error("INSPECTOR_NOT_OPEN");
       const lastLink = page.locator(".inspector-actions a").last();
