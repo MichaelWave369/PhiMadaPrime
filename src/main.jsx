@@ -25,6 +25,8 @@ import "./contracts.css";
 import "./scheduler.css";
 import "./evidence-bay.css";
 
+// Set at Vite build time. Empty local builds must never pretend to be deployed.
+const PUBLIC_BUILD_SHA = __PHIMADA_BUILD_SHA__;
 const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
 
@@ -714,6 +716,10 @@ function App() {
             </>}
           <footer className="main-footer">
             <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
+            <span data-testid="phimada-deployed-revision"
+              data-build-sha={PUBLIC_BUILD_SHA || "UNSTAMPED"}>
+              BUILD {PUBLIC_BUILD_SHA ? PUBLIC_BUILD_SHA.slice(0, 12) : "UNSTAMPED / LOCAL"}
+            </span>
             <span>ΦMADA PRIME R11 · EVIDENCE COVERAGE / NO AUTOMATED MERGES</span>
           </footer>
           {message && <div className="toast" role="status">{message}
