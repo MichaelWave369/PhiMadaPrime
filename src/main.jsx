@@ -696,7 +696,7 @@ function App() {
             <span className="help-key">← → to change floors</span>
           </div>
           {boardOpen ?
-            <MissionBoard queue={missions} plan={plan} catalog={rows}
+            <MissionBoard queue={missions} plan={plan} catalog={rows} contracts={contracts}
               reviewed={reviewedJobs} pinned={pinnedJobs}
               onReview={markReviewed} onPin={togglePinned}
               onVisit={jumpToRepo}
@@ -714,7 +714,7 @@ function App() {
             </>}
           <footer className="main-footer">
             <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
-            <span>ΦMADA PRIME R10 · SHA-BOUND EVIDENCE BAY / NO AUTOMATED MERGES</span>
+            <span>ΦMADA PRIME R11 · EVIDENCE COVERAGE / NO AUTOMATED MERGES</span>
           </footer>
           {message && <div className="toast" role="status">{message}
             <button type="button" onClick={() => setMessage("")} aria-label="Dismiss message">×</button></div>}
