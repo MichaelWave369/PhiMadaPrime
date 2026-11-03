@@ -385,7 +385,7 @@ function App() {
       r.full_name === c.repository));
   function createLocalContract(repo, types) {
     const sha = observedSourceSha(signals[repo.id], coverage?.byRepo[repo.name],
-      plan?.byRepo?.[repo.name]);
+      (plan?.freshness === "RECENT" ? plan.byRepo?.[repo.name] : null));
     const contract = newContract(repo, types, sha);
     setContracts(previous => ({ ...previous, [repo.id]: contract }));
     setMessage("Local completion checklist prepared for " + repo.name +
@@ -703,7 +703,8 @@ function App() {
         cohort={coverage?.byRepo[selected.name]}
         contract={contracts[selected.id]}
         sourceSha={observedSourceSha(signals[selected.id],
-          coverage?.byRepo[selected.name], plan?.byRepo?.[selected.name])}
+          coverage?.byRepo[selected.name],
+          plan?.freshness === "RECENT" ? plan.byRepo?.[selected.name] : null)}
         onCreateContract={types => createLocalContract(selected, types)}
         onToggleContract={(checkId, checked) => patchLocalContract(selected, checkId,
           { locally_reviewed: checked })}
