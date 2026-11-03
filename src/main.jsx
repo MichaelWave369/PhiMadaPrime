@@ -24,6 +24,7 @@ import "./triage.css";
 import "./contracts.css";
 import "./scheduler.css";
 import "./evidence-bay.css";
+import "./browser-evidence.css";
 
 // Set at Vite build time. Empty local builds must never pretend to be deployed.
 const PUBLIC_BUILD_SHA = __PHIMADA_BUILD_SHA__;
@@ -720,7 +721,7 @@ function App() {
               data-build-sha={PUBLIC_BUILD_SHA || "UNSTAMPED"}>
               BUILD {PUBLIC_BUILD_SHA ? PUBLIC_BUILD_SHA.slice(0, 12) : "UNSTAMPED / LOCAL"}
             </span>
-            <span>ΦMADA PRIME R11 · EVIDENCE COVERAGE / NO AUTOMATED MERGES</span>
+            <span>ΦMADA PRIME R13 · BROWSER EVIDENCE / NO AUTOMATED MERGES</span>
           </footer>
           {message && <div className="toast" role="status">{message}
             <button type="button" onClick={() => setMessage("")} aria-label="Dismiss message">×</button></div>}
