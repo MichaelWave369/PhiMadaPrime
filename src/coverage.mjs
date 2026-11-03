@@ -87,15 +87,18 @@ export function parsePublicCoverage(source, manifest, rows, now = Date.now()) {
     const key = row.repository.toLowerCase();
     if (seen.has(key)) throw new Error("COVERAGE_DUPLICATE");
     seen.add(key);
-    const state = recordState(row, now);
-    if (state === "NEVER_OBSERVED") declaredNever++;
+    const declaredState = recordState(row, at);
+    if (declaredState === "NEVER_OBSERVED") declaredNever++;
     else {
       declaredEver++;
-      if (state === "RECENT_OBSERVATION_NOT_PRODUCT_VERIFIED") declaredRecent++;
-      if (state === "RECENT_LIMITED_OBSERVATION") declaredLimited++;
+      if (declaredState === "RECENT_OBSERVATION_NOT_PRODUCT_VERIFIED") declaredRecent++;
+      if (declaredState === "RECENT_LIMITED_OBSERVATION") declaredLimited++;
     }
     const known = catalog.get(key);
     if (!known || known.id !== row.repository_id) continue;
+    // Compare the publication's pushed_at against the latest public catalog.
+    // A repository updated after publishing cannot retain a fresh observation.
+    const state = recordState({ ...row, pushed_at: known.pushed_at }, now);
     if (row.head_sha !== null &&
         !(typeof row.head_sha === "string" && SHA40.test(row.head_sha))) {
       throw new Error("COVERAGE_INVALID_HEAD");
