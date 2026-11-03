@@ -87,7 +87,7 @@ function Desk({ repo, position, evidence, signal, cohort, onSelect }) {
 }
 
 function DetailPanel({ repo, evidence, plan, audit, signal, cohort,
-  contract, sourceSha, liveSignal, onExportVerification,
+  originalOpener, contract, sourceSha, liveSignal, onExportVerification,
   onCreateContract, onToggleContract, onNoteContract,
   onRebaseContract, onDeleteContract,
   signalLoading, signalError, onCheckSignal, onClose, onJump }) {
@@ -98,7 +98,9 @@ function DetailPanel({ repo, evidence, plan, audit, signal, cohort,
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
   useEffect(() => {
-    const opener = document.activeElement;
+    // Saved by the initiating control's event before React makes
+    // the background inert, which can itself blur activeElement.
+    const opener = originalOpener;
     closeRef.current?.focus();
     const onKey = event => {
       if (event.key === "Escape") {
@@ -283,6 +285,7 @@ function App() {
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState(TABS[0]);
   const [selectedId, setSelectedId] = useState(null);
+  const inspectorOpenerRef = useRef(null);
   const [audit, setAudit] = useState(null);
   const [plan, setPlan] = useState(null);
   const [message, setMessage] = useState("");
@@ -525,6 +528,11 @@ function App() {
       setSignalsBusy(previous => ({ ...previous, [repo.id]: false }));
     }
   }
+  function selectDesk(id) {
+    // Capture the actual invoking element before modal inertness takes effect.
+    inspectorOpenerRef.current = document.activeElement;
+    setSelectedId(id);
+  }
   function jumpToRepo(name) {
     setBoardOpen(false);
     setActiveTab("Directory");
@@ -532,7 +540,7 @@ function App() {
     if (!repo) return;
     setQuery("");
     setFloor(floorForId(allFloors, repo.id) || 1);
-    setSelectedId(repo.id);
+    selectDesk(repo.id);
   }
   async function importArtifact(e) {
     const file = e.target.files?.[0];
@@ -564,7 +572,7 @@ function App() {
   }, [selected, boardOpen, activeFloor, floors]);
   return (
     <div className="shell">
-      <header className="topbar">
+      <header className="topbar" inert={Boolean(selected)}>
         <div className="brand"><span className="brand-mark">Φ</span>
           <span><strong>ΦMADA PRIME</strong><small>THE LIVING FLEET OFFICE</small></span>
         </div>
@@ -580,7 +588,7 @@ function App() {
             catalogState === "loading" ? "CONNECTING" : "EXAMPLE MODE"}
         </div>
       </header>
-      <div className="workspace">
+      <div className="workspace" inert={Boolean(selected)}>
         <aside className="sidebar">
           <div className="sidebar-head"><strong>FLEET TRANSMISSIONS</strong>
             <small>COMMAND TOWER</small></div>
@@ -744,14 +752,14 @@ function App() {
               onClose={() => { setBoardOpen(false); setActiveTab("Directory"); }} /> :
             <>
               <WingRibbon current={currentFloor} floors={tower}
-                onSelect={setSelectedId} />
+                onSelect={selectDesk} />
               <CoverageStrip coverage={coverage} stations={stations}
                 status={coverageStatus} error={coverageError?.message}
                 onRetry={retryPublishedCoverage} />
               <ChiefOfStaff plan={plan} audit={audit} signals={signals} onJump={jumpToRepo} />
               <Office stations={stations} floor={activeFloor} wing={currentFloor.wing}
                 evidence={evidence} signals={signals} coverage={coverage}
-                hasPlan={Boolean(plan)} onSelect={setSelectedId} />
+                hasPlan={Boolean(plan)} onSelect={selectDesk} />
             </>}
           <footer className="main-footer">
             <span>12 STATIONS PER FLOOR · {(query ? filtered.length : rows.length)} RECORDS SHOWN</span>
@@ -766,6 +774,7 @@ function App() {
         </main>
       </div>
       {selected && <DetailPanel key={selected.id} repo={selected}
+        originalOpener={inspectorOpenerRef.current}
         evidence={evidence[selected.name]}
         audit={audit} plan={plan} signal={signals[selected.id]}
         cohort={coverage?.byRepo[selected.name]}
