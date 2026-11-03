@@ -33,9 +33,16 @@ export function summarizeAxeView(name, scan) {
     requireValue(typeof v.id === "string" && v.id.length <= 100 &&
       ["critical", "serious", "moderate", "minor", null].includes(v.impact) &&
       Array.isArray(v.nodes), "A11Y_AXE_VIOLATION_INVALID");
+    // Store only static CSS class tokens as diagnostic hints. Never write
+    // element HTML, form values, accessible names, or arbitrary selector text.
+    const selectorHints = [...new Set(v.nodes.slice(0, 12).flatMap(node =>
+      (Array.isArray(node.target) ? node.target : []).flatMap(target =>
+        typeof target === "string" ?
+          (target.match(/\\.[a-zA-Z][a-zA-Z0-9_-]{0,47}/g) || []) : [])))].slice(0, 12);
     return {
       id: v.id, impact: v.impact,
       affected_nodes: v.nodes.length,
+      selector_class_hints: selectorHints,
       help: typeof v.help === "string" ? v.help.slice(0, 160) : ""
     };
   });
@@ -45,6 +52,8 @@ export function summarizeAxeView(name, scan) {
     violations: findings,
     violation_rules: scan.violations.length,
     incomplete_rules: scan.incomplete.length,
+    incomplete_rule_ids: scan.incomplete.slice(0, 30)
+      .map(rule => typeof rule?.id === "string" ? rule.id.slice(0, 100) : "unknown"),
     passed_rules: scan.passes.length,
     findings_truncated: scan.violations.length > MAX_VIOLATIONS
   };
