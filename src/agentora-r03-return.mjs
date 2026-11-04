@@ -203,6 +203,8 @@ export async function reviewAgentoraR03(requestBytes,receiptBytes,repo,contract,
     sourceSha:request.source_sha,requestSha256:digest,
     preparedUtc:request.prepared_utc,receivedUtc:receipt.received_utc,
     requiredChecks:required.length,
+    surfaceTypes:[...request.surface_types],
+    checkIds:[...required],
     humanDeviceChecks:receipt.checks.filter(x=>
       x.lane==="HUMAN_OR_DEVICE_REQUIRED").length,
     ...presentContext(request,repo,contract,signal,now),
