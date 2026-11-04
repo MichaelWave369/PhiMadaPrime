@@ -323,3 +323,8 @@ See [R29 implementation, operator steps, limitations and acceptance](docs/rung-2
 Open **Mission Board → Agent Flow + Chronicle**, select an observed commit, and click **Inspect PR + CI evidence**. R30 checks the exact public commit and its first parent, then independently reads GitHub-associated PRs, Actions check runs for the exact SHA, and legacy commit status contexts. Partial/unavailable sources are explicitly labeled. Optional local R0.3 request and intake files reuse R27's strict byte-digest correlation, and are always marked **0 independent checks run**, with no source authentication, verified product claim, or merge authority.
 
 See [R30 operator instructions and safety contract](docs/rung-30-evidence-nervous-system.md).
+
+
+## R31: Agentora R1 execution provenance (trusted GitHub correlation)
+
+Within **Mission Board → Agent Flow + Chronicle → R30 Evidence Nervous System**, select an exact Agentora historical commit, inspect R30 PR/CI evidence, then verify an Agentora R1 task PR against that selected SHA. R31 **reuses** the existing strict `readTurnResult` live GitHub verifier for owner approval, trusted workflow/jobs, task digest, required exact-PR-SHA CI and merge readback, and further requires the Chronicle commit to be the **tested PR head** or **corroborated merge SHA**. A task *source* SHA is not an execution output. Non-Agentora repos are explicitly unsupported for this fixed R1 contract; nothing is dispatched or merged, and AI-model identity and product acceptance are **not** claimed. [R31 operator and trust contract](docs/rung-31-agentora-execution-provenance.md).
