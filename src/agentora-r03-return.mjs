@@ -225,6 +225,6 @@ export function recheckR03Context(result,repo,contract,signal,now=Date.now()){
   return presentContext({
     source_sha:result.sourceSha,
     surface_types:result.surfaceTypes||[],
-    required_checks:result.checkIds||[]
+    required_checks:(result.checkIds||[]).map(id=>({id}))
   },repo,contract,signal,now);
 }
