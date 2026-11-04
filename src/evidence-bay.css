@@ -67,3 +67,18 @@
 .evidence-bay-coverage>small{font:10px/1.6 monospace;color:#c3b5c4}
 @media(max-width:700px){.evidence-bay-coverage-rows>div{align-items:flex-start;
   flex-direction:column}.evidence-bay-coverage-rows em{flex-shrink:1}}
+
+/* R22: make evidence file types unambiguous before any upload is chosen. */
+.evidence-bay-file-router{display:flex;flex-direction:column;align-items:flex-start;
+  gap:9px;padding:15px;border:1px solid #a9c0dd;border-radius:7px;
+  background:#233146;color:#e4ecfd}
+.evidence-bay-file-router>strong{font:bold 12px monospace;color:#c8e1ff}
+.evidence-bay-file-router p{font:12px/1.65 monospace;color:#e1e8f7}
+.evidence-bay-file-router code{overflow-wrap:anywhere;white-space:normal}
+.evidence-bay-file-router button{padding:12px 14px;min-height:42px;
+  border:1px solid #a9d0f6;border-radius:6px;background:#394d71;
+  color:#f4f9ff;font:bold 12px monospace;cursor:pointer;text-align:left}
+.evidence-bay-file-router button:focus-visible{outline:3px solid #ffdd9a;outline-offset:3px}
+.evidence-bay-file-router>small{font:11px/1.55 monospace;color:#c7d3e7}
+.evidence-bay-agentora-title{margin:5px 0 0;font:bold 12px monospace;color:#f6d6a6}
+#phimada-r20-council-browser{scroll-margin-top:12px}
