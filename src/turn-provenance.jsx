@@ -94,7 +94,7 @@ export function TurnProvenance({repo,history,commit,bundle}) {
           result.relation.replaceAll("_"," ")}</b></div>
         <div><small>Owner environment approval</small><b>Corroborated</b></div>
         <div><small>Controller workflow + merge-gate job</small><b>Corroborated</b></div>
-        <div><small>Required exact-SHA CI names</small><b>3 observed passing</b></div>
+        <div><small>Required exact-SHA CI names</small><b>All 3 named checks passed</b></div>
         <div><small>Merge readback</small><b>{
           result.mergeReadbackCorroborated?"Corroborated":"Not merged"}</b></div>
         <div><small>Product acceptance</small><b>NOT verified</b></div>
