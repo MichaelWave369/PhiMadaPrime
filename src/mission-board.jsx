@@ -3,8 +3,10 @@ import { filterMissions, handoffText, missionStats } from "./missions.mjs";
 import { WINGS } from "./tower.mjs";
 import { SchedulerPreview } from "./scheduler-preview.jsx";
 import { EvidenceBay } from "./evidence-bay.jsx";
+import { missionLiveTriage } from "./mission-live-triage.mjs";
 
 export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned,
+  signals={}, signalsBusy={}, signalsError={}, onInspectRepo,
   onReview, onPin, onVisit, onClose }) {
   const [query, setQuery] = useState("");
   const [wing, setWing] = useState("all");
@@ -103,6 +105,44 @@ export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned
               <span>HEAD: {item.headSha?.slice(0, 12) || "UNVERIFIED"}</span>
               <span>{reviewed[item.id] ? "REVIEWED HERE ONLY" : "AWAITING REVIEW"}</span>
             </div>
+            {(() => {
+              const triage = missionLiveTriage(item, signals[item.repoId]);
+              const loading = signalsBusy[item.repoId] === true;
+              const error = signalsError[item.repoId];
+              return <section className="mission-live-triage"
+                aria-label={"Live GitHub triage for " + item.repoName}>
+                <div className="mission-live-heading">
+                  <strong>LIVE GITHUB / ON-DEMAND</strong>
+                  <button type="button" disabled={loading || !onInspectRepo}
+                    onClick={() => onInspectRepo(item.repoId)}>
+                    {loading ? "Checking GitHub…" : triage.live ? "Refresh GitHub" : "Check live GitHub"}
+                  </button>
+                </div>
+                <p role="status" aria-live="polite">{error ||
+                  (loading ? "Reading current public GitHub metadata only…" : triage.message)}</p>
+                {triage.live && <>
+                  <div className="mission-live-facts">
+                    <span>Current HEAD <code>{triage.currentSha.slice(0,12)}</code></span>
+                    <span>Plan source: {triage.headStatus === "PLAN_SHA_MOVED" ?
+                      "MOVED / REVIEW PLAN AGAIN" :
+                      triage.headStatus === "PLAN_SHA_MATCHES_CURRENT_HEAD" ?
+                      "MATCHES OBSERVED HEAD" : "UNVERIFIED"}</span>
+                    <span>CI: {triage.ciMessage}</span>
+                    <span>Open PRs observed: {triage.openPrCountObserved}{triage.prListPartial ?
+                      "+ (partial first page)" : ""}</span>
+                  </div>
+                  {triage.openPrs.length > 0 && <div className="mission-live-prs">
+                    <strong>Recent open PRs · inspect manually</strong>
+                    {triage.openPrs.map(pr => <a key={pr.number}
+                      href={pr.url} target="_blank" rel="noopener noreferrer">
+                      #{pr.number} {pr.title}{pr.draft ? " (draft)" : ""}
+                    </a>)}
+                  </div>}
+                  <small>Observed {triage.observedAt}. Only the selected public repository was checked.
+                    Exact-HEAD CI is not a full build, release, deployment, product or merge certification.</small>
+                </>}
+              </section>;
+            })()}
             <div className="mission-actions">
               <button type="button" onClick={() => onVisit(item.repoName)}>
                 Visit desk
