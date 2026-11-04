@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
-import ReactFlow, { Background, Controls } from "@xyflow/react";
+import { ReactFlow, Background, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { PatchDiff } from "@pierre/diffs/react";
 import { buildForgePatch } from "./agent-forge.mjs";
