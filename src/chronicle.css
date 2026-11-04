@@ -1,0 +1,60 @@
+/* R29 Chronicle: read-only visual observation graph and immutable commit timeline. */
+.chronicle{margin:20px 0;padding:20px;border:2px solid #65788e;border-radius:10px;background:linear-gradient(145deg,#202b3d,#171824);color:#eee8f5;min-width:0}
+.chronicle-header,.chronicle-flow-header,.chronicle-panel-title{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
+.chronicle-header{border-bottom:1px solid #4e6171;padding-bottom:16px}
+.chronicle-header small{font:700 10px monospace;letter-spacing:.12em;color:#b5cbec}
+.chronicle-header h3{margin:7px 0;font:900 clamp(19px,2.7vw,30px) monospace;color:#d6ecff}
+.chronicle-header p{max-width:650px;font:12px/1.6 monospace;color:#c6cada;margin:0}
+.chronicle-header>strong{font:10px/1.7 monospace;max-width:200px;color:#99e2bb;text-align:right}
+.chronicle-picker{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;align-items:end;gap:10px;margin:18px 0 0}
+.chronicle label{display:flex;flex-direction:column;gap:7px;min-width:0;font:700 11px monospace;color:#ffdfac}
+.chronicle input,.chronicle select{width:100%;min-width:0;padding:10px;border:1px solid #8196b2;border-radius:5px;background:#151d2b;color:#f8f2ff;font:12px monospace}
+.chronicle button{cursor:pointer}
+.chronicle-picker button,.chronicle-branch-select button,.chronicle-selected button,.chronicle-copy{padding:10px 13px;border:1px solid #8ec6d9;border-radius:5px;background:#345773;color:#e9f7ff;font:bold 12px monospace}
+.chronicle-picker button:hover:not(:disabled),.chronicle-branch-select button:hover:not(:disabled),.chronicle-selected button:hover:not(:disabled),.chronicle-copy:hover{background:#416c8e}
+.chronicle button:disabled{opacity:.55;cursor:not-allowed}
+.chronicle-source,.chronicle-disclaimer{font:11px/1.65 monospace;color:#b9c0d4;overflow-wrap:anywhere}
+.chronicle-flow-header{margin:18px 0 8px;align-items:flex-end}
+.chronicle h4{margin:0;font:bold 14px monospace;color:#d8ebff}
+.chronicle-flow-header p{font:11px/1.7 monospace;color:#b9bfd0;margin:5px 0}
+.chronicle-flow-header>span{font:10px/1.5 monospace;color:#a3cfb8;max-width:220px;text-align:right}
+.chronicle-graph{width:100%;height:380px;border:1px solid #4d6383;border-radius:7px;overflow:hidden;background:#121a28}
+.chronicle-graph .react-flow__node{cursor:pointer}
+.chronicle-graph .react-flow__controls{box-shadow:none;border:1px solid #71859b;background:#253148}
+.chronicle-graph .react-flow__controls button{background:#253148;color:#fff;border-color:#71859b}
+.chronicle-node-caption{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline;border-left:3px solid #67abc9;background:#273445;padding:11px;font:11px/1.6 monospace}
+.chronicle-node-caption strong{color:#f8e7be}.chronicle-node-caption span{color:#c2d1e4}
+.chronicle-branch-panel,.chronicle-history,.chronicle-change{margin-top:19px;padding:15px;background:#1a2434;border:1px solid #536985;border-radius:7px;min-width:0}
+.chronicle-panel-title{align-items:center;flex-wrap:wrap;margin-bottom:11px}
+.chronicle-panel-title>span{font:10px/1.5 monospace;color:#b5c7d9;overflow-wrap:anywhere}
+.chronicle-panel-title>a{font:11px monospace}
+.chronicle-branch-select{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:12px}
+.chronicle-warning{padding:11px;border-left:3px solid #e1b780;border-radius:4px;background:#3d342e;color:#ffdfb4;font:12px/1.6 monospace;overflow-wrap:anywhere}
+.chronicle-timeline{max-height:340px;overflow:auto;list-style:none;padding:2px 0 3px 10px;margin:10px 0;border-left:2px solid #436a84}
+.chronicle-timeline li{margin:7px 0 7px 11px}
+.chronicle-timeline button{width:100%;position:relative;display:flex;align-items:center;text-align:left;gap:12px;padding:11px;border-radius:5px;border:1px solid #485d75;background:#202b3d;color:#f2f0f5;min-width:0}
+.chronicle-timeline button:hover,.chronicle-timeline button.chosen{background:#304358;border-color:#83c5d9}
+.chronicle-commit-dot{position:absolute;left:-20px;top:50%;transform:translateY(-50%);width:9px;height:9px;border:2px solid #81d1e8;border-radius:50%;background:#1a2434}
+.chronicle-timeline button.chosen .chronicle-commit-dot{background:#71cced;box-shadow:0 0 0 3px #3484b044}
+.chronicle-commit-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px}
+.chronicle-commit-copy strong{font:700 12px/1.45 monospace;overflow-wrap:anywhere}
+.chronicle-commit-copy small{font:10px/1.5 monospace;color:#b8c7dd;overflow-wrap:anywhere}
+.chronicle-timeline em{font:700 9px monospace;color:#9bdfb7;font-style:normal;white-space:nowrap}
+.chronicle-selected{display:flex;justify-content:space-between;gap:14px;align-items:center;border-top:1px solid #506076;padding-top:14px}
+.chronicle-selected strong{font:bold 12px monospace;color:#ffdfaa;overflow-wrap:anywhere}
+.chronicle-selected p{font:12px/1.5 monospace;color:#d4ccda}
+.chronicle-selected span{font:11px monospace;color:#b4bfd2;overflow-wrap:anywhere}
+.chronicle-selected-actions{display:flex;flex-direction:column;align-items:stretch;gap:10px;min-width:190px}
+.chronicle-selected-actions a{text-align:center;font:11px monospace}
+.chronicle-file-select{margin:12px 0}
+.chronicle-file-head{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;padding:9px;font:12px monospace;background:#202a3b}
+.chronicle-file-head strong{overflow-wrap:anywhere;color:#f7dfb3}
+.chronicle-file-head small{color:#b3cddd}
+.chronicle-diff{min-width:0;max-height:550px;overflow:auto;border:1px solid #475a74;background:#15151e;border-radius:5px}
+.chronicle-copy{margin-top:12px}
+.chronicle-empty{padding:16px;border:1px dashed #5b7490;border-radius:6px;color:#c7c4d9;font:12px/1.7 monospace}
+.chronicle-notice{color:#b3eed5;font:12px/1.6 monospace}
+.chronicle-disclaimer{border-top:1px solid #566579;padding-top:13px;margin-top:18px}
+.chronicle button:focus-visible,.chronicle input:focus-visible,.chronicle select:focus-visible{outline:3px solid #ffe79d;outline-offset:3px}
+@media(max-width:900px){.chronicle-picker,.chronicle-branch-select{grid-template-columns:1fr}.chronicle-header,.chronicle-selected,.chronicle-flow-header{flex-direction:column;align-items:stretch}.chronicle-header>strong,.chronicle-flow-header>span{text-align:left;max-width:none}.chronicle-selected-actions{min-width:0}.chronicle-graph{height:310px}.chronicle{padding:13px}}
+@media(prefers-reduced-motion:reduce){.chronicle *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

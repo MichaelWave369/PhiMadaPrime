@@ -8,6 +8,9 @@ import { OneRepoCompletionLane } from "./completion-lane.jsx";
 import "./agent-forge.css";
 const AgentForge = React.lazy(() => import("./agent-forge.jsx")
   .then(module => ({ default: module.AgentForge })));
+import "./chronicle.css";
+const Chronicle = React.lazy(() => import("./chronicle.jsx")
+  .then(module => ({ default: module.Chronicle })));
 
 export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned,
   signals={}, signalsBusy={}, signalsError={}, onInspectRepo, onExportVerification,
@@ -16,6 +19,7 @@ export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned
   const [wing, setWing] = useState("all");
   const [review, setReview] = useState("all");
   const [notice, setNotice] = useState("");
+  const [chronicleOpen,setChronicleOpen] = useState(false);
   const stats = useMemo(() => missionStats(queue, reviewed, pinned),
     [queue, reviewed, pinned]);
   const visible = useMemo(() => filterMissions(queue, {
@@ -54,6 +58,16 @@ export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned
       <React.Suspense fallback={<p role="status">Opening the Agent Forge reviewer…</p>}>
         <AgentForge catalog={catalog} />
       </React.Suspense>
+    </details>
+    <details className="chronicle-launch"
+      onToggle={event => setChronicleOpen(event.currentTarget.open)}>
+      <summary style={{cursor:"pointer",padding:"13px 16px",border:"1px solid #829fb6",
+        borderRadius:"6px",background:"#233549",color:"#def2ff",fontWeight:700}}>
+        ✦ Agent Flow + Chronicle · Branch & Commit Time Machine
+      </summary>
+      {chronicleOpen && <React.Suspense fallback={<p role="status">Opening the Chronicle workstation…</p>}>
+        <Chronicle catalog={catalog} />
+      </React.Suspense>}
     </details>
     <EvidenceBay catalog={catalog} contracts={contracts} onVisit={onVisit} />
     <SchedulerPreview queue={queue} plan={plan} catalog={catalog} />
