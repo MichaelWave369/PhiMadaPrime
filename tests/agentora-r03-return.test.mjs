@@ -240,3 +240,11 @@ test("R27-18 UI requires two local files, reports unsigned and never calls API",
   assert.match(lane,/AgentoraR03Return key=\{selected\.id\}/);
   assert.doesNotMatch(ui,/\bfetch\s*\(|route\.fulfill|navigator\.sendBeacon|window\.localStorage/);
 });
+
+test("R27-19 Clear must reset both input controls for repeat same-file review",()=>{
+  const ui=readFileSync("src/agentora-r03-return.jsx","utf8");
+  assert.match(ui,/setInputGeneration\(previous=>previous\+1\)/);
+  assert.match(ui,/key=\{"request-"\+inputGeneration\}/);
+  assert.match(ui,/key=\{"receipt-"\+inputGeneration\}/);
+  assert.match(ui,/setRequestFile\(null\);setReceiptFile\(null\)/);
+});
