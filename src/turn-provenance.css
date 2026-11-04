@@ -1,0 +1,34 @@
+/* R31: authenticated GitHub R1 metadata correlation, not model identity proof. */
+.r31-provenance{margin:13px 0 0;padding:12px;border:1px solid #678d9d;border-radius:7px;background:#172d3a;min-width:0}
+.r31-heading{display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+.r31-heading strong{font:bold 12px/1.5 monospace;color:#d5f1fe}
+.r31-heading span{font:bold 9px/1.5 monospace;color:#a9e4d4;text-align:right}
+.r31-provenance p,.r31-unsupported p{font:11px/1.65 monospace;color:#c5d9e7;overflow-wrap:anywhere}
+.r31-provenance label{display:flex;flex-direction:column;gap:6px;color:#f0d4a1;font:bold 11px/1.5 monospace;margin:13px 0}
+.r31-provenance label input{min-width:0;width:100%;max-width:260px;padding:9px;border:1px solid #7295ad;border-radius:4px;background:#111d2c;color:#e5f4ff;font:12px monospace}
+.r31-provenance button{border:1px solid #81bfc9;border-radius:4px;color:#e6f7ff;background:#30586a;padding:9px 11px;font:bold 11px monospace;cursor:pointer}
+.r31-provenance button:disabled{opacity:.5;cursor:not-allowed}
+.r31-provenance button:hover:not(:disabled){background:#477288}
+.r31-provenance :is(button,input):focus-visible{outline:3px solid #ffe4a2;outline-offset:3px}
+.r31-candidates{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}
+.r31-candidates button{padding:5px 8px}
+.r31-suggested{margin:12px 0}
+.r31-suggested small{font:10px/1.6 monospace;color:#bacadd}
+.r31-hold{border-left:3px solid #e7b371;background:#46362f;padding:10px;color:#ffe0bb!important}
+.r31-hold code{overflow-wrap:anywhere}
+.r31-result{margin-top:14px;border:1px solid #519b83;background:#1c3a3e;border-radius:5px;padding:12px}
+.r31-result>strong{font:bold 13px monospace;color:#b7f3d9}
+.r31-result code{overflow-wrap:anywhere;font:11px/1.5 monospace;color:#d7ebff}
+.r31-result a{overflow-wrap:anywhere}
+.r31-fact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.r31-fact-grid>div{background:#203b45;border:1px solid #477d78;padding:9px;display:flex;flex-direction:column;gap:6px;min-width:0;border-radius:4px}
+.r31-fact-grid small{font:10px/1.5 monospace;color:#afcbd5}
+.r31-fact-grid b{font:bold 11px/1.5 monospace;color:#d9f5e7;overflow-wrap:anywhere}
+.r31-result ul{padding-left:19px;font:11px/1.6 monospace;color:#d3e0ed}
+.r31-limit{border-left:3px solid #d2b07a;padding:9px;background:#36403d}
+.r31-notice{color:#9ee3c8!important}
+.r31-foot{border-top:1px solid #496475;padding-top:10px}
+.r31-unsupported{border:1px dashed #648094;border-radius:6px;margin-top:12px;padding:11px;background:#202b3d}
+.r31-unsupported strong{font:bold 11px monospace;color:#e1dae9}
+@media(max-width:750px){.r31-fact-grid{grid-template-columns:1fr}.r31-heading{flex-direction:column}.r31-heading span{text-align:left}}
+@media(prefers-reduced-motion:reduce){.r31-provenance *{animation:none!important;transition:none!important}}

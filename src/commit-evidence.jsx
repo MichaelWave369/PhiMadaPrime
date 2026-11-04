@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { readCommitEvidence, evidenceHandoff } from "./commit-evidence.mjs";
+import { TurnProvenance } from "./turn-provenance.jsx";
+import "./turn-provenance.css";
 import {
   reviewAgentoraR03, R03_MAX_REQUEST_BYTES, R03_MAX_RECEIPT_BYTES
 } from "./agentora-r03-return.mjs";
@@ -209,6 +211,7 @@ export function CommitEvidence({repo,history,commit}) {
               authentication, approval, dispatch, or merge authority.
             </p>}
           </details>
+          <TurnProvenance repo={repo} history={history} commit={commit} bundle={bundle} />
         </EvidenceCard>
       </div>
       <button type="button" className="r30-copy" onClick={copy}>
