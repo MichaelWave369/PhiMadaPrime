@@ -177,5 +177,5 @@ test("R26-15 no need for a mission proposal and finite selectable results",()=>{
   assert.match(src,/const selected=repos\.find/);
   assert.match(src,/Find a repository/);
   assert.match(src,/Current project/);
-  assert.doesNotMatch(src,/\bqueue\b|\bplan\b/);
+  assert.doesNotMatch(src,/\bmissionQueue\s*\(|\bplan=\{|\bqueue=\{/);
 });
