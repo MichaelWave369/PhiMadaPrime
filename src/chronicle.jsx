@@ -3,6 +3,8 @@ import { ReactFlow, Background, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { PatchDiff } from "@pierre/diffs/react";
 import { buildForgePatch } from "./agent-forge.mjs";
+import { CommitEvidence } from "./commit-evidence.jsx";
+import "./commit-evidence.css";
 import {
   CHRONICLE_STAGES, chronicleFlow, chronicleHandoff,
   readChronicleBranches, readChronicleHistory, readChronicleChange
@@ -259,6 +261,9 @@ export function Chronicle({ catalog = [] }) {
       </div>}
     </div>}
 
+    {selectedCommit && selectedRepo && <CommitEvidence
+      key={selectedRepo.id + ":" + selectedCommit.sha}
+      repo={selectedRepo} history={history} commit={selectedCommit} />}
     {change && <div className="chronicle-change" aria-label="Read-only Git commit patch inspector">
       <div className="chronicle-panel-title">
         <h4>PIERRE DIFFS · COMMIT COMPARISON</h4>

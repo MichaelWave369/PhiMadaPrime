@@ -316,3 +316,10 @@ See [R28 Agent Forge contract](docs/rung-28-agent-forge.md) for usage, limits an
 The Mission Board adds an opt-in **Agent Flow + Chronicle** workstation with a React Flow observation graph, public branch inventory, exact-head-SHA commit timeline, and first-parent Pierre side-by-side diffs. It visualizes what has actually been inspected and which review steps remain external. All GitHub calls are bounded and user-triggered. This is not an executor, saved-state backup, restore/rollback tool, CI verifier or PR approver.
 
 See [R29 implementation, operator steps, limitations and acceptance](docs/rung-29-agent-flow-chronicle.md).
+
+
+## R30: Evidence Nervous System (PR + CI + Agentora lineage)
+
+Open **Mission Board → Agent Flow + Chronicle**, select an observed commit, and click **Inspect PR + CI evidence**. R30 checks the exact public commit and its first parent, then independently reads GitHub-associated PRs, Actions check runs for the exact SHA, and legacy commit status contexts. Partial/unavailable sources are explicitly labeled. Optional local R0.3 request and intake files reuse R27's strict byte-digest correlation, and are always marked **0 independent checks run**, with no source authentication, verified product claim, or merge authority.
+
+See [R30 operator instructions and safety contract](docs/rung-30-evidence-nervous-system.md).
