@@ -747,6 +747,11 @@ function App() {
           {boardOpen ?
             <MissionBoard queue={missions} plan={plan} catalog={rows} contracts={contracts}
               reviewed={reviewedJobs} pinned={pinnedJobs}
+              signals={signals} signalsBusy={signalsBusy} signalsError={signalsError}
+              onInspectRepo={repoId => {
+                const repo = rows.find(row => row.id === repoId && !row.exampleOnly);
+                if (repo) inspectLiveRepo(repo);
+              }}
               onReview={markReviewed} onPin={togglePinned}
               onVisit={jumpToRepo}
               onClose={() => { setBoardOpen(false); setActiveTab("Directory"); }} /> :

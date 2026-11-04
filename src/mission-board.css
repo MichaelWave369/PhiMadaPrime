@@ -80,3 +80,27 @@
   .mission-provenance{flex-direction:column;align-items:flex-start}
   .mission-actions{grid-template-columns:1fr}
 }
+
+/* R25: exact-HEAD, opt-in public GitHub triage; never merge/dispatch status. */
+.mission-live-triage{margin-top:12px;padding:12px;border:1px solid #536c82;
+  background:#202d3b;border-radius:6px;display:flex;flex-direction:column;
+  gap:8px;min-width:0}
+.mission-live-heading{display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:10px}
+.mission-live-heading strong{font:bold 11px monospace;color:#c6e4f8}
+.mission-live-heading button{padding:8px 12px;min-height:36px;border-radius:5px;
+  border:1px solid #91b6cb;background:#33485b;color:#f3faff;
+  font:bold 11px monospace}
+.mission-live-heading button:disabled{opacity:.6;cursor:not-allowed}
+.mission-live-triage p{margin:0;min-height:0;color:#d8e5ee;
+  font:11px/1.5 monospace}
+.mission-live-facts{display:flex;flex-wrap:wrap;gap:7px}
+.mission-live-facts>span{background:#172330;border:1px solid #465c70;
+  color:#c8d7ea;padding:6px 8px;border-radius:4px;
+  font:10px/1.5 monospace;overflow-wrap:anywhere}
+.mission-live-facts code{color:#ffe0b1}
+.mission-live-prs{display:flex;flex-direction:column;gap:6px}
+.mission-live-prs strong{font:bold 10px monospace;color:#e6c899}
+.mission-live-prs a{font:11px/1.55 monospace;color:#d0dfff;
+  overflow-wrap:anywhere}
+.mission-live-triage>small{color:#aebfcf;font:10px/1.5 monospace}
