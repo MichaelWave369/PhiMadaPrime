@@ -66,7 +66,7 @@ test("R24-05 downloader removes Authorization after allowlisted redirect",()=>{
   assert.match(py,/class|r20\.NoRedirect\(\)/);
   assert.match(py,/R24_REDIRECT_HOST_REFUSED/);
   assert.match(py,/HOST_SUFFIXES/);
-  assert.match(py,/No Authorization header/);
+  assert.match(py,/NO Authorization header/);
   assert.match(py,/headers=\{"User-Agent": "phimada-r24-zip"\}/);
 });
 
