@@ -30,6 +30,7 @@ export function missionLiveTriage(mission, signal, now=Date.now()) {
     signal.functionallyVerified!==false||
     signal.mergeAuthorized!==false||
     typeof signal.observedAt!=="string"||
+    !Number.isFinite(Date.parse(signal.observedAt))||
     !SHA40.test(signal.headSha||"")||
     !Array.isArray(signal.openPrs)||
     signal.openPrs.length>10||
