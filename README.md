@@ -302,3 +302,10 @@ After the verified [R24 real artifact-to-live-R20 handoff](https://github.com/Mi
 ## Rung 27: Agentora R0.3 intake receipt return (request lineage only)
 
 The **One Repo · Finish Lane** now includes a local **Agentora R0.3 receipt return** disclosure. Import the exact original R8 verification request JSON and the offline Agentora `verification-intake.json` receipt. The browser verifies their byte-exact SHA-256 linkage, selected real repo identity, immutable claimed source SHA, scope/check IDs, check-by-check `NOT_RUN` state and every required false authority flag. It separately shows current GitHub HEAD / local contract alignment or drift. The result is **HELD FOR OPERATOR REVIEW, 0 independent checks run**, not Agentora producer authentication, source attestation, executed checks or product completion. Both files stay local; no new API, credential or remote write exists. [R27 operator instructions and trust limits](docs/rung-27-agentora-r03-return.md).
+
+
+## R28: Agent Forge (Pierre Trees + Diffs)
+
+The Mission Board now includes an opt-in, **read-only Agent Forge** code-review bay. Browse real public open PRs, select changed files in Pierre Trees, view bounded GitHub patches with Pierre Diffs, and copy exact-SHA review handoffs. No tokens, GitHub reviews, merges, autonomous jobs, or release authority are granted to the static browser app. Partial API responses and unrenderable patches are explicitly labeled.
+
+See [R28 Agent Forge contract](docs/rung-28-agent-forge.md) for usage, limits and acceptance tests.

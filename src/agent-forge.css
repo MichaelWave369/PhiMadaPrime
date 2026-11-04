@@ -1,0 +1,39 @@
+/* R28 Agent Forge: bounded, public-only PR review. */
+.agent-forge{margin:22px 0;padding:20px;border:2px solid #70657d;border-radius:9px;background:linear-gradient(145deg,#202739,#181724);color:#ede8ef;min-width:0}
+.forge-header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;border-bottom:1px solid #5a586c;padding-bottom:14px}
+.forge-header small{font:700 10px monospace;color:#b3c8e7;letter-spacing:.13em}
+.forge-header h3{font:900 clamp(19px,2.5vw,28px) monospace;color:#d7f1ff;margin:7px 0}
+.forge-header p{font:12px/1.6 monospace;color:#c8c4d4;margin:0;max-width:650px}
+.forge-header>strong{font:10px/1.6 monospace;color:#98dfc6;max-width:220px;text-align:right}
+.forge-picker{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:12px;align-items:end;margin-top:18px}
+.forge-picker label,.forge-file-sidebar label{display:flex;flex-direction:column;gap:7px;font:700 11px monospace;color:#e7cfa4;min-width:0}
+.forge-picker input,.forge-picker select,.forge-file-sidebar select{min-width:0;width:100%;border:1px solid #85758e;border-radius:5px;background:#171722;color:#fff0df;padding:10px;font:12px monospace}
+.forge-picker button,.forge-pr button,.forge-file-head button,.forge-copy{background:#34546c;border:1px solid #92cadd;border-radius:5px;padding:10px 13px;color:#f1fbff;font:bold 12px monospace}
+.forge-picker button:hover:not(:disabled),.forge-pr button:hover,.forge-file-head button:hover,.forge-copy:hover{background:#466e89}
+.forge-source,.forge-disclaimer{font:11px/1.7 monospace;color:#bbb7c9;margin:12px 0 0}
+.forge-error,.forge-warning{font:12px/1.6 monospace;padding:10px;border-left:3px solid #ebbe83;color:#ffe0ae;background:#43342c;overflow-wrap:anywhere}
+.forge-pr-list{margin-top:19px;border:1px solid #4f5b73;border-radius:7px;padding:12px;background:#202337}
+.forge-pr-list>strong{display:block;color:#c9e8f7;font:700 12px monospace;margin-bottom:9px}
+.forge-pr{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:9px 0;border-top:1px solid #484b62}
+.forge-pr>div{min-width:0;flex:1}.forge-pr b{font:700 12px/1.5 monospace;color:#f4e6d2;display:block;overflow-wrap:anywhere}
+.forge-pr small{display:block;font:11px monospace;color:#b2b6cf;margin-top:3px}
+.forge-pr a{font:700 11px monospace;white-space:nowrap}
+.forge-review{margin-top:20px;border-top:2px solid #52637a;padding-top:15px}
+.forge-review-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.forge-review-top h4{margin:0 0 8px;font:bold 17px monospace;color:#ffe1ac}
+.forge-review-top p{font:11px/1.5 monospace;margin:4px 0;color:#c2bdd0;overflow-wrap:anywhere}
+.forge-review-top code{overflow-wrap:anywhere}
+.forge-review-top>span{white-space:nowrap;font:11px monospace;color:#a1dbc1}
+.forge-review-grid{display:grid;grid-template-columns:minmax(220px,31%) minmax(0,1fr);gap:13px;margin-top:15px}
+.forge-file-sidebar,.forge-patch-panel{min-width:0;border:1px solid #566175;border-radius:7px;background:#151d2c;padding:12px}
+.forge-file-sidebar>strong{font:bold 12px monospace;color:#c7e4fa;display:block;margin-bottom:12px}
+.forge-tree{height:300px;overflow:hidden;border:1px solid #4c5871;background:#161823;border-radius:5px;margin-bottom:12px}
+.forge-file-head{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:12px}
+.forge-file-head strong{display:block;font:700 13px monospace;color:#e7d39c;overflow-wrap:anywhere}
+.forge-file-head small{display:block;font:11px monospace;color:#adbfd0;margin-top:4px}
+.forge-diff{max-height:580px;overflow:auto;border:1px solid #445066;border-radius:5px;background:#15151c;min-width:0}
+.forge-copy{margin-top:12px}.forge-empty{font:12px/1.7 monospace;color:#b8b3c5;background:#222033;padding:15px;border-radius:6px}
+.forge-disclaimer{border-top:1px solid #4d5160;padding-top:13px}
+.agent-forge button:focus-visible,.agent-forge select:focus-visible,.agent-forge input:focus-visible{outline:3px solid #ffe69a;outline-offset:3px}
+@media(max-width:950px){.forge-picker{grid-template-columns:1fr}.forge-review-grid{grid-template-columns:1fr}.forge-header,.forge-review-top{flex-direction:column}.forge-header>strong{text-align:left}.forge-pr{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.agent-forge *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
