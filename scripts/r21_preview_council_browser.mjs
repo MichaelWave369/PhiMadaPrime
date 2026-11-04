@@ -5,7 +5,8 @@ import { chromium } from "playwright";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { mkdir, open } from "node:fs/promises";
-import { dirname } from "node:path";
+import { dirname, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 
 export const PREVIEW_URL = "http://127.0.0.1:4173/";
 export const CHECKS = Object.freeze([
@@ -241,6 +242,6 @@ async function main() {
   process.exitCode=report.browser_interactions_passed?0:2;
 }
 if (process.argv[1] && import.meta.url===
-    new URL("file://"+process.argv[1]).href) {
+    pathToFileURL(resolve(process.argv[1])).href) {
   main().catch(e=>{process.stderr.write("R21_HELD "+sanitize(e)+"\n");process.exitCode=1;});
 }
