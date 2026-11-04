@@ -4,9 +4,10 @@ import { WINGS } from "./tower.mjs";
 import { SchedulerPreview } from "./scheduler-preview.jsx";
 import { EvidenceBay } from "./evidence-bay.jsx";
 import { missionLiveTriage } from "./mission-live-triage.mjs";
+import { OneRepoCompletionLane } from "./completion-lane.jsx";
 
 export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned,
-  signals={}, signalsBusy={}, signalsError={}, onInspectRepo,
+  signals={}, signalsBusy={}, signalsError={}, onInspectRepo, onExportVerification,
   onReview, onPin, onVisit, onClose }) {
   const [query, setQuery] = useState("");
   const [wing, setWing] = useState("all");
@@ -39,6 +40,10 @@ export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned
         ← Return to office
       </button>
     </header>
+    <OneRepoCompletionLane catalog={catalog} contracts={contracts}
+      signals={signals} signalsBusy={signalsBusy} signalsError={signalsError}
+      onInspectRepo={onInspectRepo} onVisit={onVisit}
+      onExportVerification={onExportVerification} />
     <EvidenceBay catalog={catalog} contracts={contracts} onVisit={onVisit} />
     <SchedulerPreview queue={queue} plan={plan} catalog={catalog} />
     <div className="mission-stat-grid" aria-label="Review-only mission counts">

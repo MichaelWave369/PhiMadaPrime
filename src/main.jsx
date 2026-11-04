@@ -752,6 +752,10 @@ function App() {
                 const repo = rows.find(row => row.id === repoId && !row.exampleOnly);
                 if (repo) inspectLiveRepo(repo);
               }}
+              onExportVerification={repoId => {
+                const repo = rows.find(row => row.id === repoId && !row.exampleOnly);
+                if (repo) downloadVerificationRequest(repo);
+              }}
               onReview={markReviewed} onPin={togglePinned}
               onVisit={jumpToRepo}
               onClose={() => { setBoardOpen(false); setActiveTab("Directory"); }} /> :

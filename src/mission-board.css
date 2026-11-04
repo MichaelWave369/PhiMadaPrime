@@ -104,3 +104,58 @@
 .mission-live-prs a{font:11px/1.55 monospace;color:#d0dfff;
   overflow-wrap:anywhere}
 .mission-live-triage>small{color:#aebfcf;font:10px/1.5 monospace}
+
+
+/* R26: full-fleet single-project completion lane, ahead of nested evidence importers. */
+.one-repo-lane{margin:18px 0;padding:18px;border:1px solid #b48c5a;
+  border-radius:9px;background:linear-gradient(140deg,#283240,#242233);
+  box-shadow:0 5px 18px #0004;color:#e9e6e5}
+.one-repo-lane-title{display:flex;justify-content:space-between;align-items:flex-start;
+  gap:12px;flex-wrap:wrap}
+.one-repo-lane-title small{color:#a7cdeb;font:10px monospace;letter-spacing:.12em}
+.one-repo-lane-title h3{color:#ffdc94;font:900 20px monospace;margin:7px 0}
+.one-repo-lane-title p{font:12px/1.6 monospace;max-width:620px;margin:0;color:#cfd9e4}
+.one-repo-lane-title>strong{border:1px solid #8e8fa2;padding:7px;border-radius:4px;
+  font:10px/1.5 monospace;color:#e6d19e}
+.one-repo-lane-picker{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;
+  gap:11px}
+.one-repo-lane-picker label{display:flex;flex-direction:column;gap:7px;
+  font:bold 11px monospace;color:#e3d39d}
+.one-repo-lane-picker input,.one-repo-lane-picker select{padding:10px;
+  width:100%;min-width:0;border:1px solid #7794af;border-radius:5px;
+  background:#161c2a;color:#f7f1e7;font:12px monospace}
+.one-repo-lane-picker>small{grid-column:1/-1;font:10px/1.6 monospace;color:#adc4d5}
+.one-repo-lane-steps{display:flex;gap:7px;flex-wrap:wrap;list-style:none;
+  padding:0;margin:14px 0}
+.one-repo-lane-steps li{display:flex;align-items:center;gap:7px;border:1px solid #50697f;
+  padding:7px;border-radius:5px;color:#c6d4e0;background:#1b2937;
+  font:10px/1.5 monospace}
+.one-repo-lane-steps b{border-radius:50%;background:#e0b869;color:#211b26;
+  width:19px;height:19px;display:grid;place-items:center}
+.one-repo-lane-result{border-top:1px solid #57667e;padding-top:13px}
+.one-repo-lane-status{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.one-repo-lane-status strong{font:bold 16px monospace;color:#fff0c0}
+.one-repo-lane-status span{font:bold 10px monospace;color:#d0dbfa;letter-spacing:.03em;
+  background:#344260;border-radius:4px;padding:6px;overflow-wrap:anywhere}
+.one-repo-lane-result>p{font:12px/1.7 monospace;color:#d7e2eb}
+.one-repo-lane-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;margin:12px 0}
+.one-repo-lane-facts div{padding:10px;border-radius:5px;background:#161f30;
+  border:1px solid #455b70;min-width:0}
+.one-repo-lane-facts dt{font:10px monospace;color:#b3c1d3}
+.one-repo-lane-facts dd{margin:6px 0 0;font:bold 11px monospace;color:#f5e1b9;
+  overflow-wrap:anywhere}
+.one-repo-lane-actions{display:flex;gap:10px;flex-wrap:wrap}
+.one-repo-lane-actions button{border:1px solid #b29e75;border-radius:5px;
+  padding:10px;background:#4d4c54;color:#fff1dd;font:bold 11px monospace;
+  min-height:40px}
+.one-repo-lane-actions button:last-child{background:#47644e;border-color:#91c3a1}
+.one-repo-lane-actions button:disabled{background:#29313c;border-color:#58606b;
+  color:#8d9cab}
+.one-repo-lane-result>.one-repo-lane-disclaimer{font:10px/1.7 monospace;
+  color:#b4bdcc;margin-bottom:0}
+.one-repo-lane-empty{padding:14px;background:#1d2532;border:1px dashed #677388;
+  border-radius:6px;color:#ccdadf;font:12px/1.6 monospace}
+@media(max-width:850px){.one-repo-lane-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.one-repo-lane{padding:12px}.one-repo-lane-picker{
+  grid-template-columns:1fr}.one-repo-lane-facts{grid-template-columns:1fr}}
