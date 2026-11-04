@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { completionLane } from "./completion-lane.mjs";
+import { AgentoraR03Return } from "./agentora-r03-return.jsx";
 
 const ORDER = [
   ["1", "Select one real repo"],
@@ -85,6 +86,8 @@ export function OneRepoCompletionLane({catalog=[],contracts={},signals={},
           Download governed request
         </button>
       </div>
+      <AgentoraR03Return key={selected.id} repo={selected}
+        contract={contract} signal={signal} />
       <p className="one-repo-lane-disclaimer">This exports an existing R8
         local request, not an Agentora job. Source must be recently observed,
         exact-SHA matched and contract-valid. Independent execution evidence

@@ -159,3 +159,34 @@
 @media(max-width:850px){.one-repo-lane-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:540px){.one-repo-lane{padding:12px}.one-repo-lane-picker{
   grid-template-columns:1fr}.one-repo-lane-facts{grid-template-columns:1fr}}
+
+/* R27: original request + unsigned Agentora R0.3 local receipt, never job evidence. */
+.one-repo-intake-return{margin-top:16px;border:1px solid #708293;
+  border-radius:7px;background:#1b2636;color:#dbe5ef;padding:13px}
+.one-repo-intake-return summary{cursor:pointer;font:bold 12px/1.5 monospace;
+  color:#e9d69a;padding:4px 0}
+.one-repo-intake-return summary:focus-visible{outline:3px solid #ffe69a;
+  outline-offset:4px}
+.one-repo-intake-return>p{font:11px/1.65 monospace;color:#c5d3e0;
+  margin:10px 0;overflow-wrap:anywhere}
+.one-repo-intake-return>p code{display:block;overflow-wrap:anywhere;
+  margin:7px 0;padding:8px;border:1px solid #50677b;background:#111d2b;
+  white-space:normal}
+.one-repo-intake-return>p a{display:inline-block;margin-top:4px;
+  color:#d7e4ff}
+.one-repo-intake-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;margin:12px 0}
+.one-repo-intake-fields label{display:flex;flex-direction:column;gap:8px;
+  font:bold 11px/1.5 monospace;color:#e1d6bc;min-width:0}
+.one-repo-intake-fields input{min-width:0;max-width:100%;padding:9px;
+  background:#1e2f40;border:1px solid #688096;color:#f5ecdf;border-radius:5px;
+  font:11px monospace}
+.one-repo-intake-refusal{font:11px/1.6 monospace;color:#ffd3c5;
+  border-left:3px solid #b45c54;padding:9px;background:#422b31;
+  overflow-wrap:anywhere}
+.one-repo-intake-result{margin-top:12px;border:1px solid #789ba0;
+  padding:12px;border-radius:5px;background:#223842}
+.one-repo-intake-result>strong{display:block;font:bold 11px/1.5 monospace;
+  color:#f8e2b4}
+.one-repo-intake-result>p{font:11px/1.7 monospace;color:#dce6e9}
+@media(max-width:680px){.one-repo-intake-fields{grid-template-columns:1fr}}
