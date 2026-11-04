@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { readCommitEvidence, evidenceHandoff } from "./commit-evidence.mjs";
 import { TurnProvenance } from "./turn-provenance.jsx";
+import { RunObservatory } from "./run-observatory.jsx";
 import "./turn-provenance.css";
 import {
   reviewAgentoraR03, R03_MAX_REQUEST_BYTES, R03_MAX_RECEIPT_BYTES
@@ -214,6 +215,7 @@ export function CommitEvidence({repo,history,commit}) {
           <TurnProvenance repo={repo} history={history} commit={commit} bundle={bundle} />
         </EvidenceCard>
       </div>
+      <RunObservatory repo={repo} history={history} commit={commit} bundle={bundle} />
       <button type="button" className="r30-copy" onClick={copy}>
         Copy R30 evidence-only handoff
       </button>

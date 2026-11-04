@@ -1,0 +1,52 @@
+/* R32 Run Observatory · bounded and read-only exact-commit workflow evidence */
+.r32-observatory{margin:18px 0;padding:17px;border:1px solid #657f98;border-radius:9px;background:#192536;color:#eaf0f8;min-width:0}
+.r32-header,.r32-actions,.r32-meta{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
+.r32-header{padding-bottom:12px;border-bottom:1px solid #53657d}
+.r32-header small{font:700 10px monospace;letter-spacing:.11em;color:#b3d6f1}
+.r32-header h4{font:800 clamp(16px,2vw,22px) monospace;color:#e0eeff;margin:6px 0}
+.r32-header p{font:11px/1.7 monospace;color:#c2d1e1;margin:0;max-width:680px}
+.r32-header>span{font:700 10px/1.6 monospace;max-width:220px;text-align:right;color:#a6e4cf}
+.r32-actions{margin:15px 0;align-items:center}
+.r32-actions>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.r32-actions strong{font:700 11px monospace;color:#ffdea6}
+.r32-actions code{font:11px/1.4 monospace;color:#d5e6ff;overflow-wrap:anywhere}
+.r32-observatory button{border:1px solid #7ec3d9;background:#2c5873;color:#e8f8ff;border-radius:5px;padding:10px;font:bold 11px/1.4 monospace;cursor:pointer}
+.r32-observatory button:hover:not(:disabled){background:#3c7393}
+.r32-observatory button:disabled{opacity:.48;cursor:not-allowed}
+.r32-observatory button:focus-visible{outline:3px solid #ffdf93;outline-offset:3px}
+.r32-meta{align-items:baseline;flex-wrap:wrap;border-bottom:1px solid #4f627a;padding:10px 0;margin-bottom:10px}
+.r32-meta strong{font:bold 12px monospace;color:#d6ecff}
+.r32-meta span{font:10px/1.6 monospace;color:#aebbd0;overflow-wrap:anywhere}
+.r32-warning{font:11px/1.6 monospace;color:#ffe3b5;background:#3a332e;border-left:3px solid #e9bc79;border-radius:3px;padding:10px}
+.r32-muted,.r32-disclaimer{font:11px/1.7 monospace;color:#b7c8da;overflow-wrap:anywhere}
+.r32-run-list{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0;padding:0}
+.r32-run-list li{min-width:0}
+.r32-run-list button{width:100%;height:100%;text-align:left;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;background:#212f44;border-color:#506c86}
+.r32-run-list button.r32-selected{background:#2f435d;border-color:#93d3e7}
+.r32-run-list button>span{display:flex;flex-direction:column;gap:4px;min-width:0}
+.r32-run-list strong{font:bold 12px/1.5 monospace;color:#f7e6c4;overflow-wrap:anywhere}
+.r32-run-list small{font:10px/1.5 monospace;color:#aebfd3;overflow-wrap:anywhere}
+.r32-run-list em,.r32-step-list em{font:700 10px/1.4 monospace;color:#bde8d8;font-style:normal;text-align:right}
+.r32-picker{border:1px solid #597791;border-radius:6px;background:#22334a;padding:12px;margin-top:12px}
+.r32-picker p{font:11px/1.6 monospace;color:#c7d9ee;overflow-wrap:anywhere}
+.r32-picker>div{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.r32-picker a{font:11px monospace}
+.r32-job-panel{margin-top:15px;border-top:2px solid #658ca2;padding-top:13px}
+.r32-summary{font:bold 11px/1.6 monospace;color:#d9f3e6}
+.r32-job-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:14px 0}
+.r32-job{border:1px solid #52718b;border-radius:6px;background:#172838;padding:11px;min-width:0}
+.r32-job header{display:flex;justify-content:space-between;gap:8px;align-items:start}
+.r32-job header div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.r32-job strong{font:700 12px/1.5 monospace;color:#e9dcbb;overflow-wrap:anywhere}
+.r32-job small{font:10px/1.5 monospace;color:#afc8dc}
+.r32-job a{flex-shrink:0;font:10px monospace}
+.r32-step-list{max-height:280px;overflow:auto;list-style:none;padding:0;margin:9px 0}
+.r32-step-list li{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid #3d5970;align-items:start}
+.r32-step-list li span{min-width:0;display:flex;flex-direction:column;gap:4px}
+.r32-step-list b{font:11px/1.5 monospace;color:#dfeff9;overflow-wrap:anywhere}
+.r32-step-list em{flex:0 0 110px}
+.r32-notice{font:11px monospace;color:#aaead5}
+.r32-disclaimer{border-top:1px solid #506680;margin:16px 0 0;padding-top:12px}
+@media(max-width:960px){.r32-run-list,.r32-job-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.r32-actions,.r32-header{flex-direction:column;align-items:stretch}.r32-header>span{text-align:left;max-width:none}.r32-observatory{padding:12px}.r32-run-list button{flex-direction:column}.r32-run-list em{text-align:left}}
+@media(prefers-reduced-motion:reduce){.r32-observatory *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
