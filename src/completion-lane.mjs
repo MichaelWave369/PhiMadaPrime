@@ -58,6 +58,10 @@ export function completionLane(repo, signal, contract, now = Date.now()) {
   }
   const head={...identity,observedHeadSha:signal.headSha};
   if (!contract) return result(STEP.CONTRACT_REQUIRED,head);
+  if (!Array.isArray(contract.checks) || contract.checks.length>100 ||
+    !contract.checks.every(item=>item && typeof item==="object")) {
+    return result(STEP.CONTRACT_REVIEW_REQUIRED,head);
+  }
   const progress=contractProgress(contract,signal.headSha);
   const scoped={...head,
     contractSha:SHA40.test(contract.source_sha||"")?contract.source_sha:null,
