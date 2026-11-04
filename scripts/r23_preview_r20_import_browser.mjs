@@ -232,9 +232,10 @@ export async function runR23(expectedSha,{launchBrowser=()=>chromium.launch({hea
       corrupt[corrupt.length-1]^=0xff;
       await upload(review,corrupt);
       await submit.click();
-      await r20status.getByText(
-        "Council browser evidence held:",{exact:false}
-      ).waitFor({state:"visible",timeout:12000});
+      await page.waitForFunction(()=>
+        document.querySelector(".r20-council-browser [role='status']")
+          ?.textContent?.includes("Council browser evidence held:"),
+        null,{timeout:12000});
       await noResult();
     });
     await check("forged_reviewer_authority_refused",async()=>{
@@ -242,9 +243,10 @@ export async function runR23(expectedSha,{launchBrowser=()=>chromium.launch({hea
       await inputs.nth(0).setInputFiles({
         name:"r23-forged-review.json",mimeType:"application/json",
         buffer:Buffer.from(JSON.stringify(forged))});
-      await r20status.getByText(
-        "R20 reviewer JSON refused.",{exact:false}
-      ).waitFor({state:"visible",timeout:12000});
+      await page.waitForFunction(()=>
+        document.querySelector(".r20-council-browser [role='status']")
+          ?.textContent?.includes("R20 reviewer JSON refused."),
+        null,{timeout:12000});
       await noResult();
     });
     await check("source_moved_reported_historical",async()=>{
