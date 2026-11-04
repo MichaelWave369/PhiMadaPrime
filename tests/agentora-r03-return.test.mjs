@@ -150,7 +150,7 @@ test("R27-09 forged check result or evidence receipt refuses",async()=>{
   for(const changed of [
     {verification_state:"PASS"},{evidence_receipt:{url:"https://evil.test"}},
     {check_id:"unlisted"},{operator_reviewed_claim:true},
-    {lane:"AUTOMATION_CANDIDATE_ONLY"}
+    {lane:"HUMAN_OR_DEVICE_REQUIRED"}
   ]) {
     const receipt={...f.receipt,checks:f.receipt.checks.map((x,i)=>
       i===1?{...x,...changed}:x)};
