@@ -1,0 +1,78 @@
+name: R21 Isolated Chromium Council Preview
+
+# Real browser interactions, built source only. Not a Pages deployment audit.
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'scripts/r21_preview_council_browser.mjs'
+      - 'tests/fixtures/council-e1-producer-golden.json'
+      - 'tests/r21-preview-browser.test.mjs'
+      - 'vite.config.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/r21-council-preview.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'scripts/r21_preview_council_browser.mjs'
+      - 'tests/fixtures/council-e1-producer-golden.json'
+      - 'tests/r21-preview-browser.test.mjs'
+      - 'vite.config.js'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/r21-council-preview.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-council-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout candidate snapshot without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned packages without lifecycle scripts
+        run: npm install --no-audit --no-fund --ignore-scripts
+      - name: Check preview runner source and static safeguards
+        run: |
+          node --check scripts/r21_preview_council_browser.mjs
+          node --test tests/r21-preview-browser.test.mjs
+      - name: Build candidate source with exact CI checkout commit marker
+        run: npm run build
+      - name: Install isolated Chromium runtime
+        run: npx playwright install --with-deps chromium
+      - name: Launch loopback-only production Vite preview
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run preview -- --host 127.0.0.1 --port 4173 --strictPort > /tmp/phimada-r21-preview.log 2>&1 &
+          echo "$!" > /tmp/phimada-r21-preview.pid
+          for n in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/phimada-r21-preview.log
+          exit 1
+      - name: Exercise actual Council UI with local file imports and no external browser network
+        env:
+          PREVIEW_SOURCE_SHA: ${{ github.sha }}
+        run: node scripts/r21_preview_council_browser.mjs r21-artifacts/council-preview.json
+      - name: Upload bounded preview result even on failed or incomplete steps
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phimada-r21-local-preview-${{ github.run_id }}
+          path: r21-artifacts/council-preview.json
+          if-no-files-found: warn
+          retention-days: 7
