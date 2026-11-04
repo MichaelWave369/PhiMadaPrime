@@ -309,3 +309,10 @@ The **One Repo · Finish Lane** now includes a local **Agentora R0.3 receipt ret
 The Mission Board now includes an opt-in, **read-only Agent Forge** code-review bay. Browse real public open PRs, select changed files in Pierre Trees, view bounded GitHub patches with Pierre Diffs, and copy exact-SHA review handoffs. No tokens, GitHub reviews, merges, autonomous jobs, or release authority are granted to the static browser app. Partial API responses and unrenderable patches are explicitly labeled.
 
 See [R28 Agent Forge contract](docs/rung-28-agent-forge.md) for usage, limits and acceptance tests.
+
+
+## R29: Agent Flow + Chronicle (read-only)
+
+The Mission Board adds an opt-in **Agent Flow + Chronicle** workstation with a React Flow observation graph, public branch inventory, exact-head-SHA commit timeline, and first-parent Pierre side-by-side diffs. It visualizes what has actually been inspected and which review steps remain external. All GitHub calls are bounded and user-triggered. This is not an executor, saved-state backup, restore/rollback tool, CI verifier or PR approver.
+
+See [R29 implementation, operator steps, limitations and acceptance](docs/rung-29-agent-flow-chronicle.md).
