@@ -40,6 +40,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Install pinned JavaScript tooling without lifecycle scripts
+        run: npm install --no-audit --no-fund --ignore-scripts
       - name: Check source-only R24 guards
         run: |
           python3 -m unittest discover -s tests -p 'test_r24_handoff.py' -v
@@ -67,8 +69,6 @@ jobs:
             --source-sha "$R24_MAIN_SHA" \
             --confirmation "$R24_CONFIRMATION" \
             --output-dir r24-private
-      - name: Install pinned JavaScript tooling without lifecycle scripts
-        run: npm install --no-audit --no-fund --ignore-scripts
       - name: Install Chromium runtime
         run: npx playwright install --with-deps chromium
       - name: Import independently reviewed real R19 ZIP into actual deployed PhiMada R20 browser panel
