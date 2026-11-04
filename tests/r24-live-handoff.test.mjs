@@ -133,3 +133,16 @@ test("R24-12 original R19 and R20 gates remain unchanged and manual",()=>{
   assert.match(ui,/Corroborate R19 ZIP \+ GitHub source/);
   assert.match(ui,/Clear R20 review/);
 });
+
+test("R24-13 install JavaScript dependencies before importing Playwright in Node guards",()=>{
+  const install=wf.indexOf("name: Install pinned JavaScript tooling without lifecycle scripts");
+  const check=wf.indexOf("name: Check source-only R24 guards");
+  const browserInstall=wf.indexOf("name: Install Chromium runtime");
+  const browserTest=wf.indexOf("name: Import independently reviewed real R19 ZIP into actual deployed PhiMada R20 browser panel");
+  assert.ok(install>=0 && check>=0 && browserInstall>=0 && browserTest>=0);
+  assert.ok(install<check,"npm dependencies must be installed before Node imports Playwright");
+  assert.ok(check<browserInstall && browserInstall<browserTest,
+    "R24 static preflight and Chromium setup must precede live browsing");
+  assert.match(wf,/run: npm install --no-audit --no-fund --ignore-scripts/);
+  assert.equal((wf.match(/name: Install pinned JavaScript tooling without lifecycle scripts/g)||[]).length,1);
+});
