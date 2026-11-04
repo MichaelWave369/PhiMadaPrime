@@ -48,7 +48,7 @@ export function R20CouncilBrowserEvidence({catalog}) {
     } finally {setBusy(false);}
   }
   function clear(){setReview(null);setZip(null);setResult(null);setError("");}
-  return <details className="browser-evidence r20-council-browser" aria-label="R20 Council browser evidence">
+  return <details id="phimada-r20-council-browser" className="browser-evidence r20-council-browser" aria-label="R20 Council browser evidence">
     <summary>
       <span><strong>R20 / COUNCIL LIVE BROWSER EVIDENCE</strong>
         <small>Original R19 Actions ZIP + independent local review + GitHub source check</small>

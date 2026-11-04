@@ -152,6 +152,15 @@ export async function previewSmoke(expectedSha, { launchBrowser = () => chromium
       await page.locator("details.evidence-bay > summary").click();
       const bay=page.locator("details.evidence-bay");
       if (!(await bay.evaluate(el=>el.open))) throw new Error("EVIDENCE_BAY_NOT_OPEN");
+      await page.getByRole("button",{
+        name:"Go to R20 Council JSON + R19 ZIP import"
+      }).click();
+      const routed=page.locator("#phimada-r20-council-browser");
+      if (!(await routed.evaluate(el=>el.open)))
+        throw new Error("R20_IMPORT_ROUTER_FAILED_TO_OPEN");
+      if (await routed.getByText("1. R20 local review JSON").count()!==1 ||
+          await routed.getByText("2. Original R19 Actions ZIP").count()!==1)
+        throw new Error("R20_IMPORT_ROUTER_WRONG_FILE_FIELDS");
       await page.locator("details.council-evidence > summary").click();
       const council=page.locator("details.council-evidence");
       if (!(await council.evaluate(el=>el.open))) throw new Error("COUNCIL_NOT_OPEN");
