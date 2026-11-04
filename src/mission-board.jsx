@@ -5,6 +5,9 @@ import { SchedulerPreview } from "./scheduler-preview.jsx";
 import { EvidenceBay } from "./evidence-bay.jsx";
 import { missionLiveTriage } from "./mission-live-triage.mjs";
 import { OneRepoCompletionLane } from "./completion-lane.jsx";
+import "./agent-forge.css";
+const AgentForge = React.lazy(() => import("./agent-forge.jsx")
+  .then(module => ({ default: module.AgentForge })));
 
 export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned,
   signals={}, signalsBusy={}, signalsError={}, onInspectRepo, onExportVerification,
@@ -44,6 +47,14 @@ export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned
       signals={signals} signalsBusy={signalsBusy} signalsError={signalsError}
       onInspectRepo={onInspectRepo} onVisit={onVisit}
       onExportVerification={onExportVerification} />
+    <details className="forge-launch">
+      <summary style={{cursor:"pointer",padding:"13px 16px",border:"1px solid #7696ac",borderRadius:"6px",background:"#253448",color:"#d9f3ff",fontWeight:700}}>
+        ✦ Agent Forge · Public PR Review (Pierre Trees + Diffs)
+      </summary>
+      <React.Suspense fallback={<p role="status">Opening the Agent Forge reviewer…</p>}>
+        <AgentForge catalog={catalog} />
+      </React.Suspense>
+    </details>
     <EvidenceBay catalog={catalog} contracts={contracts} onVisit={onVisit} />
     <SchedulerPreview queue={queue} plan={plan} catalog={catalog} />
     <div className="mission-stat-grid" aria-label="Review-only mission counts">
