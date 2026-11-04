@@ -165,7 +165,7 @@ export function AgentForge({ catalog = [] }) {
       {review.files.length ? <div className="forge-review-grid">
         <div className="forge-file-sidebar">
           <strong>Changed paths · Pierre Trees</strong>
-          <ChangedFileTree key={review.pr.headSha} files={review.files} onSelect={setSelectedPath} />
+          <ChangedFileTree key={review.pr.number + ":" + review.pr.headSha} files={review.files} onSelect={setSelectedPath} />
           <label>Choose changed file
             <select value={selectedPath} onChange={event => setSelectedPath(event.target.value)}>
               {review.files.map(item => <option key={item.path} value={item.path}>{item.path}</option>)}
