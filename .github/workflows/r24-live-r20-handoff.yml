@@ -1,0 +1,89 @@
+name: R24 Actual R19 Artifact to Live R20 Handoff (Manual)
+
+# Operator-reviewed, read-only replay of EXISTING R19 artifact through LIVE R20 UI.
+# Never starts R19, runs Council, dispatches fleet work or merges pull requests.
+on:
+  workflow_dispatch:
+    inputs:
+      r19_run_id:
+        description: "Exact successful manual R19 Actions run ID to REVIEW, not re-run"
+        required: true
+        type: string
+      source_sha:
+        description: "Exact 40-character CURRENT PhiMada main SHA, matching deployed Pages"
+        required: true
+        type: string
+      confirmation:
+        description: "Type REVIEW_EXISTING_R19_ON_LIVE_PAGES to approve read-only evidence handoff"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: phimada-r24-live-r20-handoff
+  cancel-in-progress: false
+
+jobs:
+  actual-artifact-ui-handoff:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - name: Checkout selected source without retained credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check source-only R24 guards
+        run: |
+          python3 -m unittest discover -s tests -p 'test_r24_handoff.py' -v
+          node --test tests/r24-live-handoff.test.mjs
+          node --check scripts/r24_live_r20_handoff.mjs
+      - name: Validate operator inputs BEFORE any network artifact retrieval
+        env:
+          R24_RUN: ${{ inputs.r19_run_id }}
+          R24_MAIN_SHA: ${{ inputs.source_sha }}
+          R24_CONFIRMATION: ${{ inputs.confirmation }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$R24_MAIN_SHA" = "$GITHUB_SHA"
+          python3 -c 'import os,re,sys; r=os.environ; sys.exit(0 if re.fullmatch(r"[1-9][0-9]{0,18}",r["R24_RUN"]) and re.fullmatch(r"[0-9a-f]{40}",r["R24_MAIN_SHA"]) and r["R24_CONFIRMATION"]=="REVIEW_EXISTING_R19_ON_LIVE_PAGES" else 2)'
+      - name: Download original existing R19 GitHub Actions ZIP and run R20 independent Python reviewer
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          R24_RUN: ${{ inputs.r19_run_id }}
+          R24_MAIN_SHA: ${{ inputs.source_sha }}
+          R24_CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          python3 scripts/r24_prepare_live_r20.py \
+            --run-id "$R24_RUN" \
+            --source-sha "$R24_MAIN_SHA" \
+            --confirmation "$R24_CONFIRMATION" \
+            --output-dir r24-private
+      - name: Install pinned JavaScript tooling without lifecycle scripts
+        run: npm install --no-audit --no-fund --ignore-scripts
+      - name: Install Chromium runtime
+        run: npx playwright install --with-deps chromium
+      - name: Import independently reviewed real R19 ZIP into actual deployed PhiMada R20 browser panel
+        env:
+          R24_R19_RUN_ID: ${{ inputs.r19_run_id }}
+          R24_MAIN_SHA: ${{ inputs.source_sha }}
+          R24_CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          node scripts/r24_live_r20_handoff.mjs \
+            --output r24-artifacts/live-r20-handoff.json
+      - name: Upload bounded R24 browser receipt even if red
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phimada-r24-live-handoff-${{ github.run_id }}
+          path: r24-artifacts/live-r20-handoff.json
+          if-no-files-found: warn
+          retention-days: 7
