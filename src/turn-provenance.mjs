@@ -12,7 +12,8 @@ function need(value, code) {
   if (!value) throw Error("R31_"+code);
 }
 export function turnProvenanceEligible(repo) {
-  return turnEligible(repo) && repo.name==="Agentora" &&\n    repo.full_name===TURN_REPO && repo.id===TURN_REPO_ID;
+  return turnEligible(repo) && repo.name==="Agentora" &&
+    repo.full_name===TURN_REPO && repo.id===TURN_REPO_ID;
 }
 function validateSelection(repo,history,commit,bundle) {
   need(turnProvenanceEligible(repo),"AGENTORA_ONLY");
