@@ -6,6 +6,8 @@ on:
     paths:
       - 'src/**'
       - 'scripts/r21_preview_council_browser.mjs'
+      - 'scripts/r23_preview_r20_import_browser.mjs'
+      - 'tests/r23-evidence-import-browser.test.mjs'
       - 'tests/fixtures/council-e1-producer-golden.json'
       - 'tests/r21-preview-browser.test.mjs'
       - 'vite.config.js'
@@ -17,6 +19,8 @@ on:
     paths:
       - 'src/**'
       - 'scripts/r21_preview_council_browser.mjs'
+      - 'scripts/r23_preview_r20_import_browser.mjs'
+      - 'tests/r23-evidence-import-browser.test.mjs'
       - 'tests/fixtures/council-e1-producer-golden.json'
       - 'tests/r21-preview-browser.test.mjs'
       - 'vite.config.js'
@@ -46,6 +50,8 @@ jobs:
         run: |
           node --check scripts/r21_preview_council_browser.mjs
           node --test tests/r21-preview-browser.test.mjs
+          node --check scripts/r23_preview_r20_import_browser.mjs
+          node --test tests/r23-evidence-import-browser.test.mjs
       - name: Build candidate source with exact CI checkout commit marker
         run: npm run build
       - name: Install isolated Chromium runtime
@@ -68,11 +74,23 @@ jobs:
         env:
           PREVIEW_SOURCE_SHA: ${{ github.sha }}
         run: node scripts/r21_preview_council_browser.mjs r21-artifacts/council-preview.json
+      - name: Exercise R20 JSON and ZIP import in Chromium with strictly mocked public GitHub
+        env:
+          PREVIEW_SOURCE_SHA: ${{ github.sha }}
+        run: node scripts/r23_preview_r20_import_browser.mjs r23-artifacts/r20-import-browser.json
       - name: Upload bounded preview result even on failed or incomplete steps
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: phimada-r21-local-preview-${{ github.run_id }}
           path: r21-artifacts/council-preview.json
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Upload bounded R23 mocked provenance result even when red
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phimada-r23-local-r20-import-${{ github.run_id }}
+          path: r23-artifacts/r20-import-browser.json
           if-no-files-found: warn
           retention-days: 7
