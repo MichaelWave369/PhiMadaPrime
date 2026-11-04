@@ -10,6 +10,7 @@ export function AgentoraR03Return({repo,contract,signal}) {
   const [result,setResult]=useState(null);
   const [error,setError]=useState("");
   const [busy,setBusy]=useState(false);
+  const [inputGeneration,setInputGeneration]=useState(0);
   const context=result?recheckR03Context(result,repo,contract,signal):null;
 
   async function correlate(){
@@ -38,6 +39,7 @@ export function AgentoraR03Return({repo,contract,signal}) {
   }
   function clear(){
     setResult(null);setError("");setRequestFile(null);setReceiptFile(null);
+    setInputGeneration(previous=>previous+1);
   }
   return <details className="one-repo-intake-return"
     aria-label="Agentora R0.3 intake receipt return">
@@ -53,14 +55,14 @@ export function AgentoraR03Return({repo,contract,signal}) {
     </p>
     <div className="one-repo-intake-fields">
       <label>1. Exact original PhiMada R8 request JSON
-        <input type="file" accept=".json,application/json"
+        <input key={"request-"+inputGeneration} type="file" accept=".json,application/json"
           onChange={e=>{
             setRequestFile(e.target.files?.[0]||null);
             setResult(null);setError("");
           }}/>
       </label>
       <label>2. Agentora R0.3 verification-intake.json
-        <input type="file" accept=".json,application/json"
+        <input key={"receipt-"+inputGeneration} type="file" accept=".json,application/json"
           onChange={e=>{
             setReceiptFile(e.target.files?.[0]||null);
             setResult(null);setError("");
