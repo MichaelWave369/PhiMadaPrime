@@ -51,6 +51,14 @@ export function EvidenceBay({ catalog, contracts, onVisit }) {
     }
     setArchive(file);
   }
+  function openR20CouncilImport() {
+    // This is only an in-page navigation action; no file is read or submitted.
+    const target = document.getElementById("phimada-r20-council-browser");
+    if (!target) return;
+    target.open = true;
+    target.querySelector("summary")?.focus({ preventScroll: true });
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
   async function inspect() {
     if (!review || !archive || busy) return;
     setBusy(true);
@@ -74,6 +82,19 @@ export function EvidenceBay({ catalog, contracts, onVisit }) {
         review ? "LOCAL REPORT ONLY" : "NO PILOT EVIDENCE"}</span>
     </summary>
     <div className="evidence-bay-content">
+      <nav className="evidence-bay-file-router" aria-label="Choose the correct evidence importer">
+        <strong>WHICH EVIDENCE FILES DO YOU HAVE?</strong>
+        <p>For <code>r20-council-review-*.json</code> and
+          <code> phimada-r19-council-*.zip</code>, use the separate
+          <strong> R20 Council importer</strong>, not the Agentora R0.7 fields below.</p>
+        <button type="button" aria-controls="phimada-r20-council-browser"
+          onClick={openR20CouncilImport}>
+          Go to R20 Council JSON + R19 ZIP import ↓
+        </button>
+        <small>Agentora R0.7 fields below accept only Agentora R0.7 JSON and
+          the original R0.6 ZIP. These file families are intentionally incompatible.</small>
+      </nav>
+      <h3 className="evidence-bay-agentora-title">AGENTORA R0.7 / R0.6 IMPORT ONLY</h3>
       <p><strong>Actual pilot results, not a simulated job.</strong> First run
         the manual <a href="https://github.com/MichaelWave369/Agentora/actions/workflows/fleet-r06-phimada-pilot.yml"
           target="_blank" rel="noopener noreferrer">Agentora R0.6 workflow ↗</a>.
