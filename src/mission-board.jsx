@@ -13,6 +13,8 @@ const Chronicle = React.lazy(() => import("./chronicle.jsx")
   .then(module => ({ default: module.Chronicle })));
 const FleetFailureInvestigator = React.lazy(() => import("./fleet-failure-investigator.jsx")
   .then(module => ({ default: module.FleetFailureInvestigator })));
+const PhiBotCrewDeck = React.lazy(() => import("./phibot-crew-deck.jsx")
+  .then(module => ({ default: module.PhiBotCrewDeck })));
 
 export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned,
   signals={}, signalsBusy={}, signalsError={}, onInspectRepo, onExportVerification,
@@ -23,6 +25,7 @@ export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned
   const [notice, setNotice] = useState("");
   const [chronicleOpen,setChronicleOpen] = useState(false);
   const [failuresOpen,setFailuresOpen] = useState(false);
+  const [crewOpen,setCrewOpen] = useState(false);
   const stats = useMemo(() => missionStats(queue, reviewed, pinned),
     [queue, reviewed, pinned]);
   const visible = useMemo(() => filterMissions(queue, {
@@ -83,6 +86,14 @@ export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned
         Opening the Fleet Failure Investigator…
       </p>}>
         <FleetFailureInvestigator catalog={catalog} />
+      </React.Suspense>}
+    </details>
+    <details className="crew-launch" onToggle={e=>setCrewOpen(e.currentTarget.open)}>
+      <summary style={{cursor:"pointer",padding:"13px 16px",border:"1px solid #79b8c1",borderRadius:"6px",background:"#20424b",color:"#e0faff",fontWeight:700}}>
+        ✦ R34 PhiBot Crew Deck · Published Bot Manifests
+      </summary>
+      {crewOpen && <React.Suspense fallback={<p role="status">Opening PhiBot Crew Deck…</p>}>
+        <PhiBotCrewDeck />
       </React.Suspense>}
     </details>
     <EvidenceBay catalog={catalog} contracts={contracts} onVisit={onVisit} />
