@@ -2,13 +2,14 @@ import React,{useMemo,useState} from "react";
 import {OPERATORS,ORI_COUNCIL,BOT_BLUEPRINTS,thinktankSnapshot} from "./thinktank-model.mjs";
 import {handoffText} from "./missions.mjs";
 import {VesselEvidence} from "./vessel-evidence.jsx";
+import {TriBrainSnapshotViewer} from "./tri-brain-viewer.jsx";
 import "./thinktank.css";
 
 const PAGES=[
   ["overview","ThinkTank","◈"],["bots","PhiBots","⚙"],["repos","Repo Health","▤"],
   ["builds","Build Queue","≋"],["oversight","Human Oversight","⬡"],
   ["ori","Ori Council","✦"],["pocket","PocketBrain","▣"],
-  ["trust","Evidence & Trust","⬡"]
+  ["trust","Evidence & Trust","⬡"],["tribrain","Three-Brain Ledger","◈"]
 ];
 const summaryText="DESIGN / REVIEW ONLY · No runtime, grants, or automatic dispatch connected";
 function Panel({title,eyebrow,children,className=""}){
@@ -105,6 +106,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
         aria-current={page===id?"page":undefined} onClick={()=>open(id)}>
         <span aria-hidden="true">{glyph}</span>{label}</button>)}</nav>
     {page==="trust"&&<VesselEvidence/>}
+    {page==="tribrain"&&<TriBrainSnapshotViewer/>}
     {page==="overview"&&<>
       <PersonaCards people={OPERATORS} selected={selectedOperator} onSelect={setSelectedOperator}/>
       <div className="tt-main-grid">
