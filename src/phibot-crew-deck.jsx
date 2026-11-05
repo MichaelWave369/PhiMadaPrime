@@ -1,8 +1,9 @@
 import React,{useState} from "react";
 import {SOURCE,EXAMPLES,loadExamples,reviewHandoff} from "./phibot-crew.mjs";
 import "./phibot-crew.css";
+import {PhiBotQueueBridge} from "./phibot-bridge.jsx";
 const authority=x=>x==="gated"?"GATED (DECLARED)":x?"YES (DECLARED)":"NO (DECLARED)";
-export function PhiBotCrewDeck(){
+export function PhiBotCrewDeck({catalog=[]}){
  const [snapshot,setSnapshot]=useState(null),[busy,setBusy]=useState(false);
  const [notice,setNotice]=useState("");
  async function inspect(){
@@ -71,6 +72,7 @@ export function PhiBotCrewDeck(){
    </div>
   </>}
   {notice&&<p role="status" className="crew-message">{notice}</p>}
+  <PhiBotQueueBridge catalog={catalog} />
   <footer><strong>REALITY GATE NOT CONNECTED</strong>
    <p>This public Pages view never runs a model, checks localhost, loads credentials,
     registers agents, schedules work, creates grants, modifies GitHub or claims verified execution.
