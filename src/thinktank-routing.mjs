@@ -4,25 +4,25 @@ import {signalsFresh} from "./signals.mjs";
 import {OPERATORS,ORI_COUNCIL,BOT_BLUEPRINTS} from "./thinktank-model.mjs";
 
 export const ROUTING_RULES=Object.freeze([
-  {id:"security",match:/security|secret|auth|permission|policy|vulnerab|trust|guard|safety|threat|credential/i,
+  {id:"security",match:/\b(?:security|secrets?|auth(?:entication|orization)?|permissions?|polic(?:y|ies)|vulnerabilit(?:y|ies)|trust|guards?|safety|threats?|credentials?)\b/i,
     operator:"gaia",council:"guardian-ori",bot:"Verifier Bot",
     reason:"Safety and security checks should be examined before any implementation or release."},
-  {id:"release",match:/deploy|release|publish|pages|prod|staging|rollout/i,
+  {id:"release",match:/\b(?:deploy(?:ment|ments|ed|ing)?|releases?|publish(?:ing|ed)?|pages|production|prod|staging|rollout)\b/i,
     operator:"gaia",council:"guardian-ori",bot:"Deploy Bot",
     reason:"Release planning needs environment awareness and a separate evidence and authorization gate."},
-  {id:"test",match:/test|ci|build|lint|verify|coverage|workflow|regression|typecheck|failure/i,
+  {id:"test",match:/\b(?:tests?|testing|ci|build(?:s|ing|ers)?|lint|verify|verification|coverage|workflows?|regressions?|typechecks?|fail(?:ure|ures|ed|ing)?)\b/i,
     operator:"brainc",council:"guardian-ori",bot:"Verifier Bot",
     reason:"Verification work starts with evidence collection, then a human checks exact-HEAD results."},
-  {id:"documentation",match:/readme|docs|document|changelog|guide|manual/i,
+  {id:"documentation",match:/\b(?:readme|docs?|document(?:ation|ing)?|changelogs?|guides?|manuals?)\b/i,
     operator:"pocketbrain",council:"pocket-ori",bot:"Doc Bot",
     reason:"Documentation proposals can be drafted for human review without modifying a repository."},
-  {id:"interface",match:/interface|ui|ux|frontend|react|visual|accessibility|a11y|css|layout/i,
+  {id:"interface",match:/\b(?:interface|ui|ux|frontend|react|visuals?|accessibility|a11y|css|layouts?)\b/i,
     operator:"vessie",council:"scout-ori",bot:"Creative Bot",
     reason:"Interface changes call for usability review, implementation planning and accessibility checks."},
-  {id:"integration",match:/integrat|dependency|bridge|api|connector|sync|network|migration/i,
+  {id:"integration",match:/\b(?:integrations?|integrate|dependencies|dependency|bridge|api|connectors?|sync|network|migration)\b/i,
     operator:"gaia",council:"forge-ori",bot:"Builder Bot",
     reason:"Cross-system proposals need dependency mapping and an implementation review."},
-  {id:"architecture",match:/architect|design|refactor|model|performance|optimi[sz]|cache|feature/i,
+  {id:"architecture",match:/\b(?:architecture|architectural|design|refactor|models?|performance|optim(?:ize|ise|ization|isation)|cache|features?)\b/i,
     operator:"brainc",council:"forge-ori",bot:"Builder Bot",
     reason:"Architecture and feature work should start with a scoped implementation plan."}
 ]);
@@ -46,7 +46,8 @@ function trusted(mission,plan,repo){
 }
 export function routeProposal(mission,plan,repo,signal=null,now=Date.now()){
   trusted(mission,plan,repo);
-  const subject=[mission.check,mission.summary].filter(x=>typeof x==="string").join(" ").slice(0,500);
+  const subject=[typeof mission.check==="string"?mission.check.replaceAll("_"," "):"",mission.summary]
+    .filter(x=>typeof x==="string").join(" ").slice(0,500);
   const rule=ROUTING_RULES.find(x=>x.match.test(subject));
   const operator=OPERATORS.find(x=>x.id===(rule?.operator||"brainc"));
   const council=ORI_COUNCIL.find(x=>x.id===(rule?.council||"scout-ori"));
