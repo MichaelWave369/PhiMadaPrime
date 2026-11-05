@@ -356,3 +356,12 @@ Tests: run npm test and npm run build, then perform separate manual Chrome/Edge 
 The two rails do **not** establish a cross-runtime cryptographic binding, genuine AI model identity, a running council session, real inference, product acceptance or execution authority. R37 keeps the bridge truthful: seat NOT AUTHENTICATED, cross-source binding NONE, all authority NONE. No R10 files are sent to GitHub or stored, and no bot operation is dispatched.
 
 See [R37 operator guidance, limitations and browser acceptance](docs/rung-37-council-provenance.md). Run npm test and npm run build for source validation; separately perform deployed browser and real GitHub-record acceptance.
+
+
+## R38: Φ TriBrain 369 Knowledge Bridge
+
+ThinkTank now includes **Φ TriBrain 369**, a three-lane **WITNESS / WEAVER / STEWARD** read-only viewer for exact Rung 4a JSON exports from [PhiTriBrain369](https://github.com/MichaelWave369/PhiTriBrain369). Run the source CLI locally to export selected quote-backed evidence to a new JSON file, then explicitly import that file into the browser.
+
+The panel independently validates the bounded structure, cross-lane IDs, no-action permission flags and the Python canonical SHA-256 digest (including integral float serialization). **The digest is not an authentic signature.** This is a snapshot of untrusted attributed evidence, not verified source truth, model identity, a shared R36/R37 cryptographic proof, or authorization. No upload, live sync, task dispatch or write permissions.
+
+Read [R38 operator guide and acceptance](docs/rung-38-tribrain-knowledge-bridge.md). Continue using original local PhiTriBrain SQLite for long-term knowledge, and PhiMadaPrime for the read-only display.
