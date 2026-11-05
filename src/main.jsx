@@ -7,6 +7,7 @@ import { towerFloors, floorForId } from "./tower.mjs";
 import { fetchRepoSignals, signalsFresh } from "./signals.mjs";
 import { ChiefOfStaff, SignalInspector, WingRibbon } from "./office-parts.jsx";
 import { MissionBoard } from "./mission-board.jsx";
+import { ThinkTank } from "./thinktank.jsx";
 import { TrustWorldLab } from "./trust-world.jsx";
 import { dialogFocusableElements, wrappedTabTarget, restoreFocusToOpener } from "./dialog-focus.mjs";
 import { fetchPublicSnapshot } from "./public-feed.mjs";
@@ -30,7 +31,7 @@ import "./browser-evidence.css";
 
 // Set at Vite build time. Empty local builds must never pretend to be deployed.
 const PUBLIC_BUILD_SHA = __PHIMADA_BUILD_SHA__;
-const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions", "Φ World"];
+const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions", "Φ World", "ThinkTank"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
 
 function Star({ index }) {
@@ -564,7 +565,7 @@ function App() {
   }
   useEffect(() => {
     function keypress(e) {
-      if (selected || boardOpen || activeTab === "Φ World" || ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+      if (selected || boardOpen || activeTab === "Φ World" || activeTab === "ThinkTank" || ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
       if (e.key === "ArrowRight" && activeFloor < floors) setFloor(f => Math.min(floors, f + 1));
       if (e.key === "ArrowLeft" && activeFloor > 1) setFloor(f => Math.max(1, f - 1));
     }
@@ -640,6 +641,13 @@ function App() {
               <p>10 fictional agents · 4 repeatable scenarios · independent policy gate.</p>
               <p>Explore forbidden operations, resource pressure, and audit evidence without live model calls.</p>
               <small>Isolated browser simulation. Nothing dispatched, authorized or merged.</small>
+            </div>
+          </> : activeTab === "ThinkTank" ? <>
+            <div className="signal-feed">
+              <h3>Φ ThinkTank</h3>
+              <p>Core operators, separate Ori Council, PhiBots, repo evidence and local review.</p>
+              <small>Review-only visuals. No worker execution, GitHub write or remote approval.</small>
+              <button type="button" className="import-button" onClick={() => { setActiveTab("Missions"); setBoardOpen(true); }}>View mission tools</button>
             </div>
           </> : activeTab === "Missions" ? <>
             <div className="signal-feed">
@@ -720,8 +728,8 @@ function App() {
         <main className="main-area">
           <div className="elevator-bar">
             <div><small>ΦMADA PRIME / VIRTUAL OFFICE</small>
-              <h1>{activeTab === "Φ World" ? "Φ World · Trust Gauntlet" : boardOpen ? "Fleet Mission Board" : "Deck " + String(activeFloor).padStart(2, "0")}
-                {!boardOpen && activeTab !== "Φ World" && <span> · {currentFloor.title}</span>}</h1>
+              <h1>{activeTab === "ThinkTank" ? "Φ The ThinkTank" : activeTab === "Φ World" ? "Φ World · Trust Gauntlet" : boardOpen ? "Fleet Mission Board" : "Deck " + String(activeFloor).padStart(2, "0")}
+                {!boardOpen && activeTab !== "Φ World" && activeTab !== "ThinkTank" && <span> · {currentFloor.title}</span>}</h1>
             </div>
             <div className="mission-top-actions">
               <button type="button" className="mission-open-button"
@@ -730,10 +738,10 @@ function App() {
               </button>
             <div className="elevator-controls" aria-label="Floor elevator">
               <button type="button" onClick={() => setFloor(Math.max(1, activeFloor - 1))}
-                disabled={activeFloor <= 1 || boardOpen || activeTab === "Φ World"} aria-label="Previous floor">↑</button>
+                disabled={activeFloor <= 1 || boardOpen || activeTab === "Φ World" || activeTab === "ThinkTank"} aria-label="Previous floor">↑</button>
               <span>FLOOR {activeFloor} / {floors}</span>
               <button type="button" onClick={() => setFloor(Math.min(floors, activeFloor + 1))}
-                disabled={activeFloor >= floors || boardOpen || activeTab === "Φ World"} aria-label="Next floor">↓</button>
+                disabled={activeFloor >= floors || boardOpen || activeTab === "Φ World" || activeTab === "ThinkTank"} aria-label="Next floor">↓</button>
             </div>
             </div>
           </div>
@@ -752,7 +760,16 @@ function App() {
               "GitHub inventory unavailable. Curated examples only; no live statuses."}
             <span className="help-key">← → to change floors</span>
           </div>
-          {activeTab === "Φ World" ? <TrustWorldLab /> : boardOpen ?
+          {activeTab === "Φ World" ? <TrustWorldLab /> : activeTab === "ThinkTank" ?
+            <ThinkTank rows={rows} catalogState={catalogState} signals={signals}
+              signalsBusy={signalsBusy} missions={missions} reviewedJobs={reviewedJobs}
+              pinnedJobs={pinnedJobs} plan={plan}
+              onInspectRepo={repoId => {
+                const repo = rows.find(row => row.id === repoId && !row.exampleOnly);
+                if (repo) inspectLiveRepo(repo);
+              }}
+              onVisit={jumpToRepo} onReview={markReviewed} onPin={togglePinned}
+              onClose={() => { setActiveTab("Directory"); setBoardOpen(false); }} /> : boardOpen ?
             <MissionBoard queue={missions} plan={plan} catalog={rows} contracts={contracts}
               reviewed={reviewedJobs} pinned={pinnedJobs}
               signals={signals} signalsBusy={signalsBusy} signalsError={signalsError}
