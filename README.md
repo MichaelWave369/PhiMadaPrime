@@ -333,3 +333,8 @@ Within **Mission Board → Agent Flow + Chronicle → R30 Evidence Nervous Syste
 ## R32: Run Observatory (exact-SHA GitHub Actions jobs and steps)
 
 Inside **Mission Board → Agent Flow + Chronicle → R30 Evidence Nervous System**, the opt-in **R32 Run Observatory** inspects real public GitHub Actions workflow runs on the exact selected commit. Each run's repository, workflow path, SHA, status and attempt are independently checked before reading its bounded jobs and recorded steps. It shows actual step failures and direct GitHub job links, refuses changed/retried/foreign evidence, and labels missing or truncated data as partial. It is **not** a job dispatcher, generic AI-agent identity verifier, complete required-check audit, or software acceptance certification. The Agentora-specific R31 verifier remains separate. See [R32 trust and operator contract](docs/rung-32-run-observatory.md).
+
+
+## R33: Fleet Failure Investigator (public, bounded cohort)
+
+The **Mission Board → R33 Fleet Failure Investigator** lets an operator select up to four public repositories and explicitly scan GitHub Actions runs with conclusion `failure`. Each record is anchored to its exact SHA, workflow path and attempt, alongside the observed default-branch HEAD. Select a failed run to inspect independently revalidated GitHub job/step outcomes and copy a review-only diagnostic handoff. Historic feature-branch failures are not called active production incidents. Partial/unavailable sources are labeled; there are no credentials, log downloads, workflow reruns, merges or root-cause claims. [R33 operator and trust contract](docs/rung-33-fleet-failure-investigator.md).
