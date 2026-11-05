@@ -11,6 +11,8 @@ const AgentForge = React.lazy(() => import("./agent-forge.jsx")
 import "./chronicle.css";
 const Chronicle = React.lazy(() => import("./chronicle.jsx")
   .then(module => ({ default: module.Chronicle })));
+const FleetFailureInvestigator = React.lazy(() => import("./fleet-failure-investigator.jsx")
+  .then(module => ({ default: module.FleetFailureInvestigator })));
 
 export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned,
   signals={}, signalsBusy={}, signalsError={}, onInspectRepo, onExportVerification,
@@ -20,6 +22,7 @@ export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned
   const [review, setReview] = useState("all");
   const [notice, setNotice] = useState("");
   const [chronicleOpen,setChronicleOpen] = useState(false);
+  const [failuresOpen,setFailuresOpen] = useState(false);
   const stats = useMemo(() => missionStats(queue, reviewed, pinned),
     [queue, reviewed, pinned]);
   const visible = useMemo(() => filterMissions(queue, {
@@ -67,6 +70,19 @@ export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned
       </summary>
       {chronicleOpen && <React.Suspense fallback={<p role="status">Opening the Chronicle workstation…</p>}>
         <Chronicle catalog={catalog} />
+      </React.Suspense>}
+    </details>
+    <details className="failure-investigator-launch"
+      onToggle={event => setFailuresOpen(event.currentTarget.open)}>
+      <summary style={{cursor:"pointer",padding:"13px 16px",
+        border:"1px solid #9a829c",borderRadius:"6px",
+        background:"#342d42",color:"#f0e4ff",fontWeight:700}}>
+        ✦ R33 Fleet Failure Investigator · Real GitHub Job Diagnostics
+      </summary>
+      {failuresOpen && <React.Suspense fallback={<p role="status">
+        Opening the Fleet Failure Investigator…
+      </p>}>
+        <FleetFailureInvestigator catalog={catalog} />
       </React.Suspense>}
     </details>
     <EvidenceBay catalog={catalog} contracts={contracts} onVisit={onVisit} />
