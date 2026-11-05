@@ -349,7 +349,7 @@ The **Mission Board → R33 Fleet Failure Investigator** lets an operator select
 Tests: run npm test and npm run build, then perform separate manual Chrome/Edge acceptance on the deployed ThinkTank.
 
 
-## R37: PhiTriBrain369 Three-Brain Ledger snapshot viewer
+## R38: PhiTriBrain369 Three-Brain Ledger snapshot viewer
 
 The existing **ThinkTank → Three-Brain Ledger** room now accepts explicitly selected, locally exported PhiTriBrain369 R4a snapshot JSON files. Open the local file picker and inspect three separate, strictly read-only panes:
 
@@ -366,6 +366,6 @@ Generate a snapshot with the PhiTriBrain369 CLI, then pick the file in the Think
 phitribrain bridge --manifest ./my-bridge-manifest.json --output ./tri-brain-snapshot.json
 ~~~
 
-See [R37 local Three-Brain Ledger contract](docs/rung-37-tribrain-ledger-viewer.md) for exact manifest fields, scope limits, privacy rules, and browser acceptance steps.
+See [R38 local Three-Brain Ledger contract](docs/rung-38-tribrain-ledger-viewer.md) for exact manifest fields, scope limits, privacy rules, and browser acceptance steps.
 
 **Gergy & Mreen Rule #377: The ThinkTank may read the ledger. It may not fire the engines.**
