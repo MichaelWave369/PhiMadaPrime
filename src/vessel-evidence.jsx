@@ -7,10 +7,10 @@ async function parseFile(file,max) {
   if(!file || file.size<1 || file.size>max) throw Error("MISSING_OR_OVERSIZED_INPUT");
   return JSON.parse(await file.text());
 }
-export function VesselEvidence({onReportChange=()=>{}}) {
+export function VesselEvidence({onReportChange=()=>{},initialReport=null}) {
   const signedInput=useRef(null), trustInput=useRef(null), latest=useRef(0);
   const [signed,setSigned]=useState(null), [trust,setTrust]=useState(null);
-  const [report,setReport]=useState(null), [busy,setBusy]=useState(false);
+  const [report,setReport]=useState(initialReport), [busy,setBusy]=useState(false);
   const [error,setError]=useState("");
   function invalidate() { latest.current++; setReport(null); onReportChange(null); setError(""); setBusy(false); }
   function clear() {
@@ -43,6 +43,7 @@ export function VesselEvidence({onReportChange=()=>{}}) {
         and optional R10 operator-pinned Ed25519 signature. <strong>No data is uploaded.
         No model is invoked. Nothing is approved or dispatched.</strong></p>
     </div>
+    {report&&!signed&&<p className="ve-note">This is the last verified summary retained in this ThinkTank tab. Original file bytes were not retained; import the original files again to reverify.</p>}
     <div className="ve-steps">
       <label>1 · R10 signed Skill Passport JSON (max 320 KB)
         <input ref={signedInput} type="file" accept=".json,application/json"
