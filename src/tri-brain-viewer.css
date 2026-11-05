@@ -1,4 +1,4 @@
-/* R37: confined to the existing ThinkTank. No modal or external widget. */
+/* R38: confined to the existing ThinkTank. No modal or external widget. */
 .tt3-root{color:#e9f5ff;display:grid;gap:16px}
 .tt3-root *{box-sizing:border-box;min-width:0}
 .tt3-root button,.tt3-root input{font:inherit}
