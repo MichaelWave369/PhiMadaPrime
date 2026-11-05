@@ -349,6 +349,14 @@ The **Mission Board → R33 Fleet Failure Investigator** lets an operator select
 Tests: run npm test and npm run build, then perform separate manual Chrome/Edge acceptance on the deployed ThinkTank.
 
 
+## R37: Council Provenance in the ThinkTank (two independent rails)
+
+**ThinkTank → Council Provenance** pairs the existing R36 **signed synthetic R10 passport result** with an independent **live, GET-only GitHub Agentora R1** verification. A human selects one of four primary ThinkTank roles or five separate Ori Council roles to organize the review. The same strict GitHub reader already used by R31 verifies owner approvals, controller workflow/job, task digest, exact-SHA CI and historical tested/merge output. User-entered source/input SHAs are refused as proof of worker output.
+
+The two rails do **not** establish a cross-runtime cryptographic binding, genuine AI model identity, a running council session, real inference, product acceptance or execution authority. R37 keeps the bridge truthful: seat NOT AUTHENTICATED, cross-source binding NONE, all authority NONE. No R10 files are sent to GitHub or stored, and no bot operation is dispatched.
+
+See [R37 operator guidance, limitations and browser acceptance](docs/rung-37-council-provenance.md). Run npm test and npm run build for source validation; separately perform deployed browser and real GitHub-record acceptance.
+
 ## R38: PhiTriBrain369 Three-Brain Ledger snapshot viewer
 
 The existing **ThinkTank → Three-Brain Ledger** room now accepts explicitly selected, locally exported PhiTriBrain369 R4a snapshot JSON files. Open the local file picker and inspect three separate, strictly read-only panes:
