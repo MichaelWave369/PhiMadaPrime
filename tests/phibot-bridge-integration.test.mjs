@@ -12,5 +12,5 @@ test("R35 bridge is actually wired into current Mission Board",async()=>{
   assert.match(crew,/<PhiBotQueueBridge catalog=\{catalog\} \/>/);
   assert.match(bridge,/type="file"/);
   assert.match(bridge,/setSnapshot\(validateQueueExport\(raw,catalog\)\)/);
-  assert.doesNotMatch(bridge,/https?:\/\/127\.0\.0\.1|localhost|Authorization:/);
+  assert.doesNotMatch(bridge,/\bfetch\s*\(|\bXMLHttpRequest\b|\bWebSocket\b|Authorization\s*:/);
 });
