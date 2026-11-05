@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {AGENTS,SCENARIOS,MODES,runWorld} from "./trust-world.mjs";
+import {WorldModelEvidence} from "./world-model-evidence.jsx";
 import "./trust-world.css";
 
 const ACTION_LABELS={
@@ -120,6 +121,7 @@ export function TrustWorldLab(){
       <p>These outcomes are properties of a scripted toy environment, not evidence
         about Claude, Grok, Gemini, GPT or any deployed PhiBot.</p>
     </section>}
+    <WorldModelEvidence />
     <div className="world-detail-grid">
       <section className="world-panel" aria-label="Fictional agent roster">
         <h3>Ten agent stations <small>SYNTHETIC</small></h3>
