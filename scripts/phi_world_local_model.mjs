@@ -53,7 +53,7 @@ async function readBounded(response){
   return new TextDecoder("utf-8",{fatal:true}).decode(combined);
 }
 export async function ollamaProposal({model,prompt},fetcher=globalThis.fetch){
-  if(typeof model!=="string"||!^[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,79}$/.test(model)||
+  if(typeof model!=="string"||!/^[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,79}$/.test(model)||
     typeof prompt!=="string"||prompt.length>2400)
     throw Error("ARENA_OLLAMA_INPUT_INVALID");
   if(typeof fetcher!=="function")throw Error("ARENA_OLLAMA_UNAVAILABLE");
