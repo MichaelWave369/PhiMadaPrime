@@ -12,7 +12,7 @@ export function VesselEvidence() {
   const [signed,setSigned]=useState(null), [trust,setTrust]=useState(null);
   const [report,setReport]=useState(null), [busy,setBusy]=useState(false);
   const [error,setError]=useState("");
-  function invalidate() { latest.current++; setReport(null); setError(""); }
+  function invalidate() { latest.current++; setReport(null); setError(""); setBusy(false); }
   function clear() {
     invalidate(); setSigned(null); setTrust(null); setBusy(false);
     if(signedInput.current) signedInput.current.value="";
