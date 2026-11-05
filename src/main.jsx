@@ -7,6 +7,7 @@ import { towerFloors, floorForId } from "./tower.mjs";
 import { fetchRepoSignals, signalsFresh } from "./signals.mjs";
 import { ChiefOfStaff, SignalInspector, WingRibbon } from "./office-parts.jsx";
 import { MissionBoard } from "./mission-board.jsx";
+import { ThinkTank } from "./thinktank.jsx";
 import { dialogFocusableElements, wrappedTabTarget, restoreFocusToOpener } from "./dialog-focus.mjs";
 import { fetchPublicSnapshot } from "./public-feed.mjs";
 import { fetchPublicCoverage, coverageFailureReason } from "./coverage.mjs";
@@ -29,7 +30,7 @@ import "./browser-evidence.css";
 
 // Set at Vite build time. Empty local builds must never pretend to be deployed.
 const PUBLIC_BUILD_SHA = __PHIMADA_BUILD_SHA__;
-const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions"];
+const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions", "ThinkTank"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
 
 function Star({ index }) {
@@ -563,13 +564,13 @@ function App() {
   }
   useEffect(() => {
     function keypress(e) {
-      if (selected || boardOpen || ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+      if (selected || boardOpen || activeTab === "ThinkTank" || ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
       if (e.key === "ArrowRight" && activeFloor < floors) setFloor(f => Math.min(floors, f + 1));
       if (e.key === "ArrowLeft" && activeFloor > 1) setFloor(f => Math.max(1, f - 1));
     }
     window.addEventListener("keydown", keypress);
     return () => window.removeEventListener("keydown", keypress);
-  }, [selected, boardOpen, activeFloor, floors]);
+  }, [selected, boardOpen, activeTab, activeFloor, floors]);
   return (
     <div className="shell">
       <header className="topbar" inert={Boolean(selected)}>
@@ -643,6 +644,13 @@ function App() {
               <button type="button" className="import-button"
                 onClick={() => setBoardOpen(true)}>Open Mission Board</button>
             </div>
+          </> : activeTab === "ThinkTank" ? <>
+            <div className="signal-feed">
+              <h3>Φ ThinkTank</h3>
+              <p>Operator roles, Ori Council, PhiBots, repository evidence, and local review.</p>
+              <small>Read-only visualization. No agent execution, GitHub writes, or remote approvals.</small>
+              <button type="button" className="import-button" onClick={() => { setActiveTab("Missions"); setBoardOpen(true); }}>View mission tools</button>
+            </div>
           </> : <>
             <div className="signal-feed">
               <h3>Observation sources</h3>
@@ -712,8 +720,8 @@ function App() {
         <main className="main-area">
           <div className="elevator-bar">
             <div><small>ΦMADA PRIME / VIRTUAL OFFICE</small>
-              <h1>{boardOpen ? "Fleet Mission Board" : "Deck " + String(activeFloor).padStart(2, "0")}
-                {!boardOpen && <span> · {currentFloor.title}</span>}</h1>
+              <h1>{activeTab === "ThinkTank" ? "Φ The ThinkTank" : boardOpen ? "Fleet Mission Board" : "Deck " + String(activeFloor).padStart(2, "0")}
+                {!boardOpen && activeTab !== "ThinkTank" && <span> · {currentFloor.title}</span>}</h1>
             </div>
             <div className="mission-top-actions">
               <button type="button" className="mission-open-button"
@@ -744,7 +752,16 @@ function App() {
               "GitHub inventory unavailable. Curated examples only; no live statuses."}
             <span className="help-key">← → to change floors</span>
           </div>
-          {boardOpen ?
+          {activeTab === "ThinkTank" ?
+            <ThinkTank rows={rows} catalogState={catalogState} signals={signals}
+              signalsBusy={signalsBusy} missions={missions} reviewedJobs={reviewedJobs}
+              pinnedJobs={pinnedJobs} plan={plan}
+              onInspectRepo={repoId => {
+                const repo = rows.find(row => row.id === repoId && !row.exampleOnly);
+                if (repo) inspectLiveRepo(repo);
+              }}
+              onVisit={jumpToRepo} onReview={markReviewed} onPin={togglePinned}
+              onClose={() => { setActiveTab("Directory"); setBoardOpen(false); }} /> : boardOpen ?
             <MissionBoard queue={missions} plan={plan} catalog={rows} contracts={contracts}
               reviewed={reviewedJobs} pinned={pinnedJobs}
               signals={signals} signalsBusy={signalsBusy} signalsError={signalsError}
