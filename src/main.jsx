@@ -564,13 +564,13 @@ function App() {
   }
   useEffect(() => {
     function keypress(e) {
-      if (selected || boardOpen || ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+      if (selected || boardOpen || activeTab === "Φ World" || ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
       if (e.key === "ArrowRight" && activeFloor < floors) setFloor(f => Math.min(floors, f + 1));
       if (e.key === "ArrowLeft" && activeFloor > 1) setFloor(f => Math.max(1, f - 1));
     }
     window.addEventListener("keydown", keypress);
     return () => window.removeEventListener("keydown", keypress);
-  }, [selected, boardOpen, activeFloor, floors]);
+  }, [selected, boardOpen, activeTab, activeFloor, floors]);
   return (
     <div className="shell">
       <header className="topbar" inert={Boolean(selected)}>
