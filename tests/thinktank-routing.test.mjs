@@ -42,6 +42,14 @@ test("R36 deterministic match prioritizes safety then release then test",()=>{
   assert.equal(unknown.category,"manual_triage");
   assert.equal(unknown.bot,"Scout Bot");
 });
+test("R36 token boundaries do not mistake incidental letters for CI or auth",()=>{
+  const x=routeProposal(m({check:"misc",summary:"Draft a social post for community"}),plan,repo,signal(),now);
+  assert.equal(x.category,"manual_triage");
+  const y=routeProposal(m({check:"readme_update",summary:"Author a documentation guide"}),plan,repo,signal(),now);
+  assert.equal(y.category,"documentation");
+  const z=routeProposal(m({check:"ci_pipeline",summary:"Review pipeline status"}),plan,repo,signal(),now);
+  assert.equal(z.category,"test");
+});
 test("R36 fresh, matching HEAD permits only a human review stage, never execution",()=>{
   const x=routeProposal(m(),plan,repo,signal(),now);
   assert.equal(x.headStatus,"HEAD_MATCH_OBSERVED");
