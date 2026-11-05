@@ -113,7 +113,7 @@ export function TriBrainSnapshotViewer(){
   const byClaim=new Map((data?.lanes.WITNESS??[]).map(c=>[c.id,c]));
   return <section className="tt3-root" aria-label="Three-Brain Ledger read-only viewer">
     <header className="tt3-hero">
-      <small>R37 / PHITRIBRAIN369 / LOCAL SNAPSHOT</small>
+      <small>R38 / PHITRIBRAIN369 / LOCAL SNAPSHOT</small>
       <h3>Three-Brain Ledger</h3>
       <p>Import a Rung 4a JSON snapshot that you deliberately exported from PhiTriBrain369. All three lanes are read-only. Nothing is fetched, dispatched, approved, or sent to PhiBots.</p>
     </header>
