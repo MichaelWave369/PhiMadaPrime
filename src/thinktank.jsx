@@ -106,7 +106,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
       <button type="button" key={id} className={page===id?"active":""}
         aria-current={page===id?"page":undefined} onClick={()=>open(id)}>
         <span aria-hidden="true">{glyph}</span>{label}</button>)}</nav>
-    {page==="trust"&&<VesselEvidence onReportChange={setR36Report}/>}
+    {page==="trust"&&<VesselEvidence onReportChange={setR36Report} initialReport={r36Report}/>}
     {page==="provenance"&&<CouncilProvenance r36Report={r36Report}
       onOpenR36={()=>open("trust")}/> }
     {page==="overview"&&<>
