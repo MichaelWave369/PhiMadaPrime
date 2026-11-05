@@ -1,10 +1,11 @@
 import React,{useMemo,useState} from "react";
 import {OPERATORS,ORI_COUNCIL,BOT_BLUEPRINTS,thinktankSnapshot} from "./thinktank-model.mjs";
 import {handoffText} from "./missions.mjs";
+import {MissionRouter} from "./thinktank-router.jsx";
 import "./thinktank.css";
 
 const PAGES=[
-  ["overview","ThinkTank","◈"],["bots","PhiBots","⚙"],["repos","Repo Health","▤"],
+  ["overview","ThinkTank","◈"],["router","Mission Router","⑂"],["bots","PhiBots","⚙"],["repos","Repo Health","▤"],
   ["builds","Build Queue","≋"],["oversight","Human Oversight","⬡"],
   ["ori","Ori Council","✦"],["pocket","PocketBrain","▣"]
 ];
@@ -64,7 +65,7 @@ function MissionRows({missions,reviewed,pinned,onReview,onPin,onCopy}){
 }
 export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy={},
   missions=[],reviewedJobs={},pinnedJobs={},plan=null,onInspectRepo=()=>{},
-  onVisit=()=>{},onReview=()=>{},onPin=()=>{},onClose=()=>{}}){
+  onVisit=()=>{},onReview=()=>{},onPin=()=>{},onClose=()=>{},onOpenMissionBoard=()=>{}}){
   const [page,setPage]=useState("overview");
   const [selectedOperator,setSelectedOperator]=useState("brainc");
   const [selectedOri,setSelectedOri]=useState("ori-prime");
@@ -91,7 +92,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
   function open(pageName){setPage(pageName);setNotice("");}
   return <div className="tt-root">
     <header className="tt-heading">
-      <div><small>ΦMADA PRIME / OPERATORS ROOM / R35</small>
+      <div><small>ΦMADA PRIME / OPERATORS ROOM / R36</small>
         <h2>Φ <span>The ThinkTank</span></h2>
         <p>Brains decide. Bots do. Humans approve. <strong>Today this is an evidence-aware planning interface.</strong></p>
       </div>
@@ -139,13 +140,17 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
         </div>
       </div>
       <div className="tt-workstreams">{[
-        ["Operators",OPERATORS.length+" designed","overview"],["PhiBots",BOT_BLUEPRINTS.length+" roles","bots"],
+        ["Operators",OPERATORS.length+" designed","overview"],["Mission Router",view.proposalCount+" proposals","router"],["PhiBots",BOT_BLUEPRINTS.length+" roles","bots"],
         ["Repo Health",String(view.totalRepos??"—")+" cataloged","repos"],
         ["Build Queue",view.inspected+" inspected","builds"],
         ["Ori Council",ORI_COUNCIL.length+" distinct roles","ori"],
         ["PocketBrain","Companion concept","pocket"]].map(([name,value,target])=>
         <button type="button" key={name} onClick={()=>open(target)}><strong>{name}</strong><span>{value}</span><small>Explore →</small></button>)}</div>
     </>}
+    {page==="router"&&<MissionRouter missions={missions} plan={plan} rows={rows}
+      signals={signals} signalsBusy={signalsBusy} reviewedJobs={reviewedJobs}
+      pinnedJobs={pinnedJobs} onInspectRepo={onInspectRepo} onVisit={onVisit}
+      onReview={onReview} onPin={onPin} onOpenMissionBoard={onOpenMissionBoard}/>}
     {page==="bots"&&<>
       <div className="tt-intro"><h3>PhiBots · orchestration deck</h3>
         <p>Seven proposed specialist roles. Worker availability, queues, and execution are not verified by this interface.</p></div>
@@ -158,6 +163,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
         <div className="tt-flow">{["Scout: plan","Builder: draft","Verifier: inspect","Human: review","Merge: handoff","Deploy: release check"].map((x,i)=>
           <span key={x}>{i+1}. {x}</span>)}</div>
         <p className="tt-quiet">Existing R34 PhiBot Crew Deck inspects pinned public manifest definitions. It does not prove running workers. Use the Mission Board to inspect those definitions.</p>
+        <button type="button" className="tt-primary" onClick={()=>open("router")}>Open review-only Mission Router →</button>
       </Panel>
     </>}
     {page==="repos"&&<>
@@ -235,6 +241,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
             {["Scout Ori → Scout Bot","Forge Ori → Builder Bot","Guardian Ori → Verifier Bot",
             "Ori Prime → Merge review","Pocket Ori → Doc summaries"].map(x=><span key={x}>{x}</span>)}
           </div><button type="button" className="tt-primary" onClick={()=>open("bots")}>Inspect bot roles →</button>
+          <button type="button" className="tt-primary" onClick={()=>open("router")}>Review council routing →</button>
         </Panel>
       </div>
     </>}
@@ -261,6 +268,6 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
       </div>
     </>}
     {notice&&<p className="tt-notice" role="status">{notice}<button type="button" onClick={()=>setNotice("")}>Dismiss</button></p>}
-    <footer className="tt-footer">R35 VISUAL ORCHESTRATION · PUBLIC CATALOG + USER-TRIGGERED GITHUB INSPECTION · ZERO AUTOMATIC WORKER EXECUTION</footer>
+    <footer className="tt-footer">R36 EVIDENCE ROUTING · PUBLIC CATALOG + USER-TRIGGERED GITHUB INSPECTION · ZERO AUTOMATIC WORKER EXECUTION</footer>
   </div>;
 }
