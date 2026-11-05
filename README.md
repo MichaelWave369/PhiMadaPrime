@@ -338,3 +338,12 @@ Inside **Mission Board → Agent Flow + Chronicle → R30 Evidence Nervous Syste
 ## R33: Fleet Failure Investigator (public, bounded cohort)
 
 The **Mission Board → R33 Fleet Failure Investigator** lets an operator select up to four public repositories and explicitly scan GitHub Actions runs with conclusion `failure`. Each record is anchored to its exact SHA, workflow path and attempt, alongside the observed default-branch HEAD. Select a failed run to inspect independently revalidated GitHub job/step outcomes and copy a review-only diagnostic handoff. Historic feature-branch failures are not called active production incidents. Partial/unavailable sources are labeled; there are no credentials, log downloads, workflow reruns, merges or root-cause claims. [R33 operator and trust contract](docs/rung-33-fleet-failure-investigator.md).
+
+
+## R36: Vessel Evidence Bridge in the ThinkTank (review-only)
+
+**ThinkTank → Evidence & Trust** now has an offline/browser-local verification panel for original SuperPhiVessel/PhiLearn R10 signed R8 Skill Passports. It replays the six fixed R6 synthetic scenarios, checks original R7/R8 SHA-256 hashes, validates an independently operator-pinned R10 public trust-store fingerprint and, where possible, verifies the original Ed25519 signature with Web Crypto. No imported key is trusted merely because the sender attached it. No file is uploaded, retained or converted into a grant.
+
+**This verifies signed synthetic-passport consistency only.** R11 inspection approval, R12 event chains, R13 witnesses, real AI/model identity, FlashProve inference proof, execution, deployment and merge authority are **NOT evaluated** by R36. Refer to [R36 operator/acceptance contract](docs/rung-36-vessel-evidence-bridge.md) and use the original offline SuperPhiVessel R11–R13 checkers before considering any future integration.
+
+Tests: run npm test and npm run build, then perform separate manual Chrome/Edge acceptance on the deployed ThinkTank.
