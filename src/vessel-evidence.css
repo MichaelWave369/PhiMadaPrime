@@ -1,0 +1,29 @@
+.vessel-evidence{max-width:1050px;margin:0 auto;color:#dfeef8}
+.ve-heading{padding:20px 22px;border:1px solid #58798d;border-radius:12px;background:linear-gradient(135deg,#1b3040,#222b42)}
+.ve-heading small{font-size:.73rem;letter-spacing:.13em;color:#9dd5ea}
+.ve-heading h3{font-size:1.45rem;margin:.35rem 0 .5rem}
+.ve-heading p{line-height:1.6;margin:0;max-width:80ch}
+.ve-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:18px 0 12px}
+.ve-steps label{display:grid;gap:10px;padding:15px;border:1px solid #526b7f;border-radius:10px;background:#1d2c3d;font-weight:600}
+.ve-steps input{max-width:100%;font-size:.85rem;color:#e0f3ff}
+.ve-note,.ve-empty,.ve-warning,.ve-boundary{line-height:1.6;padding:13px 16px;border-radius:8px}
+.ve-note{border-left:3px solid #8caac0;background:#203144}
+.ve-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+.ve-actions button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid #86bdcf;background:#275467;color:white;padding:11px 16px}
+.ve-actions button:disabled{opacity:.5;cursor:not-allowed}
+.ve-actions .ve-clear{background:transparent}
+.ve-empty{border:1px dashed #658197}
+.ve-warning{background:#422f30;border:1px solid #ad6d70}
+.ve-report{border:1px solid #799eb0;border-radius:12px;background:#172d3c;padding:18px;margin:15px 0}
+.ve-report h4{font-size:1.05rem;margin:0 0 8px;overflow-wrap:anywhere}
+.ve-report p{line-height:1.6}
+.ve-report dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:9px;margin:15px 0}
+.ve-report dl>div{border:1px solid #49667b;border-radius:8px;padding:10px;display:grid;gap:6px}
+.ve-report dt{font-size:.8rem;color:#b2c9d9}
+.ve-report dd{margin:0;font-weight:700;overflow-wrap:anywhere}
+.ve-report .ve-foot{color:#c4d8e3;font-size:.88rem}
+.ve-boundary{border:1px solid #526b7f;background:#1d2b39;margin:16px 0}
+.ve-boundary h4{margin:0 0 7px}
+.ve-boundary a{color:#a8e3fa}
+.vessel-evidence button:focus-visible,.vessel-evidence input:focus-visible,.vessel-evidence a:focus-visible{outline:3px solid #dcf5ff;outline-offset:3px}
+@media(max-width:540px){.ve-heading{padding:15px}.ve-steps{grid-template-columns:1fr}.ve-report dl{grid-template-columns:1fr}}
