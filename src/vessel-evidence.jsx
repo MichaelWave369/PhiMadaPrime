@@ -7,12 +7,12 @@ async function parseFile(file,max) {
   if(!file || file.size<1 || file.size>max) throw Error("MISSING_OR_OVERSIZED_INPUT");
   return JSON.parse(await file.text());
 }
-export function VesselEvidence() {
+export function VesselEvidence({onReportChange=()=>{}}) {
   const signedInput=useRef(null), trustInput=useRef(null), latest=useRef(0);
   const [signed,setSigned]=useState(null), [trust,setTrust]=useState(null);
   const [report,setReport]=useState(null), [busy,setBusy]=useState(false);
   const [error,setError]=useState("");
-  function invalidate() { latest.current++; setReport(null); setError(""); setBusy(false); }
+  function invalidate() { latest.current++; setReport(null); onReportChange(null); setError(""); setBusy(false); }
   function clear() {
     invalidate(); setSigned(null); setTrust(null); setBusy(false);
     if(signedInput.current) signedInput.current.value="";
@@ -28,7 +28,7 @@ export function VesselEvidence() {
         trust ? parseFile(trust,MAX_TRUST_BYTES) : Promise.resolve(null)
       ]);
       const outcome=await verifyR10Evidence(envelope,pins);
-      if(run===latest.current) setReport(outcome);
+      if(run===latest.current) { setReport(outcome); onReportChange(outcome); }
     } catch {
       if(run===latest.current) setError("Evidence refused: invalid, unreadable or oversized JSON. No authority granted.");
     } finally {
