@@ -93,7 +93,7 @@ export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned
         ✦ R34 PhiBot Crew Deck · Published Bot Manifests
       </summary>
       {crewOpen && <React.Suspense fallback={<p role="status">Opening PhiBot Crew Deck…</p>}>
-        <PhiBotCrewDeck />
+        <PhiBotCrewDeck catalog={catalog} />
       </React.Suspense>}
     </details>
     <EvidenceBay catalog={catalog} contracts={contracts} onVisit={onVisit} />
