@@ -347,3 +347,25 @@ The **Mission Board → R33 Fleet Failure Investigator** lets an operator select
 **This verifies signed synthetic-passport consistency only.** R11 inspection approval, R12 event chains, R13 witnesses, real AI/model identity, FlashProve inference proof, execution, deployment and merge authority are **NOT evaluated** by R36. Refer to [R36 operator/acceptance contract](docs/rung-36-vessel-evidence-bridge.md) and use the original offline SuperPhiVessel R11–R13 checkers before considering any future integration.
 
 Tests: run npm test and npm run build, then perform separate manual Chrome/Edge acceptance on the deployed ThinkTank.
+
+
+## R37: PhiTriBrain369 Three-Brain Ledger snapshot viewer
+
+The existing **ThinkTank → Three-Brain Ledger** room now accepts explicitly selected, locally exported PhiTriBrain369 R4a snapshot JSON files. Open the local file picker and inspect three separate, strictly read-only panes:
+
+- **WITNESS:** exact source quotes, claim states, observation age and provenance warnings.
+- **WEAVER:** proposed relationships, selected claim context and review status, without treating a suggestion as factual truth.
+- **STEWARD:** evidence-linked decisions, review attestation digest and explicit **no execution authority**.
+
+The viewer validates the producer's schema, selected dependencies, no-authority flags, and SHA-256 content digest against the Python canonical format. The digest is **not a digital signature or proof of source authenticity**, and the original source bodies are not included to reproduce the underlying source hashes. Nothing is uploaded, persisted, connected to the database, or dispatched. Clear the loaded file or leave the room to discard it from React memory.
+
+Generate a snapshot with the PhiTriBrain369 CLI, then pick the file in the ThinkTank:
+
+
+~~~bash
+phitribrain bridge --manifest ./my-bridge-manifest.json --output ./tri-brain-snapshot.json
+~~~
+
+See [R37 local Three-Brain Ledger contract](docs/rung-37-tribrain-ledger-viewer.md) for exact manifest fields, scope limits, privacy rules, and browser acceptance steps.
+
+**Gergy & Mreen Rule #377: The ThinkTank may read the ledger. It may not fire the engines.**
