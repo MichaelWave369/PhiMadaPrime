@@ -58,7 +58,7 @@ async function expectRejection(change,message){
   await assert.rejects(inspect(bad),message);
 }
 
-test("R37 independently accepts the Python producer's canonical digest including 0.0",async()=>{
+test("R38 independently accepts the Python producer's canonical digest including 0.0",async()=>{
   const x=await inspect(fixture());
   assert.equal(x.content_sha256,GOLDEN);
   assert.equal(x.lanes.WITNESS.length,2);
@@ -66,11 +66,11 @@ test("R37 independently accepts the Python producer's canonical digest including
   assert.equal(x.lanes.STEWARD.length,1);
   assert.equal(x.permissions.tool_execution,false);
 });
-test("R37 flags unchanged-shape tampering via the content digest",async()=>{
+test("R38 flags unchanged-shape tampering via the content digest",async()=>{
   await expectRejection(x=>{x.lanes.WITNESS[0].statement="Falsified but plausible";},
     /digest mismatch/);
 });
-test("R37 fails closed on execution / deployment privilege escalation",async()=>{
+test("R38 fails closed on execution / deployment privilege escalation",async()=>{
   for(const key of ["database_write","network_access","tool_execution",
     "deployment","autonomous_actions"]){
     await expectRejection(x=>{x.permissions[key]=true},/privileges/);
@@ -80,7 +80,7 @@ test("R37 fails closed on execution / deployment privilege escalation",async()=>
   await expectRejection(x=>{x.lanes.WEAVER[0].is_factual_truth=true},
     /review boundary/);
 });
-test("R37 consumer name is NOT an authentication credential",async()=>{
+test("R38 consumer name is NOT an authentication credential",async()=>{
   await expectRejection(x=>{x.consumer_label_not_authentication="PhiBots";},
     /scope|consumer/);
   await expectRejection(x=>{x.scope="../OtherScope";},
@@ -88,7 +88,7 @@ test("R37 consumer name is NOT an authentication credential",async()=>{
   await expectRejection(x=>{x.schema_version=2;},
     /version|scope/);
 });
-test("R37 only accepts explicitly included dependencies",async()=>{
+test("R38 only accepts explicitly included dependencies",async()=>{
   await expectRejection(x=>{x.lanes.WITNESS.pop();},
     /outside the selected snapshot/);
   await expectRejection(x=>{x.lanes.STEWARD[0].evidence_claim_ids=[B,REL];},
@@ -96,7 +96,7 @@ test("R37 only accepts explicitly included dependencies",async()=>{
   await expectRejection(x=>{x.lanes.STEWARD[0].evidence_claim_ids=[];},
     /outside the selected snapshot/);
 });
-test("R37 rejects duplicate IDs and malformed quote anchors",async()=>{
+test("R38 rejects duplicate IDs and malformed quote anchors",async()=>{
   await expectRejection(x=>{x.lanes.WITNESS.push(cloned(x.lanes.WITNESS[0]));},
     /Duplicate WITNESS/);
   await expectRejection(x=>{x.lanes.WITNESS[0].citation.quote_offset=-1;},
@@ -106,14 +106,14 @@ test("R37 rejects duplicate IDs and malformed quote anchors",async()=>{
   await expectRejection(x=>{x.lanes.WITNESS[0].source_attribution_only=false;},
     /truth boundary/);
 });
-test("R37 rejects unexpected objects and untrusted provenance types",async()=>{
+test("R38 rejects unexpected objects and untrusted provenance types",async()=>{
   await expectRejection(x=>{x.auto_execute=true;},/envelope/);
   await expectRejection(x=>{x.lanes.WITNESS[0].citation.references=[
     {kind:"external_url",url:"javascript:alert(1)"}
   ];},/Unsupported provenance/);
   await expectRejection(x=>{x.lanes.WRITER=[];},/three-brain lanes/);
 });
-test("R37 enforces bytes before JSON parsing",async()=>{
+test("R38 enforces bytes before JSON parsing",async()=>{
   const giant="x".repeat(TRI_BRAIN_MAX_FILE_BYTES+1);
   await assert.rejects(
     parseTriBrainSnapshot(giant,{digest}),/256 KB/
@@ -122,19 +122,19 @@ test("R37 enforces bytes before JSON parsing",async()=>{
     parseTriBrainSnapshot("{bad json}",{digest}),/not valid JSON/
   );
 });
-test("R37 refuses unsigned, missing-digest, or malformed external snapshots",async()=>{
+test("R38 refuses unsigned, missing-digest, or malformed external snapshots",async()=>{
   await expectRejection(x=>{delete x.content_sha256;},/envelope/);
   await expectRejection(x=>{x.content_sha256="0".repeat(64);},/digest mismatch/);
   await expectRejection(x=>{x.lanes.WEAVER[0].review_status="automatically_executed";},
     /review boundary/);
 });
-test("R37 is mounted in existing ThinkTank navigation, not a parallel app",()=>{
+test("R38 is mounted in existing ThinkTank navigation, not a parallel app",()=>{
   const text=readFileSync(new URL("../src/thinktank.jsx",import.meta.url),"utf8");
   assert.match(text,/TriBrainSnapshotViewer/);
   assert.match(text,/Three-Brain Ledger/);
   assert.match(text,/page==="tribrain"/);
 });
-test("R37 bridge has no active network or browser persistence implementations",()=>{
+test("R38 bridge has no active network or browser persistence implementations",()=>{
   const s=readFileSync(new URL("../src/tri-brain-viewer.jsx",import.meta.url),"utf8");
   assert.doesNotMatch(s,/\bfetch\s*\(|\blocalStorage\b|\bsessionStorage\b|\bWebSocket\b/);
   assert.match(s,/type="file"/);
