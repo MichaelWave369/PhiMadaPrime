@@ -7,6 +7,7 @@ import { towerFloors, floorForId } from "./tower.mjs";
 import { fetchRepoSignals, signalsFresh } from "./signals.mjs";
 import { ChiefOfStaff, SignalInspector, WingRibbon } from "./office-parts.jsx";
 import { MissionBoard } from "./mission-board.jsx";
+import { TrustWorldLab } from "./trust-world.jsx";
 import { dialogFocusableElements, wrappedTabTarget, restoreFocusToOpener } from "./dialog-focus.mjs";
 import { fetchPublicSnapshot } from "./public-feed.mjs";
 import { fetchPublicCoverage, coverageFailureReason } from "./coverage.mjs";
@@ -29,7 +30,7 @@ import "./browser-evidence.css";
 
 // Set at Vite build time. Empty local builds must never pretend to be deployed.
 const PUBLIC_BUILD_SHA = __PHIMADA_BUILD_SHA__;
-const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions"];
+const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions", "Φ World"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
 
 function Star({ index }) {
@@ -633,6 +634,13 @@ function App() {
             {coverage && <TriageCoverage coverage={coverage} rows={rows} onJump={jumpToRepo} />}
           </> : activeTab === "Contracts" ? <>
             <ContractDirectory contracts={contracts} rows={rows} onVisit={jumpToRepo} />
+          </> : activeTab === "Φ World" ? <>
+            <div className="signal-feed">
+              <h3>Φ World · Trust Lab</h3>
+              <p>10 fictional agents · 4 repeatable scenarios · independent policy gate.</p>
+              <p>Explore forbidden operations, resource pressure, and audit evidence without live model calls.</p>
+              <small>Isolated browser simulation. Nothing dispatched, authorized or merged.</small>
+            </div>
           </> : activeTab === "Missions" ? <>
             <div className="signal-feed">
               <h3>Mission Control</h3>
@@ -712,8 +720,8 @@ function App() {
         <main className="main-area">
           <div className="elevator-bar">
             <div><small>ΦMADA PRIME / VIRTUAL OFFICE</small>
-              <h1>{boardOpen ? "Fleet Mission Board" : "Deck " + String(activeFloor).padStart(2, "0")}
-                {!boardOpen && <span> · {currentFloor.title}</span>}</h1>
+              <h1>{activeTab === "Φ World" ? "Φ World · Trust Gauntlet" : boardOpen ? "Fleet Mission Board" : "Deck " + String(activeFloor).padStart(2, "0")}
+                {!boardOpen && activeTab !== "Φ World" && <span> · {currentFloor.title}</span>}</h1>
             </div>
             <div className="mission-top-actions">
               <button type="button" className="mission-open-button"
@@ -722,10 +730,10 @@ function App() {
               </button>
             <div className="elevator-controls" aria-label="Floor elevator">
               <button type="button" onClick={() => setFloor(Math.max(1, activeFloor - 1))}
-                disabled={activeFloor <= 1 || boardOpen} aria-label="Previous floor">↑</button>
+                disabled={activeFloor <= 1 || boardOpen || activeTab === "Φ World"} aria-label="Previous floor">↑</button>
               <span>FLOOR {activeFloor} / {floors}</span>
               <button type="button" onClick={() => setFloor(Math.min(floors, activeFloor + 1))}
-                disabled={activeFloor >= floors || boardOpen} aria-label="Next floor">↓</button>
+                disabled={activeFloor >= floors || boardOpen || activeTab === "Φ World"} aria-label="Next floor">↓</button>
             </div>
             </div>
           </div>
@@ -744,7 +752,7 @@ function App() {
               "GitHub inventory unavailable. Curated examples only; no live statuses."}
             <span className="help-key">← → to change floors</span>
           </div>
-          {boardOpen ?
+          {activeTab === "Φ World" ? <TrustWorldLab /> : boardOpen ?
             <MissionBoard queue={missions} plan={plan} catalog={rows} contracts={contracts}
               reviewed={reviewedJobs} pinned={pinnedJobs}
               signals={signals} signalsBusy={signalsBusy} signalsError={signalsError}
