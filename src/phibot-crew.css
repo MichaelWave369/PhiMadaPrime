@@ -1,0 +1,26 @@
+.crew-deck{margin:14px 0;padding:18px;background:#142a36;color:#e8f5fc;border:1px solid #71a7b4;border-radius:10px}
+.crew-intro{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.crew-deck h3{font-size:1.42rem;letter-spacing:.05em;color:#a9eff9;margin:5px 0}
+.crew-deck h4{font-size:1.14rem;margin:5px 0;color:#fff}
+.crew-deck p{line-height:1.5}
+.crew-deck small{color:#b5cfdc;letter-spacing:.04em;font-size:.75rem}
+.crew-deck button{border:1px solid #8ad6e4;border-radius:6px;background:#275164;color:white;padding:9px 12px;cursor:pointer;font:inherit}
+.crew-deck button:disabled{opacity:.7;cursor:wait}
+.crew-deck :is(button,a,summary):focus-visible{outline:3px solid #ffdb84;outline-offset:3px}
+.crew-deck a{color:#b7f0ff;overflow-wrap:anywhere}
+.crew-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}
+.crew-metrics div{display:grid;gap:4px;padding:12px;border:1px solid #476d7b;border-radius:7px;background:#1e3a48}
+.crew-metrics b{font-size:1.4rem}.crew-metrics span{font-size:.76rem;color:#c1d8e2}
+.crew-source,.crew-message{padding:11px;background:#234354;border-radius:7px;overflow-wrap:anywhere}
+.crew-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:12px;margin:13px 0}
+.crew-card{border:1px solid #577b8c;border-radius:9px;background:#1c3645;padding:15px;min-width:0}
+.crew-role{font-size:.85rem;color:#c0dbe7;margin:3px 0}
+.crew-card dl{display:grid;gap:9px}.crew-card dt{font-size:.76rem;color:#bbd3dd}.crew-card dd{margin:0;overflow-wrap:anywhere;font-size:.87rem}
+.crew-card details{border-top:1px solid #577b8c;padding-top:9px}
+.crew-card summary{cursor:pointer}.crew-card ul{padding-left:20px;overflow-wrap:anywhere}.crew-card code{white-space:normal;overflow-wrap:anywhere}
+.crew-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:15px}
+.crew-error{border-color:#c4a079}
+.crew-deck footer{margin-top:15px;border-top:1px solid #577b8c;padding-top:14px}
+.crew-deck footer p{font-size:.84rem}
+@media(max-width:650px){.crew-deck{padding:12px}.crew-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.crew-deck *{animation:none!important;transition:none!important}}
