@@ -1,4 +1,4 @@
-// R37: strict local PhiTriBrain369 R4a snapshot parser. No fetch, storage, or actions.
+// R38: strict local PhiTriBrain369 R4a snapshot parser. No fetch, storage, or actions.
 // The producer's SHA-256 is a CONTENT CORRUPTION check, not an authenticity signature.
 export const TRI_BRAIN_MAX_FILE_BYTES=262144;
 export const TRI_BRAIN_CONSUMER="PhiMadaPrime";
