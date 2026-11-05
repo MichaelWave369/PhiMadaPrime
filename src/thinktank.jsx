@@ -3,13 +3,15 @@ import {OPERATORS,ORI_COUNCIL,BOT_BLUEPRINTS,thinktankSnapshot} from "./thinktan
 import {handoffText} from "./missions.mjs";
 import {VesselEvidence} from "./vessel-evidence.jsx";
 import {CouncilProvenance} from "./council-provenance.jsx";
+import {TriBrainBridge} from "./tribrain-bridge.jsx";
 import "./thinktank.css";
 
 const PAGES=[
   ["overview","ThinkTank","◈"],["bots","PhiBots","⚙"],["repos","Repo Health","▤"],
   ["builds","Build Queue","≋"],["oversight","Human Oversight","⬡"],
   ["ori","Ori Council","✦"],["pocket","PocketBrain","▣"],
-  ["trust","Evidence & Trust","⬡"],["provenance","Council Provenance","◎"]
+  ["trust","Evidence & Trust","⬡"],["provenance","Council Provenance","◎"],
+  ["tribrain","Φ TriBrain 369","◉"]
 ];
 const summaryText="DESIGN / REVIEW ONLY · No runtime, grants, or automatic dispatch connected";
 function Panel({title,eyebrow,children,className=""}){
@@ -106,6 +108,8 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
       <button type="button" key={id} className={page===id?"active":""}
         aria-current={page===id?"page":undefined} onClick={()=>open(id)}>
         <span aria-hidden="true">{glyph}</span>{label}</button>)}</nav>
+    {page==="tribrain"&&<TriBrainBridge onOpenR36={()=>open("trust")}
+      onOpenR37={()=>open("provenance")}/>}
     {page==="trust"&&<VesselEvidence onReportChange={setR36Report} initialReport={r36Report}/>}
     {page==="provenance"&&<CouncilProvenance r36Report={r36Report}
       onOpenR36={()=>open("trust")}/> }
@@ -268,6 +272,6 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
       </div>
     </>}
     {notice&&<p className="tt-notice" role="status">{notice}<button type="button" onClick={()=>setNotice("")}>Dismiss</button></p>}
-    <footer className="tt-footer">R35–R37 VISUAL ORCHESTRATION · PUBLIC CATALOG + USER-TRIGGERED GITHUB INSPECTION · ZERO AUTOMATIC WORKER EXECUTION</footer>
+    <footer className="tt-footer">R35–R38 VISUAL ORCHESTRATION · PUBLIC CATALOG + USER-TRIGGERED GITHUB INSPECTION · ZERO AUTOMATIC WORKER EXECUTION</footer>
   </div>;
 }
