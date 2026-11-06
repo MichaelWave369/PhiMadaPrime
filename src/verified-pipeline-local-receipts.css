@@ -1,0 +1,38 @@
+/* R42: local, unsigned receipts. Never green status cards. */
+.vpl-root{display:grid;gap:13px;border:1px solid #5e738a;border-radius:13px;
+ padding:16px;color:#e7f4ff;background:linear-gradient(130deg,#14233d,#112d38)}
+.vpl-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center}
+.vpl-head small{font:700 10px/1.5 ui-monospace,monospace;color:#92dfe4;letter-spacing:.1em}
+.vpl-head h4{font-size:20px;color:#f3e9ff;margin:5px 0}
+.vpl-head p{margin:0;font-size:12px;color:#c7dce9}
+.vpl-head>span{font:700 11px/1.4 ui-monospace,monospace;color:#ffe4b5;
+ background:#463223;border:1px solid #a88564;padding:9px;border-radius:8px}
+.vpl-loaders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) auto;gap:12px;align-items:end}
+.vpl-loaders label{display:grid;gap:7px;font-size:12px;font-weight:700;color:#d7e5f7}
+.vpl-loaders input{min-width:0;max-width:100%;border:1px solid #6789a3;
+ border-radius:8px;background:#0f263a;padding:10px;color:#f3f9ff}
+.vpl-loaders small{font-size:11px;line-height:1.4;color:#bad2df;font-weight:400}
+.vpl-loaders button{border-radius:8px;border:1px solid #adc4cf;background:#2d455b;
+ color:#f3faff;padding:10px 14px;cursor:pointer;font-weight:700}
+.vpl-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.vpl-cards article,.vpl-alignment{padding:15px;background:#13283f;
+ border:1px solid #4e7188;border-radius:10px;overflow-wrap:anywhere}
+.vpl-root h5{font-size:16px;margin:0 0 12px;color:#eaf4ff}
+.vpl-cards article>p,.vpl-alignment p{font-size:12px;line-height:1.6}
+.vpl-cards dl{display:grid;gap:7px;margin:0}
+.vpl-cards dl>div{display:grid;gap:4px;padding-bottom:8px;border-bottom:1px solid #476077}
+.vpl-cards dt{font:700 10px/1.4 ui-monospace,monospace;color:#a7cbe0}
+.vpl-cards dd{font-size:12px;margin:0;color:#edf6ff;overflow-wrap:anywhere}
+.vpl-cards code{overflow-wrap:anywhere}
+.vpl-caution{background:#413324;border-left:3px solid #e5bd7e;color:#ffe5c0;
+ padding:10px;border-radius:3px}
+.vpl-alignment>strong{display:block;font:700 12px/1.4 ui-monospace,monospace;color:#e7d5ff}
+.vpl-error,.vpl-notice{padding:10px;font-size:12px;border-radius:7px;
+ border-left:3px solid #eab87e;background:#47332d;color:#ffead9}
+.vpl-notice{border-left-color:#76d4c4;background:#183f3e;color:#e1fff7}
+.vpl-boundary{font-size:12px;color:#c9dfe7;line-height:1.6}
+.vpl-root input:focus-visible,.vpl-root button:focus-visible{outline:3px solid #ffeab0;outline-offset:3px}
+@media(max-width:980px){.vpl-loaders{grid-template-columns:1fr 1fr}
+ .vpl-loaders button{grid-column:1/-1}}
+@media(max-width:650px){.vpl-cards,.vpl-loaders{grid-template-columns:1fr}
+ .vpl-loaders button{grid-column:auto}}

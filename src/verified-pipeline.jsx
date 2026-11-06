@@ -9,6 +9,7 @@ import {
 import "./verified-pipeline.css";
 import {SyntheticGateLab} from "./verified-pipeline-simulator.jsx";
 import {PublicCiEvidenceBridge} from "./verified-pipeline-live-evidence.jsx";
+import {LocalReceiptBridge} from "./verified-pipeline-local-receipts.jsx";
 
 function StageNode({data,selected}){
   return <div className={"vp-stage vp-"+data.kind+(selected?" vp-selected":"")}>
@@ -112,7 +113,7 @@ export function VerifiedPipelineFactory({rows=[],signals={},signalsBusy={},onIns
 
   return <section className="vp-factory" aria-label="Verified Pipeline Factory designer">
     <header className="vp-heading">
-      <div><small>ΦMADA PRIME · VERIFIED PIPELINE FACTORY · R1 + R2 + R3</small>
+      <div><small>ΦMADA PRIME · VERIFIED PIPELINE FACTORY · R1 + R2 + R3 + R3.2</small>
         <h3>Architect workflows. Require evidence.</h3>
         <p>Drag, connect, inspect and export. No models, tests, approvals or executions.</p>
       </div>
@@ -176,6 +177,7 @@ export function VerifiedPipelineFactory({rows=[],signals={},signalsBusy={},onIns
     <SyntheticGateLab design={candidate}/>
     <PublicCiEvidenceBridge design={candidate} rows={rows} signals={signals}
       signalsBusy={signalsBusy} onInspectRepo={onInspectRepo}/>
+    <LocalReceiptBridge/>
     {notice&&<p role="status" className="vp-notice">{notice}</p>}
     <p className="vp-note">Diagram validity, simulated gate acceptance, and public CI observations are distinct. None alone proves test commands ran or grants approval. No runtime is connected.</p>
   </section>;

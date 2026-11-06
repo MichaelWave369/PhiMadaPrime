@@ -6,7 +6,7 @@ const scope=/^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 const claimId=/^clm_[0-9a-f]{20}$/;
 const relationId=/^rel_[0-9a-f]{20}$/;
 const decisionId=/^dec_[0-9a-f]{20}$/;
-const sourceId=/^src_[0-9a-f]{20}$/;
+const sourceId=/^src_[0-9a-f]{24}$/; // Matches PhiTriBrain369 BrainStore.ingest SHA256-derived IDs
 const shaHex=/^[0-9a-f]{64}$/;
 const gitSha=/^[0-9a-f]{40}$/;
 const defined=(v)=>v!==null&&typeof v==="object"&&!Array.isArray(v);
