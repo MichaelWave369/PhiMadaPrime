@@ -184,6 +184,8 @@ export async function reobserveGmedReceipt(raw,{
       ...details,reobserved_at:reobservedAt.toISOString(),
       github_observed_state:freshState,github_observed_merge_sha:mergeSha,
       github_observed_signal_count:rows.length,
+      observed_base_branch:typeof pr.base?.ref==="string"?pr.base.ref:null,
+      observed_signals:rows,
       checks:{same_state:sameState,same_merged:sameMerged,
         same_merge_sha:sameSha,same_signal_multiset:sameRows},
       matching_github_evidence:matched

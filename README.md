@@ -455,3 +455,18 @@ is a **same-provider second observation**, not a signed issuer certificate,
 a replay of test commands or merge/deployment permission.
 No automatic network request occurs on local file import.
 See [R43 operator guide](docs/verified-pipeline-factory-r43-second-opinion.md).
+
+## R44: Pipeline Factory required-check policy visibility
+
+Following an explicit R43 public-GitHub GMED second opinion, the GMED/WITNESS
+desk offers an **Inspect required-check policy** action. It consults active
+public branch rulesets and classic branch-protection required checks, then
+compares declared status context names against the already re-observed
+exact merge-SHA check/status rows.
+
+A 403/404 for classic protection is **partial/unknown coverage**, not proof
+that no checks were required. Rulesets may impose additional workflows,
+approvals, signatures, scanning or deployment rules. Matching status names
+never grants merge permission or proves that a particular test ran.
+
+See [R44 policy guide](docs/verified-pipeline-factory-r44-policy.md).

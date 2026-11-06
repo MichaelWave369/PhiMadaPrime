@@ -4,19 +4,22 @@ import {GMED_MAX_BYTES,inspectGmedLocalReceipt,correlateGmedWithWitness}
   from "./verified-pipeline-local-receipts.mjs";
 import "./verified-pipeline-local-receipts.css";
 import {reobserveGmedReceipt} from "./verified-pipeline-second-opinion.mjs";
+import {inspectRequiredCheckPolicy} from "./verified-pipeline-required-policy.mjs";
 
 /** Explicit local file comparison; no API calls, execution, or persistence. */
 export function LocalReceiptBridge(){
   const gmedRef=useRef(null),witnessRef=useRef(null);
-  const gmedSequence=useRef(0),witnessSequence=useRef(0),recheckSequence=useRef(0);
+  const gmedSequence=useRef(0),witnessSequence=useRef(0),recheckSequence=useRef(0),policySequence=useRef(0);
   const [gmed,setGmed]=useState(null),[witness,setWitness]=useState(null);
   const [error,setError]=useState(""),[notice,setNotice]=useState("");
   const [second,setSecond]=useState(null),[checking,setChecking]=useState(false);
+  const [policy,setPolicy]=useState(null),[policyBusy,setPolicyBusy]=useState(false);
   const correlation=correlateGmedWithWitness(gmed?.value,witness?.value);
   async function loadGmed(file){
     const attempt=++gmedSequence.current;
     ++recheckSequence.current;
-    setSecond(null);setChecking(false);
+    ++policySequence.current;
+    setSecond(null);setChecking(false);setPolicy(null);setPolicyBusy(false);
     setGmed(null);setError("");setNotice("");
     if(!file)return;
     try {
@@ -53,7 +56,8 @@ export function LocalReceiptBridge(){
     if(!gmed?.raw)return;
     const request=++recheckSequence.current;
     const selected=gmedSequence.current;
-    setSecond(null);setChecking(true);setError("");
+    ++policySequence.current;
+    setSecond(null);setChecking(true);setPolicy(null);setPolicyBusy(false);setError("");
     try {
       // Explicit user action is the only path to the public GitHub GETs.
       const result=await reobserveGmedReceipt(gmed.raw);
@@ -67,13 +71,34 @@ export function LocalReceiptBridge(){
         setChecking(false);
     }
   }
+  async function inspectPolicy(){
+    if(!second||second.state!=="SECOND_OBSERVATION_GMED_AGREEMENT")return;
+    const request=++policySequence.current;
+    const recheckId=recheckSequence.current;
+    setPolicy(null);setPolicyBusy(true);setError("");
+    try{
+      // An explicit click, not import, is the only way to inspect these
+      // separate public rulesets/classic protection endpoints.
+      const result=await inspectRequiredCheckPolicy(second);
+      if(request!==policySequence.current||recheckId!==recheckSequence.current)return;
+      setPolicy(result);
+    }catch(e){
+      if(request===policySequence.current&&recheckId===recheckSequence.current)
+        setError(e instanceof Error?e.message:"Branch policy inspection unavailable");
+    }finally{
+      if(request===policySequence.current&&recheckId===recheckSequence.current)
+        setPolicyBusy(false);
+    }
+  }
   function clear(){
     ++gmedSequence.current;
     ++witnessSequence.current;
     ++recheckSequence.current;
+    ++policySequence.current;
     if(gmedRef.current)gmedRef.current.value="";
     if(witnessRef.current)witnessRef.current.value="";
     setGmed(null);setWitness(null);setSecond(null);setChecking(false);
+    setPolicy(null);setPolicyBusy(false);
     setError("");setNotice("Cleared local receipt copies.");
   }
   return <section className="vpl-root" aria-label="Local GMED and WITNESS receipt comparison">
@@ -170,6 +195,51 @@ export function LocalReceiptBridge(){
         <p className="vpl-caution">{second.warning}</p>
       </div>}
     </section>
+    <section className="vpl-policy" aria-label="Required check policy observation">
+      <header className="vpl-policy-head">
+        <div>
+          <h5>GitHub required-check policy inspection</h5>
+          <p>Public branch rulesets and classic branch protection are separate.
+            A denied policy endpoint means UNKNOWN, never "no checks required."
+            Requires a recent matching R43 second observation.</p>
+        </div>
+        <button type="button" onClick={inspectPolicy}
+          disabled={!second||second.state!=="SECOND_OBSERVATION_GMED_AGREEMENT"||checking||policyBusy}>
+          {policyBusy?"Reading GitHub branch policy…":"Inspect required-check policy"}
+        </button>
+      </header>
+      {!policy&&!policyBusy&&<p className="vpl-empty">
+        No required-check policy inspected for this receipt.
+        Only the button initiates GitHub policy reads.
+      </p>}
+      {policyBusy&&<p role="status">Reading active public rulesets and classic
+        protection metadata. No repository changes are performed.</p>}
+      {policy&&<div className="vpl-policy-results" role="status">
+        <strong>{policy.state.replaceAll("_"," ")}</strong>
+        <dl>
+          <div><dt>Policy coverage</dt><dd>{policy.policy_coverage.replaceAll("_"," ")}</dd></div>
+          <div><dt>Classic branch protection</dt><dd>{policy.protection_access}</dd></div>
+          <div><dt>PR target branch</dt><dd>{policy.base_branch||"UNAVAILABLE"}</dd></div>
+          <div><dt>Declared status contexts</dt><dd>{policy.required_contexts.length}</dd></div>
+          <div><dt>Source provider</dt><dd>PUBLIC GITHUB API ONLY</dd></div>
+          <div><dt>Every required test proven</dt><dd>NO</dd></div>
+          <div><dt>Merge authorization</dt><dd>NONE</dd></div>
+        </dl>
+        {policy.context_checks.length>0&&<div className="vpl-policy-contexts">
+          <h5>Observed check-name comparisons</h5>
+          <ul>{policy.context_checks.map(item=>
+            <li key={item.name}><strong>{item.name}</strong>
+              <span>{item.result.replaceAll("_"," ")}
+                {item.app_binding_present?" · integration identity not authenticated":""}</span>
+            </li>)}</ul>
+        </div>}
+        {policy.unsupported_merge_rules.length>0&&<p className="vpl-caution">
+          Other merge rules not evaluated: {policy.unsupported_merge_rules.join(", ")}
+        </p>}
+        {policy.error&&<p className="vpl-error">{policy.error}</p>}
+        <p className="vpl-caution">{policy.warning}</p>
+      </div>}
+    </section>
     <div className="vpl-alignment">
       <h5>Optional commit-reference alignment</h5>
       <strong>{correlation.state.replaceAll("_"," ")}</strong>
@@ -181,7 +251,7 @@ export function LocalReceiptBridge(){
       <p className="vpl-caution">{correlation.warning}</p>
     </div>
     <p className="vpl-boundary">File imports and WITNESS reference comparison are local.
-      Only the explicit second-opinion button issues bounded read-only public
+      Only explicit second-opinion and required-policy buttons issue bounded read-only
       GitHub requests. This is a fresh observation through a separate verifier
       implementation, not an independent provider or signed provenance.
       No model inference, test execution, original source replay, permission grant,
