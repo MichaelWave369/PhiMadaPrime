@@ -7,11 +7,11 @@ import {parseTriBrainSnapshot,validateTriBrainSnapshot,TRI_BRAIN_MAX_FILE_BYTES,
 
 const digest=async raw=>createHash("sha256").update(raw,"utf8").digest("hex");
 const A="clm_"+"a".repeat(20), B="clm_"+"b".repeat(20);
-const REL="rel_"+"c".repeat(20), DEC="dec_"+"d".repeat(20), SRC="src_"+"e".repeat(20);
+const REL="rel_"+"c".repeat(20), DEC="dec_"+"d".repeat(20), SRC="src_"+"e".repeat(24);
 const HASH="f".repeat(64);
 // Golden fixture SHA calculated by PhiTriBrain369 producer's Python canonical_json
 // (json.dumps(sort_keys=True,ensure_ascii=False,separators=(",",":"))).
-const GOLDEN="b23eb7393212adad2eaff8b06cd46656760b2752ccb1411cf7cd10da3b0768f1";
+const GOLDEN="61c397b86bab79eedd8a8dff910aa224b2246d339fed5b13a010931ffa5a3434";
 function witness(id,statement,quote,offset){
   return {
     id,statement,recorded_state:"recorded",
@@ -161,4 +161,12 @@ test("R38 canonical viewer links to existing evidence rooms",()=>{
   assert.match(source,/onOpenProvenance/);
   const viewer=readFileSync(new URL("../src/tri-brain-viewer.jsx",import.meta.url),"utf8");
   assert.match(viewer,/Copy safe review summary/);
+});
+
+test("R38 source identifiers require the actual 24-char WITNESS producer digest prefix",async()=>{
+  const good=fixture();
+  await assert.doesNotReject(inspect(good));
+  const short=fixture();
+  short.lanes.WITNESS[0].citation.source_id="src_"+"e".repeat(20);
+  await assert.rejects(inspect(short),/Source ID or digest is invalid/);
 });
