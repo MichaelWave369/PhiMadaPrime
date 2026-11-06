@@ -58,3 +58,32 @@
 .vpl-second-report dt{font-size:12px;color:#b1d6e5}
 .vpl-second-report dd{font-size:12px;font-weight:700;color:#e7f4fc;margin:0;overflow-wrap:anywhere}
 @media(max-width:650px){.vpl-second-report dl>div{grid-template-columns:1fr;gap:2px}}
+
+/* R44 branch rules and classic protection are two independently loaded sources. */
+.vpl-policy{display:grid;gap:13px;padding:15px;background:#152438;
+ border:1px solid #698093;border-radius:11px;overflow-wrap:anywhere}
+.vpl-policy-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.vpl-policy-head>div{flex:1;min-width:210px}
+.vpl-policy-head h5{margin:0 0 8px;color:#e8f3ff;font-size:17px}
+.vpl-policy-head p{font-size:12px;color:#bdd7e9;margin:0;line-height:1.55}
+.vpl-policy-head button{border:1px solid #b8c5ed;background:#31476c;
+ color:#f4f6ff;border-radius:8px;padding:10px 14px;font-weight:700;
+ font-size:12px;cursor:pointer}
+.vpl-policy-head button:disabled{opacity:.45;cursor:not-allowed}
+.vpl-policy-head button:focus-visible{outline:3px solid #ffe7b8;outline-offset:3px}
+.vpl-policy-results{border:1px solid #72879c;background:#1b3046;
+ padding:14px;border-radius:9px;display:grid;gap:12px}
+.vpl-policy-results>strong{font:700 13px/1.4 ui-monospace,monospace;
+ color:#f1deff;overflow-wrap:anywhere}
+.vpl-policy-results dl{display:grid;gap:7px;margin:0}
+.vpl-policy-results dl>div{display:grid;grid-template-columns:minmax(110px,1fr) minmax(0,1fr);
+ gap:10px;padding:7px 0;border-bottom:1px solid #4d6579}
+.vpl-policy-results dt{font-size:12px;color:#b6d7e8}
+.vpl-policy-results dd{font-size:12px;color:#f3f9ff;margin:0;overflow-wrap:anywhere}
+.vpl-policy-contexts h5{font-size:14px;margin-bottom:9px}
+.vpl-policy-contexts ul{list-style:none;padding:0;margin:0;display:grid;gap:7px}
+.vpl-policy-contexts li{display:flex;flex-wrap:wrap;justify-content:space-between;
+ gap:6px;padding:10px;border:1px solid #527f98;border-radius:8px}
+.vpl-policy-contexts li strong{font-size:12px;overflow-wrap:anywhere}
+.vpl-policy-contexts li span{font-size:11px;color:#c9e3f3}
+@media(max-width:650px){.vpl-policy-results dl>div{grid-template-columns:1fr;gap:3px}}
