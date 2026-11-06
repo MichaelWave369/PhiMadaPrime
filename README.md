@@ -377,3 +377,16 @@ phitribrain bridge --manifest ./my-bridge-manifest.json --output ./tri-brain-sna
 See [R38 local Three-Brain Ledger contract](docs/rung-38-tribrain-ledger-viewer.md) for exact manifest fields, scope limits, privacy rules, and browser acceptance steps.
 
 **Gergy & Mreen Rule #377: The ThinkTank may read the ledger. It may not fire the engines.**
+
+## R39: Φ Verified Pipeline Factory · Visual Architect
+
+**ThinkTank → Pipeline Factory** offers a local-only, versioned graph editor.
+It uses existing @xyflow/react 12 and strict Zod 4 validation. A design
+can be imported or exported as JSON only when all paths pass evidence,
+verification and human review stages. Status remains DESIGN_VALID_NOT_RUN:
+the editor does not run tests or models, certify truth, grant permissions,
+persist evidence, or dispatch agents.
+
+See [Pipeline Factory R1](docs/verified-pipeline-factory-r1.md) for the
+document contract, security limits and follow-on runtime plan.
+

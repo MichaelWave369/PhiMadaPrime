@@ -5,10 +5,11 @@ import {VesselEvidence} from "./vessel-evidence.jsx";
 import {CouncilProvenance} from "./council-provenance.jsx";
 import {TriBrainSnapshotViewer} from "./tri-brain-viewer.jsx";
 import {MissionRouter} from "./thinktank-router.jsx";
+import {VerifiedPipelineFactory} from "./verified-pipeline.jsx";
 import "./thinktank.css";
 
 const PAGES=[
-  ["overview","ThinkTank","◈"],["router","Mission Router","⑂"],["bots","PhiBots","⚙"],["repos","Repo Health","▤"],
+  ["overview","ThinkTank","◈"],["router","Mission Router","⑂"],["pipeline","Pipeline Factory","◇"],["bots","PhiBots","⚙"],["repos","Repo Health","▤"],
   ["builds","Build Queue","≋"],["oversight","Human Oversight","⬡"],
   ["ori","Ori Council","✦"],["pocket","PocketBrain","▣"],
   ["trust","Evidence & Trust","⬡"],["provenance","Council Provenance","◎"],["tribrain","Three-Brain Ledger","◈"]
@@ -112,6 +113,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
     {page==="provenance"&&<CouncilProvenance r36Report={r36Report}
       onOpenR36={()=>open("trust")}/> }
     {page==="tribrain"&&<TriBrainSnapshotViewer onOpenTrust={()=>open("trust")} onOpenProvenance={()=>open("provenance")}/>}
+    {page==="pipeline"&&<VerifiedPipelineFactory/>}
     {page==="router"&&<MissionRouter missions={missions} plan={plan} rows={rows}
       signals={signals} signalsBusy={signalsBusy} reviewedJobs={reviewedJobs}
       pinnedJobs={pinnedJobs} onInspectRepo={onInspectRepo} onVisit={onVisit}
@@ -153,7 +155,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
         </div>
       </div>
       <div className="tt-workstreams">{[
-        ["Operators",OPERATORS.length+" designed","overview"],["Mission Router",view.proposalCount+" proposals","router"],["PhiBots",BOT_BLUEPRINTS.length+" roles","bots"],
+        ["Operators",OPERATORS.length+" designed","overview"],["Mission Router",view.proposalCount+" proposals","router"],["Pipeline Factory","Design only","pipeline"],["PhiBots",BOT_BLUEPRINTS.length+" roles","bots"],
         ["Repo Health",String(view.totalRepos??"—")+" cataloged","repos"],
         ["Build Queue",view.inspected+" inspected","builds"],
         ["Ori Council",ORI_COUNCIL.length+" distinct roles","ori"],

@@ -14,7 +14,8 @@
     "react-dom": "19.2.0",
     "@pierre/diffs": "1.6.4",
     "@pierre/trees": "1.0.0-beta.6",
-    "@xyflow/react": "12.12.1"
+    "@xyflow/react": "12.12.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "vite": "7.1.12",
