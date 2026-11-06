@@ -6,45 +6,47 @@ import "./verified-pipeline-local-receipts.css";
 
 /** Explicit local file comparison; no API calls, execution, or persistence. */
 export function LocalReceiptBridge(){
-  const gmedRef=useRef(null),witnessRef=useRef(null),sequence=useRef(0);
+  const gmedRef=useRef(null),witnessRef=useRef(null);
+  const gmedSequence=useRef(0),witnessSequence=useRef(0);
   const [gmed,setGmed]=useState(null),[witness,setWitness]=useState(null);
   const [error,setError]=useState(""),[notice,setNotice]=useState("");
   const correlation=correlateGmedWithWitness(gmed?.value,witness?.value);
   async function loadGmed(file){
-    const attempt=++sequence.current;
+    const attempt=++gmedSequence.current;
     setGmed(null);setError("");setNotice("");
     if(!file)return;
     try {
       if(file.size<1||file.size>GMED_MAX_BYTES)throw Error("GMED receipt exceeds 256 KiB or is empty");
       const value=inspectGmedLocalReceipt(await file.text());
-      if(attempt!==sequence.current)return;
+      if(attempt!==gmedSequence.current)return;
       setGmed({filename:file.name,value});
       setNotice("GMED report structure and classifications checked locally; producer not authenticated.");
     }catch(e){
-      if(attempt===sequence.current)setError(e instanceof Error?e.message:"Invalid GMED report");
+      if(attempt===gmedSequence.current)setError(e instanceof Error?e.message:"Invalid GMED report");
     }finally{
       if(gmedRef.current)gmedRef.current.value="";
     }
   }
   async function loadWitness(file){
-    const attempt=++sequence.current;
+    const attempt=++witnessSequence.current;
     setWitness(null);setError("");setNotice("");
     if(!file)return;
     try {
       if(file.size<1||file.size>TRI_BRAIN_MAX_FILE_BYTES)
         throw Error("WITNESS export exceeds 256 KiB or is empty");
       const value=await parseTriBrainSnapshot(await file.text());
-      if(attempt!==sequence.current)return;
+      if(attempt!==witnessSequence.current)return;
       setWitness({filename:file.name,value});
       setNotice("Three-brain snapshot checksum checked locally; original sources not replayed.");
     }catch(e){
-      if(attempt===sequence.current)setError(e instanceof Error?e.message:"Invalid WITNESS export");
+      if(attempt===witnessSequence.current)setError(e instanceof Error?e.message:"Invalid WITNESS export");
     }finally{
       if(witnessRef.current)witnessRef.current.value="";
     }
   }
   function clear(){
-    ++sequence.current;
+    ++gmedSequence.current;
+    ++witnessSequence.current;
     if(gmedRef.current)gmedRef.current.value="";
     if(witnessRef.current)witnessRef.current.value="";
     setGmed(null);setWitness(null);setError("");setNotice("Cleared local receipt copies.");
