@@ -113,7 +113,8 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
     {page==="provenance"&&<CouncilProvenance r36Report={r36Report}
       onOpenR36={()=>open("trust")}/> }
     {page==="tribrain"&&<TriBrainSnapshotViewer onOpenTrust={()=>open("trust")} onOpenProvenance={()=>open("provenance")}/>}
-    {page==="pipeline"&&<VerifiedPipelineFactory/>}
+    {page==="pipeline"&&<VerifiedPipelineFactory rows={rows} signals={signals}
+      signalsBusy={signalsBusy} onInspectRepo={onInspectRepo}/>} 
     {page==="router"&&<MissionRouter missions={missions} plan={plan} rows={rows}
       signals={signals} signalsBusy={signalsBusy} reviewedJobs={reviewedJobs}
       pinnedJobs={pinnedJobs} onInspectRepo={onInspectRepo} onVisit={onVisit}

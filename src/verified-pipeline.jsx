@@ -8,6 +8,7 @@ import {
 } from "./verified-pipeline.mjs";
 import "./verified-pipeline.css";
 import {SyntheticGateLab} from "./verified-pipeline-simulator.jsx";
+import {PublicCiEvidenceBridge} from "./verified-pipeline-live-evidence.jsx";
 
 function StageNode({data,selected}){
   return <div className={"vp-stage vp-"+data.kind+(selected?" vp-selected":"")}>
@@ -36,7 +37,7 @@ const fromVisual=(title,objective,pipelineId,nodes,edges)=>({
   execution:{status:"NOT_RUN",enabled:false,permissions:[]}
 });
 
-export function VerifiedPipelineFactory(){
+export function VerifiedPipelineFactory({rows=[],signals={},signalsBusy={},onInspectRepo=()=>{}}){
   const initial=useMemo(()=>pipelineTemplate(),[]);
   const graph=useMemo(()=>toVisual(initial),[initial]);
   const [nodes,setNodes,onNodesChange]=useNodesState(graph.nodes);
@@ -111,7 +112,7 @@ export function VerifiedPipelineFactory(){
 
   return <section className="vp-factory" aria-label="Verified Pipeline Factory designer">
     <header className="vp-heading">
-      <div><small>ΦMADA PRIME · VERIFIED PIPELINE FACTORY · R1 + R2</small>
+      <div><small>ΦMADA PRIME · VERIFIED PIPELINE FACTORY · R1 + R2 + R3</small>
         <h3>Architect workflows. Require evidence.</h3>
         <p>Drag, connect, inspect and export. No models, tests, approvals or executions.</p>
       </div>
@@ -173,7 +174,9 @@ export function VerifiedPipelineFactory(){
       </aside>
     </div>
     <SyntheticGateLab design={candidate}/>
+    <PublicCiEvidenceBridge design={candidate} rows={rows} signals={signals}
+      signalsBusy={signalsBusy} onInspectRepo={onInspectRepo}/>
     {notice&&<p role="status" className="vp-notice">{notice}</p>}
-    <p className="vp-note">A valid diagram and a simulated gate acceptance are not verified test results. Human review boxes are not authorization grants. No runtime is connected.</p>
+    <p className="vp-note">Diagram validity, simulated gate acceptance, and public CI observations are distinct. None alone proves test commands ran or grants approval. No runtime is connected.</p>
   </section>;
 }

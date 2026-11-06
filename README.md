@@ -406,3 +406,16 @@ All fixtures point to an intentionally nonexistent `.invalid` repository.
 Nothing is fetched or executed.
 
 See [Pipeline Factory R2](docs/verified-pipeline-factory-r2.md).
+
+## R41: Verified Pipeline Factory R3 · Public CI observation bridge
+
+ThinkTank → Pipeline Factory now includes an opt-in read-only public GitHub
+HEAD/CI observation panel. Operators choose an actual catalog repo, request
+an inspection, pin the observed commit, and compare fresh sampled workflow
+conclusions to that SHA. It uses the existing bounded, user-triggered
+fetchRepoSignals path; no automatic network polling or execution is added.
+
+A reported green CI sample is NOT verification of all required tests,
+GMED validation, scientific truth, human approval or merge authority.
+Synthetic fixtures and live observations have separate contracts.
+See [R3 guide](docs/verified-pipeline-factory-r3.md).
