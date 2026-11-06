@@ -9,7 +9,7 @@ export const STAGE_LABELS=Object.freeze({
 export const MAX_PIPELINE_BYTES=65536;
 const ident=z.string().regex(/^[a-z][a-z0-9-]{0,63}$/);
 const safeText=max=>z.string().trim().min(1).max(max).refine(
-  x=>!/[\\u0000-\\u001f\\u007f]/.test(x),"Control characters not allowed"
+  x=>!/[\u0000-\u001f\u007f]/.test(x),"Control characters not allowed"
 );
 const position=z.strictObject({
   x:z.number().finite().min(-10000).max(10000),
