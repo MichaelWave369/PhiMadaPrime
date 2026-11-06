@@ -238,6 +238,7 @@ export async function inspectRequiredCheckPolicy(second,{
       missing.length||notSuccessful.length?"REQUIRED_CONTEXTS_NOT_SUCCESSFUL":
       coverage!=="BOTH_ENDPOINTS_READ"?"POLICY_COVERAGE_INCOMPLETE":
       appUnverified.length||conflicts.length?"APP_SOURCE_UNVERIFIED":
+      info.unsupported.length?"OTHER_MERGE_GATES_NOT_EVALUATED":
       "DECLARED_CONTEXTS_OBSERVED_SUCCESS";
     return held(condition,{
       ...metadata,policy_coverage:coverage,protection_access:
