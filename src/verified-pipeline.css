@@ -59,3 +59,5 @@
  .vp-meta label:last-child{grid-column:1/-1}.vp-inspector{max-height:none}}
 @media(max-width:610px){.vp-meta{grid-template-columns:1fr}
  .vp-meta label:last-child{grid-column:auto}.vp-graph{height:420px;min-height:420px}}
+
+.vp-import:focus-within{outline:3px solid #ffe2a4;outline-offset:3px}
