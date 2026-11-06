@@ -15,7 +15,7 @@ test("Mission Router and R36/R37/R38 rooms coexist in one ThinkTank",()=>{
 });
 test("Mainline uses validated mission board handoff and single-router navigation",()=>{
  const app=read("main.jsx");
- assert.match(app,/onOpenMissionBoard=\{\(\)=>/);
+ assert.match(app,/onOpenMissionBoard=\{\(\)\s*=>/);
  const shell=read("thinktank.jsx");
  assert.equal((shell.match(/\{page==="router"&&<MissionRouter/g)||[]).length,1);
  assert.equal((shell.match(/\{page==="tribrain"&&<TriBrainSnapshotViewer/g)||[]).length,1);
