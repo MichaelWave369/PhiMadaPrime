@@ -1,0 +1,40 @@
+/* R36 route workbench, scoped to the ThinkTank. */
+.tt-router{min-width:0}
+.tt-router-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:0 0 15px}
+.tt-router-flow span{background:#162a42;color:#bef4f3;border:1px solid #4a84a0;border-radius:10px;padding:12px 9px;font:700 11px/1.5 ui-monospace,monospace;text-align:center}
+.tt-router-layout{display:grid;grid-template-columns:minmax(225px,.8fr) minmax(0,1.6fr);gap:14px;align-items:start}
+.tt-router-select,.tt-router-detail{min-height:320px}
+.tt-router-search{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#cedce9}
+.tt-router-search input{width:100%;border:1px solid #517f9e;background:#0b192c;border-radius:8px;color:#fff;padding:11px}
+.tt-router-list{display:grid;gap:7px;max-height:610px;overflow:auto;padding:2px}
+.tt-router-list button{display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;background:#11223a;color:#dcefff;border:1px solid #36516e;border-radius:8px;padding:11px}
+.tt-router-list button:hover{border-color:#77b6c9;background:#1d3750}
+.tt-router-list button.tt-router-selected{background:#3b2b5b;border-color:#c789ff}
+.tt-router-list button strong{font-size:13px;overflow-wrap:anywhere}
+.tt-router-list button span{font-size:11px;color:#b5d8e8}
+.tt-router-list button small{font:10px ui-monospace,monospace;color:#f2d79b}
+.tt-router-detail>p{font-size:13px;color:#c5dcea}
+.tt-route-chain{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:17px 0}
+.tt-route-chain>div{display:flex;flex-direction:column;gap:7px;min-height:89px;border:1px solid #5272a0;background:linear-gradient(145deg,#1e2c4e,#0c2236);border-radius:10px;padding:12px}
+.tt-route-chain>div:nth-child(2){border-color:#a56dc4}.tt-route-chain>div:nth-child(3){border-color:#65b29a}
+.tt-route-chain small{font:700 10px/1.4 ui-monospace,monospace;color:#9ecfe8}
+.tt-route-chain strong{font-size:18px;color:#f4efff}
+.tt-route-evidence{background:#0b1b2f;border:1px solid #4c7795;border-radius:11px;padding:14px;margin:13px 0}
+.tt-route-evidence h4{font-size:15px;margin:0 0 10px;color:#edf7ff}
+.tt-gate-hold,.tt-gate-ready{display:inline-block;border-radius:7px;padding:7px 10px;background:#563617;border:1px solid #d79f4b;color:#fff0c8;font:700 10px/1.4 ui-monospace,monospace}
+.tt-gate-ready{background:#12473b;color:#bdfde0;border-color:#65dab4}
+.tt-route-evidence dl{display:grid;gap:7px}
+.tt-route-evidence dl>div{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:1px solid #29455b;padding-bottom:6px}
+.tt-route-evidence dt{color:#a4b9cc;font-size:12px}
+.tt-route-evidence dd{margin:0;color:#e9f8ff;font-size:12px;text-align:right;overflow-wrap:anywhere}
+.tt-route-evidence code{font-family:ui-monospace,monospace;color:#94faf1}
+.tt-route-evidence ul{font-size:11px;color:#d6c5a8;line-height:1.7;padding-left:20px}
+.tt-router-actions{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}
+.tt-router-actions button{padding:9px 11px;border:1px solid #528db3;border-radius:8px;background:#1b3d57;color:#edfdff;font-size:11px;font-weight:700}
+.tt-router-actions button:hover{background:#285a76}.tt-router-actions button[aria-pressed=true]{border-color:#b88bf0;background:#473369}
+.tt-router-actions .tt-copy-handoff{background:#215d50;border-color:#67d7a8;color:white}
+.tt-router-actions button:disabled{opacity:.5;cursor:wait}
+.tt-router-empty{max-width:750px}.tt-router-empty p{font-size:13px;color:#bdcede}
+@media(max-width:1200px){.tt-router-flow{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:940px){.tt-router-layout{grid-template-columns:1fr}.tt-router-list{max-height:240px}}
+@media(max-width:620px){.tt-router-flow{grid-template-columns:1fr 1fr}.tt-route-chain{grid-template-columns:1fr}.tt-route-evidence dl>div{flex-direction:column;gap:3px}.tt-route-evidence dd{text-align:left}}
