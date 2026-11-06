@@ -5,6 +5,7 @@ import {GMED_MAX_BYTES,inspectGmedLocalReceipt,correlateGmedWithWitness}
 import "./verified-pipeline-local-receipts.css";
 import {reobserveGmedReceipt} from "./verified-pipeline-second-opinion.mjs";
 import {inspectRequiredCheckPolicy} from "./verified-pipeline-required-policy.mjs";
+import {SignedProvenanceGate} from "./verified-pipeline-signed-provenance.jsx";
 
 /** Explicit local file comparison; no API calls, execution, or persistence. */
 export function LocalReceiptBridge(){
@@ -240,6 +241,7 @@ export function LocalReceiptBridge(){
         <p className="vpl-caution">{policy.warning}</p>
       </div>}
     </section>
+    <SignedProvenanceGate reportRaw={gmed?.raw||null}/>
     <div className="vpl-alignment">
       <h5>Optional commit-reference alignment</h5>
       <strong>{correlation.state.replaceAll("_"," ")}</strong>
@@ -254,6 +256,7 @@ export function LocalReceiptBridge(){
       Only explicit second-opinion and required-policy buttons issue bounded read-only
       GitHub requests. This is a fresh observation through a separate verifier
       implementation, not an independent provider or signed provenance.
+      The local R45 signature gate never contacts a remote issuer.
       No model inference, test execution, original source replay, permission grant,
       automatic cross-room synchronization, or merge action occurs.
       The separate public HEAD desk remains available for current-branch checks.</p>

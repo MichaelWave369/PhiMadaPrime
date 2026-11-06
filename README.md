@@ -470,3 +470,20 @@ approvals, signatures, scanning or deployment rules. Matching status names
 never grants merge permission or proves that a particular test ran.
 
 See [R44 policy guide](docs/verified-pipeline-factory-r44-policy.md).
+
+## R45: Verified Pipeline Factory · Ed25519 signed provenance inspection
+
+ThinkTank → Pipeline Factory → GMED × WITNESS desk now contains a separate
+**Signed provenance gate**. It accepts an explicitly selected signed claim
+and an optional *independently obtained* operator public-key pin store.
+The claim binds an Ed25519 signature to the SHA-256 of the imported GMED
+report's **exact raw bytes**, its PR identity, merge SHA and observation time.
+
+The verifier ships with **no pre-trusted issuer key**. A matching operator
+pin and mathematically valid signature remain distinguishable from
+independent issuer authentication. An optional operator checkbox can
+record that the fingerprint was checked out of band; this is self-declared,
+not something the app can prove. All merge/deploy and execution permissions
+remain denied. The signing private key is never accepted in the browser.
+
+See [R45 signed provenance guide](docs/verified-pipeline-factory-r45-signatures.md).
