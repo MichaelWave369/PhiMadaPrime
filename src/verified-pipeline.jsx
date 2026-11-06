@@ -144,6 +144,7 @@ export function VerifiedPipelineFactory(){
         <ReactFlow nodes={nodes} edges={edges} nodeTypes={TYPES}
           onNodesChange={onNodesChange} onEdgesChange={onEdgesChange}
           onConnect={onConnect} onNodeClick={(_,node)=>setSelectedId(node.id)}
+          onSelectionChange={({nodes:chosen})=>setSelectedId(chosen[0]?.id||"")}
           onPaneClick={()=>setSelectedId("")} fitView minZoom={0.2} maxZoom={1.8}
           deleteKeyCode={["Backspace","Delete"]} colorMode="dark">
           <Background color="#456780" gap={22}/>
