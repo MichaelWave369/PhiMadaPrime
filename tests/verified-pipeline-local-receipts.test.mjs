@@ -185,7 +185,8 @@ test("R42 never treats unsigned linkage as independently verified",()=>{
 test("R42 local desk reuses the existing strict PhiTriBrain checksum parser",()=>{
   const s=readFileSync(new URL("../src/verified-pipeline-local-receipts.jsx",import.meta.url),"utf8");
   assert.match(s,/parseTriBrainSnapshot\(await file\.text\(\)\)/);
-  assert.match(s,/inspectGmedLocalReceipt\(await file\.text\(\)\)/);
+  assert.match(s,/const raw=await file\.text\(\)/);
+  assert.match(s,/inspectGmedLocalReceipt\(raw\)/);
   assert.match(s,/Clear both imports/);
   assert.doesNotMatch(s,/dangerouslySetInnerHTML|eval\s*\(|\bfetch\s*\(|localStorage|sessionStorage/);
 });
