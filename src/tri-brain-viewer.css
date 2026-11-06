@@ -80,3 +80,11 @@
  .tt3-lane{padding:12px}
  .tt3-card-top{flex-direction:column}
 }
+
+.tt3-next{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0}
+.tt3-next p{flex-basis:100%;color:#c5d9e8;font-size:12px}
+.tt3-next button{background:#24445d;color:#f4ffff;border:1px solid #82b9d2;
+ border-radius:8px;padding:10px 13px;cursor:pointer;font:inherit}
+.tt3-next button:hover{background:#315875}
+.tt3-next button:focus-visible{outline:3px solid #f6e4aa;outline-offset:3px}
+.tt3-copy-notice{color:#e9d6a7;font-size:12px}

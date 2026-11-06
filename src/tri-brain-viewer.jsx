@@ -1,5 +1,5 @@
 import React,{useRef,useState} from "react";
-import {parseTriBrainSnapshot,TRI_BRAIN_MAX_FILE_BYTES} from "./tri-brain-snapshot.mjs";
+import {parseTriBrainSnapshot,TRI_BRAIN_MAX_FILE_BYTES,triBrainReviewSummary} from "./tri-brain-snapshot.mjs";
 import "./tri-brain-viewer.css";
 
 const LANE_NAMES={
@@ -76,13 +76,15 @@ function StewardLane({items,byClaim}){
     </article>)}</div>;
 }
 
-export function TriBrainSnapshotViewer(){
+export function TriBrainSnapshotViewer({onOpenTrust=()=>{},onOpenProvenance=()=>{}}){
   const inputRef=useRef(null);
   const requestRef=useRef(0);
   const [state,setState]=useState({status:"empty",snapshot:null,error:"",filename:""});
   const [lane,setLane]=useState("WITNESS");
+  const [copyNotice,setCopyNotice]=useState("");
   async function load(file){
     const request=++requestRef.current;
+    setCopyNotice("");
     setState({status:"loading",snapshot:null,error:"",filename:""});
     if(!file)return;
     if(file.size>TRI_BRAIN_MAX_FILE_BYTES){
@@ -108,6 +110,17 @@ export function TriBrainSnapshotViewer(){
     if(inputRef.current)inputRef.current.value="";
     setState({status:"empty",snapshot:null,error:"",filename:""});
     setLane("WITNESS");
+    setCopyNotice("");
+  }
+  async function copySummary(){
+    if(!state.snapshot){setCopyNotice("Select a valid local snapshot first.");return;}
+    try{
+      if(!navigator.clipboard?.writeText)throw Error("No clipboard API");
+      await navigator.clipboard.writeText(triBrainReviewSummary(state.snapshot));
+      setCopyNotice("Review-only counts copied. No claim text, job or permission was sent.");
+    }catch{
+      setCopyNotice("Clipboard unavailable. Nothing was copied or sent.");
+    }
   }
   const data=state.snapshot;
   const byClaim=new Map((data?.lanes.WITNESS??[]).map(c=>[c.id,c]));
@@ -159,6 +172,15 @@ export function TriBrainSnapshotViewer(){
         {lane==="WEAVER"&&<WeaverLane items={data.lanes.WEAVER} byClaim={byClaim}/>}
         {lane==="STEWARD"&&<StewardLane items={data.lanes.STEWARD} byClaim={byClaim}/>}
       </div>
+      <div className="tt3-next">
+        <p>Unsigned snapshot: matching digest does not authenticate the source or verify facts.</p>
+        <button type="button" onClick={copySummary}>Copy safe review summary</button>
+      </div>
     </>}
+    {copyNotice&&<p role="status" className="tt3-copy-notice">{copyNotice}</p>}
+    <nav className="tt3-next" aria-label="Related evidence rooms">
+      <button type="button" onClick={onOpenTrust}>R36 · Evidence &amp; Trust</button>
+      <button type="button" onClick={onOpenProvenance}>R37 · Council Provenance</button>
+    </nav>
   </section>;
 }

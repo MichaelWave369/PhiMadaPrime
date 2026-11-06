@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createHash} from "node:crypto";
 import {readFileSync} from "node:fs";
-import {parseTriBrainSnapshot,validateTriBrainSnapshot,TRI_BRAIN_MAX_FILE_BYTES}
+import {parseTriBrainSnapshot,validateTriBrainSnapshot,TRI_BRAIN_MAX_FILE_BYTES,triBrainReviewSummary}
   from "../src/tri-brain-snapshot.mjs";
 
 const digest=async raw=>createHash("sha256").update(raw,"utf8").digest("hex");
@@ -139,4 +139,26 @@ test("R38 bridge has no active network or browser persistence implementations",(
   assert.doesNotMatch(s,/\bfetch\s*\(|\blocalStorage\b|\bsessionStorage\b|\bWebSocket\b/);
   assert.match(s,/type="file"/);
   assert.match(s,/Clear loaded evidence/);
+});
+
+test("R38 summary includes only categorical metadata, never source claims",()=>{
+  const summary=triBrainReviewSummary(fixture());
+  assert.match(summary,/WITNESS: 2 attributed claims/);
+  assert.match(summary,/WEAVER: 1 proposed relationships/);
+  assert.match(summary,/STEWARD: 1 review-only decisions/);
+  assert.match(summary,/Execution authority: NONE/);
+  assert.match(summary,/Producer authenticated: NO/);
+  assert.doesNotMatch(summary,/Evidence is preserved|Build observed green|test quote/);
+});
+test("R38 summary refuses forged permission metadata",()=>{
+  const value=fixture();
+  value.permissions.deployment=true;
+  assert.throws(()=>triBrainReviewSummary(value),/privileges/);
+});
+test("R38 canonical viewer links to existing evidence rooms",()=>{
+  const source=readFileSync(new URL("../src/thinktank.jsx",import.meta.url),"utf8");
+  assert.match(source,/onOpenTrust/);
+  assert.match(source,/onOpenProvenance/);
+  const viewer=readFileSync(new URL("../src/tri-brain-viewer.jsx",import.meta.url),"utf8");
+  assert.match(viewer,/Copy safe review summary/);
 });
