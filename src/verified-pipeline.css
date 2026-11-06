@@ -1,0 +1,61 @@
+/* Verified Pipeline Factory R1, scoped to PhiMadaPrime ThinkTank. */
+.vp-factory{display:grid;gap:14px;color:#e9f6ff}
+.vp-heading{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+ background:linear-gradient(120deg,#152947,#1a2040);border:1px solid #597a94;border-radius:14px;padding:18px}
+.vp-heading small{font:700 10px/1.5 ui-monospace,monospace;letter-spacing:.14em;color:#99daf3}
+.vp-heading h3{font-size:23px;margin:6px 0;color:#f0e6ff}
+.vp-heading p{font-size:13px;margin:0;color:#c0d5e6}
+.vp-ready,.vp-held{font:700 11px/1.5 ui-monospace,monospace;padding:9px 12px;
+ border:1px solid #5ab497;border-radius:8px;background:#183c34;color:#bdffdd}
+.vp-held{border-color:#ca9e63;background:#493521;color:#ffe8bc}
+.vp-meta{display:grid;grid-template-columns:minmax(130px,.6fr) minmax(170px,1fr) minmax(220px,1.5fr);gap:11px}
+.vp-meta label,.vp-controls label,.vp-edit label{display:flex;flex-direction:column;gap:5px;font-size:12px;
+ color:#d0e6f3;font-weight:700}
+.vp-meta input,.vp-meta textarea,.vp-controls select,.vp-edit input{background:#0d2038;color:#f2fbff;
+ border:1px solid #56819e;border-radius:8px;padding:10px;min-height:41px;width:100%}
+.vp-controls{display:flex;flex-wrap:wrap;align-items:end;gap:9px}
+.vp-controls button,.vp-import,.vp-edit button{border:1px solid #72d0e5;background:#1e4f69;
+ color:#f1ffff;border-radius:9px;padding:10px 12px;font-size:12px;font-weight:700;cursor:pointer}
+.vp-controls button:disabled{opacity:.5;cursor:not-allowed}
+.vp-import{display:inline-flex!important;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+.vp-import input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.vp-layout{display:grid;grid-template-columns:minmax(0,3.2fr) minmax(245px,1fr);gap:12px}
+.vp-graph{height:550px;min-height:550px;overflow:hidden;border:1px solid #597b95;
+ border-radius:13px;background:radial-gradient(circle at 45% 30%,#152b4c,#08162b 75%)}
+.vp-graph .react-flow__controls button{background:#18344c;color:#ecfaff}
+.vp-stage{min-width:175px;max-width:195px;display:flex;flex-direction:column;gap:6px;
+ border:1px solid #5b91b1;border-top:4px solid #4fc6e5;border-radius:11px;
+ background:linear-gradient(135deg,#203450,#11213a);color:#f1f8ff;
+ padding:13px 14px;box-shadow:0 7px 22px #0009}
+.vp-stage small{font:700 10px/1.3 ui-monospace,monospace;letter-spacing:.08em;color:#c2d9ee}
+.vp-stage strong{font-size:15px;line-height:1.4;overflow-wrap:anywhere}
+.vp-stage span{font-size:11px;line-height:1.4;color:#c7d9e5}
+.vp-stage.vp-evidence{border-top-color:#65d2b8}
+.vp-stage.vp-verify{border-top-color:#eec375}
+.vp-stage.vp-review{border-top-color:#b8a0f1}
+.vp-stage.vp-result{border-top-color:#88e6b8}
+.vp-stage.vp-selected{outline:3px solid #f0d8ff;outline-offset:2px}
+.vp-stage .react-flow__handle{height:12px;width:12px;background:#8ae4e9;border:2px solid #143047}
+.vp-inspector{border:1px solid #54708f;border-radius:12px;background:#14253c;
+ padding:15px;max-height:550px;overflow:auto;min-width:0}
+.vp-inspector h4{font-size:16px;margin:0 0 12px;color:#f2e9ff}
+.vp-inspector h4:not(:first-child){margin-top:21px}
+.vp-inspector p,.vp-inspector li{font-size:12px;line-height:1.6;color:#cde0ed}
+.vp-inspector ul{padding-left:18px}
+.vp-inspector li{color:#ffdbbb}
+.vp-edit{display:grid;gap:12px}.vp-edit p{margin:0}
+.vp-state{display:block;font-size:11px;color:#b9f5dd}
+.vp-denied{display:grid;gap:7px;background:#1c2b3c;border:1px solid #6f6b80;
+ border-radius:8px;padding:13px;margin-top:15px;font-size:12px}
+.vp-denied strong{color:#ffdca6}
+.vp-denied span{color:#cad7e4}
+.vp-note{max-width:90ch;font-size:12px;color:#bbccdd}
+.vp-notice{border-left:3px solid #77d7c9;padding:10px 13px;
+ background:#19394c;color:#ecf9fc;font-size:12px}
+.vp-factory button:focus-visible,.vp-factory input:focus-visible,.vp-factory select:focus-visible,
+.vp-factory textarea:focus-visible{outline:3px solid #ffe2a4;outline-offset:3px}
+@media(max-width:1050px){.vp-layout{grid-template-columns:1fr}
+ .vp-meta{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .vp-meta label:last-child{grid-column:1/-1}.vp-inspector{max-height:none}}
+@media(max-width:610px){.vp-meta{grid-template-columns:1fr}
+ .vp-meta label:last-child{grid-column:auto}.vp-graph{height:420px;min-height:420px}}
