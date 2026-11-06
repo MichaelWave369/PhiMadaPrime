@@ -3,13 +3,14 @@ import {OPERATORS,ORI_COUNCIL,BOT_BLUEPRINTS,thinktankSnapshot} from "./thinktan
 import {handoffText} from "./missions.mjs";
 import {VesselEvidence} from "./vessel-evidence.jsx";
 import {CouncilProvenance} from "./council-provenance.jsx";
+import {TriBrainSnapshotViewer} from "./tri-brain-viewer.jsx";
 import "./thinktank.css";
 
 const PAGES=[
   ["overview","ThinkTank","◈"],["bots","PhiBots","⚙"],["repos","Repo Health","▤"],
   ["builds","Build Queue","≋"],["oversight","Human Oversight","⬡"],
   ["ori","Ori Council","✦"],["pocket","PocketBrain","▣"],
-  ["trust","Evidence & Trust","⬡"],["provenance","Council Provenance","◎"]
+  ["trust","Evidence & Trust","⬡"],["provenance","Council Provenance","◎"],["tribrain","Three-Brain Ledger","◈"]
 ];
 const summaryText="DESIGN / REVIEW ONLY · No runtime, grants, or automatic dispatch connected";
 function Panel({title,eyebrow,children,className=""}){
@@ -109,6 +110,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
     {page==="trust"&&<VesselEvidence onReportChange={setR36Report} initialReport={r36Report}/>}
     {page==="provenance"&&<CouncilProvenance r36Report={r36Report}
       onOpenR36={()=>open("trust")}/> }
+    {page==="tribrain"&&<TriBrainSnapshotViewer/>}
     {page==="overview"&&<>
       <PersonaCards people={OPERATORS} selected={selectedOperator} onSelect={setSelectedOperator}/>
       <div className="tt-main-grid">
