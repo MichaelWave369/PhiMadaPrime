@@ -87,7 +87,7 @@ test("R42 a fabricated extra row cannot be hidden by the reported total",()=>{
 });
 test("R42 missing or malformed merge identity cannot become GMED",()=>{
   const a=receipt();a.sha=null;
-  assert.throws(()=>inspect(a),/inconsistent/);
+  assert.throws(()=>inspect(a),/invalid|inconsistent/);
   const b=receipt();b.merged=false;
   assert.throws(()=>inspect(b),/invalid|inconsistent/);
 });
