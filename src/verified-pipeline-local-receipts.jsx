@@ -3,23 +3,28 @@ import {parseTriBrainSnapshot,TRI_BRAIN_MAX_FILE_BYTES} from "./tri-brain-snapsh
 import {GMED_MAX_BYTES,inspectGmedLocalReceipt,correlateGmedWithWitness}
   from "./verified-pipeline-local-receipts.mjs";
 import "./verified-pipeline-local-receipts.css";
+import {reobserveGmedReceipt} from "./verified-pipeline-second-opinion.mjs";
 
 /** Explicit local file comparison; no API calls, execution, or persistence. */
 export function LocalReceiptBridge(){
   const gmedRef=useRef(null),witnessRef=useRef(null);
-  const gmedSequence=useRef(0),witnessSequence=useRef(0);
+  const gmedSequence=useRef(0),witnessSequence=useRef(0),recheckSequence=useRef(0);
   const [gmed,setGmed]=useState(null),[witness,setWitness]=useState(null);
   const [error,setError]=useState(""),[notice,setNotice]=useState("");
+  const [second,setSecond]=useState(null),[checking,setChecking]=useState(false);
   const correlation=correlateGmedWithWitness(gmed?.value,witness?.value);
   async function loadGmed(file){
     const attempt=++gmedSequence.current;
+    ++recheckSequence.current;
+    setSecond(null);setChecking(false);
     setGmed(null);setError("");setNotice("");
     if(!file)return;
     try {
       if(file.size<1||file.size>GMED_MAX_BYTES)throw Error("GMED receipt exceeds 256 KiB or is empty");
-      const value=inspectGmedLocalReceipt(await file.text());
+      const raw=await file.text();
+      const value=inspectGmedLocalReceipt(raw);
       if(attempt!==gmedSequence.current)return;
-      setGmed({filename:file.name,value});
+      setGmed({filename:file.name,value,raw});
       setNotice("GMED report structure and classifications checked locally; producer not authenticated.");
     }catch(e){
       if(attempt===gmedSequence.current)setError(e instanceof Error?e.message:"Invalid GMED report");
@@ -44,12 +49,32 @@ export function LocalReceiptBridge(){
       if(witnessRef.current)witnessRef.current.value="";
     }
   }
+  async function recheck(){
+    if(!gmed?.raw)return;
+    const request=++recheckSequence.current;
+    const selected=gmedSequence.current;
+    setSecond(null);setChecking(true);setError("");
+    try {
+      // Explicit user action is the only path to the public GitHub GETs.
+      const result=await reobserveGmedReceipt(gmed.raw);
+      if(request!==recheckSequence.current||selected!==gmedSequence.current)return;
+      setSecond(result);
+    }catch(e){
+      if(request===recheckSequence.current&&selected===gmedSequence.current)
+        setError(e instanceof Error?e.message:"GitHub re-observation unavailable");
+    }finally{
+      if(request===recheckSequence.current&&selected===gmedSequence.current)
+        setChecking(false);
+    }
+  }
   function clear(){
     ++gmedSequence.current;
     ++witnessSequence.current;
+    ++recheckSequence.current;
     if(gmedRef.current)gmedRef.current.value="";
     if(witnessRef.current)witnessRef.current.value="";
-    setGmed(null);setWitness(null);setError("");setNotice("Cleared local receipt copies.");
+    setGmed(null);setWitness(null);setSecond(null);setChecking(false);
+    setError("");setNotice("Cleared local receipt copies.");
   }
   return <section className="vpl-root" aria-label="Local GMED and WITNESS receipt comparison">
     <header className="vpl-head">
@@ -107,6 +132,44 @@ export function LocalReceiptBridge(){
           it does not authenticate the exporter or re-read original source bodies.</p>
       </article>
     </div>
+    <section className="vpl-second" aria-label="Live independent GMED second opinion">
+      <div className="vpl-second-head">
+        <div>
+          <h5>GMED public GitHub second opinion</h5>
+          <p>The first receipt is unsigned. An explicit second observation compares
+            the public merged PR, exact SHA, and complete bounded signal list.
+            Both observations still use GitHub's public API.</p>
+        </div>
+        <button type="button" onClick={recheck} disabled={!gmed||checking}>
+          {checking?"Rechecking public GitHub…":"Recheck public GitHub now"}
+        </button>
+      </div>
+      {!second&&!checking&&<p className="vpl-empty">
+        No live second opinion has been requested for this imported GMED receipt.
+        Importing a file alone never contacts GitHub.
+      </p>}
+      {checking&&<p role="status">Reading public PR and observed merge-commit
+        checks on demand. No changes or deployments are performed.</p>}
+      {second&&<div className="vpl-second-report" role="status">
+        <strong>{second.state.replaceAll("_"," ")}</strong>
+        <dl>
+          <div><dt>Imported GMED verdict</dt><dd>{second.imported_state}</dd></div>
+          <div><dt>Fresh public GitHub verdict</dt><dd>{second.github_observed_state||"UNAVAILABLE"}</dd></div>
+          <div><dt>Imported commit</dt><dd><code>{second.imported_sha||"NONE"}</code></dd></div>
+          <div><dt>Fresh observed merge SHA</dt><dd><code>{second.github_observed_merge_sha||"UNAVAILABLE"}</code></dd></div>
+          <div><dt>Observed signal count</dt><dd>{second.github_observed_signal_count??"UNAVAILABLE"}</dd></div>
+          <div><dt>Re-observed at</dt><dd>{second.reobserved_at||"NOT COMPLETED"}</dd></div>
+          <div><dt>Matching signal multiset</dt>
+            <dd>{second.checks?.same_signal_multiset===true?"YES": "NO / NOT CHECKED"}</dd></div>
+          <div><dt>Original imported receipt stale</dt><dd>{second.imported_stale?"YES":"NO"}</dd></div>
+          <div><dt>Signed GMED producer identity</dt><dd>NOT AUTHENTICATED</dd></div>
+          <div><dt>Required tests replayed</dt><dd>NO</dd></div>
+          <div><dt>Merge authority</dt><dd>NONE</dd></div>
+        </dl>
+        {second.error&&<p className="vpl-error">{second.error}</p>}
+        <p className="vpl-caution">{second.warning}</p>
+      </div>}
+    </section>
     <div className="vpl-alignment">
       <h5>Optional commit-reference alignment</h5>
       <strong>{correlation.state.replaceAll("_"," ")}</strong>
@@ -117,9 +180,12 @@ export function LocalReceiptBridge(){
         {" "+correlation.claim_ids.join(", ")}</p>}
       <p className="vpl-caution">{correlation.warning}</p>
     </div>
-    <p className="vpl-boundary">No network request, model inference, source replay,
-      signed GMED provenance, CI test execution, GMED Ouroboros second opinion,
-      permission grant or automatic cross-room synchronization is performed.
-      Open the separate public CI desk for on-demand live observation.</p>
+    <p className="vpl-boundary">File imports and WITNESS reference comparison are local.
+      Only the explicit second-opinion button issues bounded read-only public
+      GitHub requests. This is a fresh observation through a separate verifier
+      implementation, not an independent provider or signed provenance.
+      No model inference, test execution, original source replay, permission grant,
+      automatic cross-room synchronization, or merge action occurs.
+      The separate public HEAD desk remains available for current-branch checks.</p>
   </section>;
 }

@@ -36,3 +36,25 @@
  .vpl-loaders button{grid-column:1/-1}}
 @media(max-width:650px){.vpl-cards,.vpl-loaders{grid-template-columns:1fr}
  .vpl-loaders button{grid-column:auto}}
+
+/* R43: a distinctly labeled, opt-in second observation, never a trust badge. */
+.vpl-second{border:1px solid #638497;background:#102a3c;border-radius:11px;
+ padding:15px;display:grid;gap:12px;overflow-wrap:anywhere}
+.vpl-second-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px}
+.vpl-second-head>div{flex:1;min-width:200px}
+.vpl-second-head h5{margin:0 0 8px}
+.vpl-second-head p,.vpl-second>p{font-size:12px;color:#c5dfed;line-height:1.5;margin:0}
+.vpl-second-head button{border:1px solid #88d8db;background:#18576b;color:#f4fcff;
+ border-radius:8px;padding:10px 13px;font-size:12px;font-weight:700;cursor:pointer}
+.vpl-second-head button:disabled{opacity:.5;cursor:not-allowed}
+.vpl-second-head button:focus-visible{outline:3px solid #ffe7b8;outline-offset:3px}
+.vpl-empty{padding:12px;border:1px dashed #567d91;border-radius:8px;font-size:12px;color:#d6e9f6}
+.vpl-second-report{background:#152d41;border:1px solid #6d8598;border-radius:10px;padding:14px}
+.vpl-second-report>strong{display:block;font:700 13px/1.5 ui-monospace,monospace;
+ margin-bottom:12px;color:#e2dbff;overflow-wrap:anywhere}
+.vpl-second-report dl{display:grid;gap:8px;margin:0 0 12px}
+.vpl-second-report dl>div{display:grid;grid-template-columns:minmax(120px,.8fr) minmax(0,1.2fr);
+ gap:10px;border-bottom:1px solid #42647a;padding-bottom:7px}
+.vpl-second-report dt{font-size:12px;color:#b1d6e5}
+.vpl-second-report dd{font-size:12px;font-weight:700;color:#e7f4fc;margin:0;overflow-wrap:anywhere}
+@media(max-width:650px){.vpl-second-report dl>div{grid-template-columns:1fr;gap:2px}}
