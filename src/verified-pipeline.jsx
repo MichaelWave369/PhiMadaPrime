@@ -113,7 +113,7 @@ export function VerifiedPipelineFactory({rows=[],signals={},signalsBusy={},onIns
 
   return <section className="vp-factory" aria-label="Verified Pipeline Factory designer">
     <header className="vp-heading">
-      <div><small>ΦMADA PRIME · VERIFIED PIPELINE FACTORY · R39–R44</small>
+      <div><small>ΦMADA PRIME · VERIFIED PIPELINE FACTORY · R39–R45</small>
         <h3>Architect workflows. Require evidence.</h3>
         <p>Drag, connect, inspect and export. No models, tests, approvals or executions.</p>
       </div>
