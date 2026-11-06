@@ -1,0 +1,48 @@
+/* R40 synthetic verification exercises, deliberately isolated from R1 execution. */
+.vps-lab{display:grid;gap:12px;margin-top:8px;padding:17px;background:#101f34;
+ border:1px solid #55718c;border-radius:13px;color:#e9f7ff}
+.vps-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.vps-heading small{font:700 10px/1.5 ui-monospace,monospace;color:#a2d5ec;letter-spacing:.11em}
+.vps-heading h4{margin:4px 0;font-size:20px;color:#f6eaff}
+.vps-heading p{margin:0;font-size:12px;color:#bfd6e5}
+.vps-stamp{border:1px solid #d5a66d;border-radius:8px;padding:8px 10px;
+ color:#ffdfb7;background:#462f21;font:700 11px/1.4 ui-monospace,monospace}
+.vps-pick{display:flex;flex-wrap:wrap;align-items:end;gap:12px}
+.vps-pick label{display:grid;gap:6px;color:#d4e6f2;font-size:12px;font-weight:700;min-width:240px;flex:1}
+.vps-pick select{width:100%;min-height:40px;padding:9px;color:#f0fbff;background:#152b43;
+ border:1px solid #6692ad;border-radius:8px}
+.vps-pick button{padding:10px 16px;border:1px solid #86dbb3;
+ border-radius:8px;background:#205b4a;color:white;font-weight:700;cursor:pointer}
+.vps-pick button:hover{background:#276e58}
+.vps-description{margin:0;flex-basis:100%;font-size:12px;color:#bcd3e2}
+.vps-empty{border:1px dashed #54728d;border-radius:9px;padding:14px;color:#d4e2ed;font-size:12px}
+.vps-results{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(230px,.9fr);gap:14px}
+.vps-verdict{grid-column:1/-1;display:flex;justify-content:space-between;gap:14px;align-items:center;
+ background:#142840;border:1px solid #547991;border-radius:9px;padding:15px}
+.vps-verdict>div{display:grid;gap:6px}
+.vps-verdict small{font:700 10px/1.3 ui-monospace,monospace;color:#9bcee7}
+.vps-verdict strong{font-size:16px;color:#f1f4ff;overflow-wrap:anywhere}
+.vps-verdict span{font-size:12px;color:#c4dfed}
+.vps-accept,.vps-reject{white-space:nowrap;border-radius:8px;border:1px solid #61ba9d;
+ background:#1b594b;padding:9px;color:#edfff7!important;font-weight:700;font-size:11px!important}
+.vps-reject{border-color:#ddaf6d;background:#674221;color:#ffefd6!important}
+.vps-checks{display:grid;gap:7px}
+.vps-check{display:grid;grid-template-columns:20px 1fr auto;gap:9px;align-items:center;
+ padding:9px;border:1px solid #4d708d;border-radius:8px;background:#172f46}
+.vps-check>span{font-size:19px;color:#a8efd2}
+.vps-check>div{display:grid;gap:4px}
+.vps-check strong{font-size:12px}
+.vps-check small{font-size:11px;color:#bad2e2;line-height:1.5}
+.vps-check b{font-size:10px;color:#c9e9f6}
+.vps-truth{display:grid;align-content:start;gap:8px;padding:14px;
+ background:#33271f;border:1px solid #9f7959;border-radius:9px}
+.vps-truth strong{color:#ffe0b0;font-size:12px}
+.vps-truth span{font-size:12px;color:#f2e2d4}
+.vps-issues{grid-column:1/-1;border-left:3px solid #d69f6d;padding:9px 14px;background:#392c27}
+.vps-issues strong{font-size:12px;color:#fff1dd}
+.vps-issues ul{font-size:12px;color:#f7dcc6;margin:7px 0 0;padding-left:20px}
+.vps-notice{font-size:11px;color:#ffddb1;line-height:1.5;margin:0}
+.vps-lab button:focus-visible,.vps-lab select:focus-visible{outline:3px solid #ffe5a7;outline-offset:3px}
+@media(max-width:850px){.vps-results{grid-template-columns:1fr}}
+@media(max-width:540px){.vps-verdict{flex-direction:column;align-items:flex-start}
+ .vps-pick label{min-width:0}.vps-stamp{white-space:normal}}

@@ -7,6 +7,7 @@ import {
   pipelineTemplate,inspectPipeline,parsePipelineText,serializePipeline
 } from "./verified-pipeline.mjs";
 import "./verified-pipeline.css";
+import {SyntheticGateLab} from "./verified-pipeline-simulator.jsx";
 
 function StageNode({data,selected}){
   return <div className={"vp-stage vp-"+data.kind+(selected?" vp-selected":"")}>
@@ -110,7 +111,7 @@ export function VerifiedPipelineFactory(){
 
   return <section className="vp-factory" aria-label="Verified Pipeline Factory designer">
     <header className="vp-heading">
-      <div><small>ΦMADA PRIME · VERIFIED PIPELINE FACTORY · R1</small>
+      <div><small>ΦMADA PRIME · VERIFIED PIPELINE FACTORY · R1 + R2</small>
         <h3>Architect workflows. Require evidence.</h3>
         <p>Drag, connect, inspect and export. No models, tests, approvals or executions.</p>
       </div>
@@ -171,7 +172,8 @@ export function VerifiedPipelineFactory(){
         </div>
       </aside>
     </div>
+    <SyntheticGateLab design={candidate}/>
     {notice&&<p role="status" className="vp-notice">{notice}</p>}
-    <p className="vp-note">A valid diagram is not a verified test result. Human review boxes are not authorization grants. No runtime is connected in this rung.</p>
+    <p className="vp-note">A valid diagram and a simulated gate acceptance are not verified test results. Human review boxes are not authorization grants. No runtime is connected.</p>
   </section>;
 }
