@@ -81,3 +81,16 @@ A successful CI/build is not a full live-browser acceptance test. After merge, s
 A future authenticated local service could provide a real, least-privilege read connection, independently pinned snapshot signatures and explicit operator-review workflows. Those are **not** included in R38.
 
 **GMED Rule #377: The ThinkTank may read the ledger. It may not fire the engines.**
+
+## R38 consolidation: preserve one viewer
+
+The merged Three-Brain Ledger remains the canonical local import surface. A new
+**Copy safe review summary** control includes only the scope, export timestamp,
+three lane counts and reported digest, with explicit no-authentication and
+no-execution caveats. It never copies claim text, source bytes or permissions.
+The **Evidence & Trust** and **Council Provenance** buttons only navigate to
+existing ThinkTank rooms. No independent parser, second TriBrain room,
+automatic sync, network calls, or runtime permissions were introduced.
+
+This incorporates the valuable operator workflow from competing PR #46 while
+preserving the merged viewer and its existing R4a trust boundary.

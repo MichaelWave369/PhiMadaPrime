@@ -168,3 +168,20 @@ export async function parseTriBrainSnapshot(raw,{digest=browserSha256}={}){
     "Snapshot content digest mismatch. File may be altered or from an incompatible producer.");
   return value;
 }
+
+/** Categorical-only review handoff; source and action authority remain unverified. */
+export function triBrainReviewSummary(snapshot){
+  validateTriBrainSnapshot(snapshot);
+  return [
+    "PHIMADA PRIME / PHITRIBRAIN369 / REVIEW ONLY",
+    "Scope: "+snapshot.scope,
+    "Export timestamp (source-claimed): "+snapshot.as_of,
+    "WITNESS: "+snapshot.lanes.WITNESS.length+" attributed claims",
+    "WEAVER: "+snapshot.lanes.WEAVER.length+" proposed relationships",
+    "STEWARD: "+snapshot.lanes.STEWARD.length+" review-only decisions",
+    "Self-consistency digest: "+snapshot.content_sha256,
+    "Producer authenticated: NO; original source replay: NO",
+    "R36/R37 cryptographic binding: NO",
+    "Execution authority: NONE; permissions: NONE"
+  ].join("\n");
+}

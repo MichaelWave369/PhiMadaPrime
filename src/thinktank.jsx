@@ -110,7 +110,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
     {page==="trust"&&<VesselEvidence onReportChange={setR36Report} initialReport={r36Report}/>}
     {page==="provenance"&&<CouncilProvenance r36Report={r36Report}
       onOpenR36={()=>open("trust")}/> }
-    {page==="tribrain"&&<TriBrainSnapshotViewer/>}
+    {page==="tribrain"&&<TriBrainSnapshotViewer onOpenTrust={()=>open("trust")} onOpenProvenance={()=>open("provenance")}/>}
     {page==="overview"&&<>
       <PersonaCards people={OPERATORS} selected={selectedOperator} onSelect={setSelectedOperator}/>
       <div className="tt-main-grid">
