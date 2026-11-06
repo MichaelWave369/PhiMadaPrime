@@ -390,3 +390,19 @@ persist evidence, or dispatch agents.
 See [Pipeline Factory R1](docs/verified-pipeline-factory-r1.md) for the
 document contract, security limits and follow-on runtime plan.
 
+
+
+## R40: Φ Verified Pipeline Factory · Offline Synthetic Verification Lab
+
+Rung 2 extends ThinkTank → Pipeline Factory with a **deterministic,
+offline-only** fixture harness. Ten selectable scenarios exercise missing
+test receipts, failures, unfinished jobs, mismatched SHAs, spoofed authority
+and contradictory exit codes.
+
+Even a "synthetic accepted" result is *never* real verification:
+`actual_tests_executed=false`, `actual_ci_verified=false`,
+`human_review_completed=false`, no permission grants.
+All fixtures point to an intentionally nonexistent `.invalid` repository.
+Nothing is fetched or executed.
+
+See [Pipeline Factory R2](docs/verified-pipeline-factory-r2.md).
