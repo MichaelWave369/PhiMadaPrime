@@ -14,3 +14,10 @@
 .reponerve-stats small { color: #c1d2d2; }
 .reponerve-events { max-height: 350px; overflow-y: auto; line-height: 1.7; padding-left: 1.5rem; }
 .reponerve-events li { overflow-wrap: anywhere; }
+
+.reponerve-stewards { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #53666e; }
+.reponerve-stewards h3 { margin-bottom: .4rem; }
+.reponerve-steward-list { display: grid; gap: .5rem; max-height: 460px; overflow-y: auto; }
+.reponerve-steward-row { display: grid; grid-template-columns: minmax(100px,1fr) minmax(110px,1fr) minmax(150px,1fr); gap: .5rem; align-items: center; background: #26343b; padding: .7rem; border-radius: 8px; overflow-wrap: anywhere; }
+.reponerve-steward-row small { color: #c1d2d2; }
+@media (max-width: 650px) { .reponerve-steward-row { grid-template-columns: 1fr; } }
