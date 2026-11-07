@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { parseRepoNervePublic, REPONERVE_MAX_BYTES } from "./reponerve.mjs";
 import { parseStewardAdvisory, MAX_STEWARD_BYTES } from "./steward-advisory.mjs";
+import { parseLeaseObservations, LEASE_MAX_BYTES } from "./fleet-lease-observations.mjs";
 import "./reponerve.css";
 
 const EVENT_LABELS = {
@@ -15,6 +16,8 @@ export function RepoNervePanel({ catalog, catalogState }) {
   const [error, setError] = useState("");
   const [stewardSnapshot, setStewardSnapshot] = useState(null);
   const [stewardError, setStewardError] = useState("");
+  const [leaseSnapshot, setLeaseSnapshot] = useState(null);
+  const [leaseError, setLeaseError] = useState("");
   const isLive = catalogState === "live";
   async function importFile(event) {
     const file = event.target.files?.[0];
@@ -22,6 +25,7 @@ export function RepoNervePanel({ catalog, catalogState }) {
     if (!file) return;
     setSnapshot(null);
     setStewardSnapshot(null);
+    setLeaseSnapshot(null);
     try {
       if (file.size > REPONERVE_MAX_BYTES) throw new Error("FILE_TOO_LARGE");
       setSnapshot(parseRepoNervePublic(await file.text(), catalog));
@@ -36,6 +40,7 @@ export function RepoNervePanel({ catalog, catalogState }) {
     event.target.value = "";
     if (!file) return;
     setStewardSnapshot(null);
+    setLeaseSnapshot(null);
     try {
       if (file.size > MAX_STEWARD_BYTES) throw new Error("FILE_TOO_LARGE");
       const parsed = parseStewardAdvisory(await file.text(), catalog);
@@ -46,6 +51,24 @@ export function RepoNervePanel({ catalog, catalogState }) {
       setStewardError("");
     } catch {
       setStewardError("Steward import held. Use a fresh Agentora R2 public-only export matching the current GitHub catalog and observation scan.");
+    }
+  }
+  async function importLeaseFile(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setLeaseSnapshot(null);
+    try {
+      if (file.size > LEASE_MAX_BYTES) throw new Error("FILE_TOO_LARGE");
+      const parsed = parseLeaseObservations(await file.text(), catalog);
+      if ((snapshot && snapshot.scanId !== parsed.scanId) ||
+          (stewardSnapshot && stewardSnapshot.scanId !== parsed.scanId)) {
+        throw new Error("SOURCE_SCAN_MISMATCH");
+      }
+      setLeaseSnapshot(parsed);
+      setLeaseError("");
+    } catch {
+      setLeaseError("Lease observation held. Use a fresh redacted Agentora R3 status file matching current public GitHub identities and loaded source scan.");
     }
   }
   return <section className="reponerve-panel" aria-labelledby="reponerve-title">
@@ -116,6 +139,41 @@ export function RepoNervePanel({ catalog, catalogState }) {
         </div>
         {stewardSnapshot.stewards.length > 60 &&
           <p>Showing 60 of {stewardSnapshot.stewards.length} logical stewards.</p>}
+      </>}
+    </div>
+    <div className="reponerve-stewards" aria-label="R3 worker reservation observations">
+      <h3>Exclusive worker reservations · R3</h3>
+      <p>A claim means local work ownership, not a running AI agent or an approved deployment.</p>
+      <label className="reponerve-import">
+        Select Agentora public lease status (.json)
+        <input type="file" accept=".json,application/json"
+          disabled={!isLive} onChange={importLeaseFile}/>
+      </label>
+      {leaseError && <p className="reponerve-error" role="alert">{leaseError}</p>}
+      {!leaseSnapshot ? <p className="reponerve-empty">
+        No reservation observations imported. No worker execution is implied.
+      </p> : <>
+        <div className="reponerve-stats">
+          <div><strong>{leaseSnapshot.reservations.length}</strong><small>Lease records observed</small></div>
+          <div><strong>{leaseSnapshot.currentlyReserved}</strong><small>Reserved at display time</small></div>
+          <div><strong>0</strong><small>Jobs dispatched by R3</small></div>
+        </div>
+        <p className="reponerve-notice">
+          These reservations are source-bound local snapshots, not live worker heartbeats.
+          Expiration and worker activity require rechecking the source; no merge or
+          execution authority is granted.
+        </p>
+        <div className="reponerve-steward-list">
+          {leaseSnapshot.reservations.slice(0,60).map(item =>
+            <div key={item.githubId} className="reponerve-steward-row">
+              <strong>{item.repoName}</strong>
+              <span>{item.state === "RESERVED" && item.expiresMs <= Date.now()
+                ? "Expired since export" : item.state.replaceAll("_"," ").toLowerCase()}</span>
+              <small>Lease generation {item.generation}</small>
+            </div>)}
+        </div>
+        {leaseSnapshot.reservations.length > 60 &&
+          <p>Showing 60 of {leaseSnapshot.reservations.length} redacted reservations.</p>}
       </>}
     </div>
   </section>;
