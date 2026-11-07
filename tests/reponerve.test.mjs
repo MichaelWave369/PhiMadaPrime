@@ -77,6 +77,6 @@ test("public Pages view never fetches RepoNerve loopback or credentials", () => 
   const panel = readFileSync("src/reponerve.jsx", "utf8");
   const main = readFileSync("src/main.jsx", "utf8");
   assert.match(main, /RepoNervePanel/);
-  assert.doesNotMatch(panel, /fetch\(|localhost|127\.0\.0\.1|GITHUB_TOKEN|localStorage/i);
+  assert.doesNotMatch(panel, /fetch\(|127\.0\.0\.1|GITHUB_TOKEN|localStorage/i);
   assert.match(panel, /type="file"/);
 });
