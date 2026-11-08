@@ -1,12 +1,18 @@
 import React,{useMemo,useState} from "react";
 import {OPERATORS,ORI_COUNCIL,BOT_BLUEPRINTS,thinktankSnapshot} from "./thinktank-model.mjs";
 import {handoffText} from "./missions.mjs";
+import {VesselEvidence} from "./vessel-evidence.jsx";
+import {CouncilProvenance} from "./council-provenance.jsx";
+import {TriBrainSnapshotViewer} from "./tri-brain-viewer.jsx";
+import {MissionRouter} from "./thinktank-router.jsx";
+import {VerifiedPipelineFactory} from "./verified-pipeline.jsx";
 import "./thinktank.css";
 
 const PAGES=[
-  ["overview","ThinkTank","◈"],["bots","PhiBots","⚙"],["repos","Repo Health","▤"],
+  ["overview","ThinkTank","◈"],["router","Mission Router","⑂"],["pipeline","Pipeline Factory","◇"],["bots","PhiBots","⚙"],["repos","Repo Health","▤"],
   ["builds","Build Queue","≋"],["oversight","Human Oversight","⬡"],
-  ["ori","Ori Council","✦"],["pocket","PocketBrain","▣"]
+  ["ori","Ori Council","✦"],["pocket","PocketBrain","▣"],
+  ["trust","Evidence & Trust","⬡"],["provenance","Council Provenance","◎"],["tribrain","Three-Brain Ledger","◈"]
 ];
 const summaryText="DESIGN / REVIEW ONLY · No runtime, grants, or automatic dispatch connected";
 function Panel({title,eyebrow,children,className=""}){
@@ -64,8 +70,9 @@ function MissionRows({missions,reviewed,pinned,onReview,onPin,onCopy}){
 }
 export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy={},
   missions=[],reviewedJobs={},pinnedJobs={},plan=null,onInspectRepo=()=>{},
-  onVisit=()=>{},onReview=()=>{},onPin=()=>{},onClose=()=>{}}){
+  onVisit=()=>{},onReview=()=>{},onPin=()=>{},onClose=()=>{},onOpenMissionBoard=()=>{}}){
   const [page,setPage]=useState("overview");
+  const [r36Report,setR36Report]=useState(null);
   const [selectedOperator,setSelectedOperator]=useState("brainc");
   const [selectedOri,setSelectedOri]=useState("ori-prime");
   const [search,setSearch]=useState("");
@@ -102,6 +109,16 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
       <button type="button" key={id} className={page===id?"active":""}
         aria-current={page===id?"page":undefined} onClick={()=>open(id)}>
         <span aria-hidden="true">{glyph}</span>{label}</button>)}</nav>
+    {page==="trust"&&<VesselEvidence onReportChange={setR36Report} initialReport={r36Report}/>}
+    {page==="provenance"&&<CouncilProvenance r36Report={r36Report}
+      onOpenR36={()=>open("trust")}/> }
+    {page==="tribrain"&&<TriBrainSnapshotViewer onOpenTrust={()=>open("trust")} onOpenProvenance={()=>open("provenance")}/>}
+    {page==="pipeline"&&<VerifiedPipelineFactory rows={rows} signals={signals}
+      signalsBusy={signalsBusy} onInspectRepo={onInspectRepo}/>} 
+    {page==="router"&&<MissionRouter missions={missions} plan={plan} rows={rows}
+      signals={signals} signalsBusy={signalsBusy} reviewedJobs={reviewedJobs}
+      pinnedJobs={pinnedJobs} onInspectRepo={onInspectRepo} onVisit={onVisit}
+      onReview={onReview} onPin={onPin} onOpenMissionBoard={onOpenMissionBoard}/>}
     {page==="overview"&&<>
       <PersonaCards people={OPERATORS} selected={selectedOperator} onSelect={setSelectedOperator}/>
       <div className="tt-main-grid">
@@ -139,7 +156,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
         </div>
       </div>
       <div className="tt-workstreams">{[
-        ["Operators",OPERATORS.length+" designed","overview"],["PhiBots",BOT_BLUEPRINTS.length+" roles","bots"],
+        ["Operators",OPERATORS.length+" designed","overview"],["Mission Router",view.proposalCount+" proposals","router"],["Pipeline Factory","Design only","pipeline"],["PhiBots",BOT_BLUEPRINTS.length+" roles","bots"],
         ["Repo Health",String(view.totalRepos??"—")+" cataloged","repos"],
         ["Build Queue",view.inspected+" inspected","builds"],
         ["Ori Council",ORI_COUNCIL.length+" distinct roles","ori"],
@@ -158,6 +175,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
         <div className="tt-flow">{["Scout: plan","Builder: draft","Verifier: inspect","Human: review","Merge: handoff","Deploy: release check"].map((x,i)=>
           <span key={x}>{i+1}. {x}</span>)}</div>
         <p className="tt-quiet">Existing R34 PhiBot Crew Deck inspects pinned public manifest definitions. It does not prove running workers. Use the Mission Board to inspect those definitions.</p>
+        <button type="button" className="tt-primary" onClick={()=>open("router")}>Open review-only Mission Router →</button>
       </Panel>
     </>}
     {page==="repos"&&<>
@@ -235,6 +253,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
             {["Scout Ori → Scout Bot","Forge Ori → Builder Bot","Guardian Ori → Verifier Bot",
             "Ori Prime → Merge review","Pocket Ori → Doc summaries"].map(x=><span key={x}>{x}</span>)}
           </div><button type="button" className="tt-primary" onClick={()=>open("bots")}>Inspect bot roles →</button>
+          <button type="button" className="tt-primary" onClick={()=>open("router")}>Review council routing →</button>
         </Panel>
       </div>
     </>}
@@ -261,6 +280,6 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
       </div>
     </>}
     {notice&&<p className="tt-notice" role="status">{notice}<button type="button" onClick={()=>setNotice("")}>Dismiss</button></p>}
-    <footer className="tt-footer">R35 VISUAL ORCHESTRATION · PUBLIC CATALOG + USER-TRIGGERED GITHUB INSPECTION · ZERO AUTOMATIC WORKER EXECUTION</footer>
+    <footer className="tt-footer">R35–R37 VISUAL ORCHESTRATION · PUBLIC CATALOG + USER-TRIGGERED GITHUB INSPECTION · ZERO AUTOMATIC WORKER EXECUTION</footer>
   </div>;
 }

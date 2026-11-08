@@ -1,0 +1,31 @@
+.council-provenance{max-width:1160px;margin:auto;color:#e7f4ff}
+.cp-head{border:1px solid #668bb5;border-radius:14px;padding:20px 22px;margin-bottom:14px;background:linear-gradient(135deg,#182b48,#29234b)}
+.cp-head small{color:#9de3ee;letter-spacing:.13em;font-weight:700;font-size:.73rem}
+.cp-head h3{margin:.3rem 0 .5rem;font-size:clamp(1.2rem,2vw,1.65rem)}
+.cp-head p{max-width:85ch;line-height:1.6}
+.cp-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.cp-panel{border:1px solid #537690;border-radius:11px;padding:18px;background:#1a2a40;margin-bottom:14px}
+.cp-panel h4{font-size:1.08rem;margin:0 0 12px}
+.cp-panel label{display:grid;gap:8px;font-size:.87rem;font-weight:600}
+.cp-panel input,.cp-panel select{width:100%;padding:10px;border:1px solid #698fa6;background:#0e1e30;color:#f3f8ff;border-radius:7px}
+.cp-panel button{border:1px solid #95cadb;background:#22546c;color:#edfaff;padding:10px 14px;border-radius:8px;cursor:pointer}
+.cp-panel button:disabled{cursor:not-allowed;opacity:.5}
+.cp-panel .cp-secondary{background:transparent}
+.cp-panel button:focus-visible,.cp-panel select:focus-visible,.cp-panel input:focus-visible,
+.cp-panel a:focus-visible{outline:3px solid #d9f8ff;outline-offset:3px}
+.cp-fact{margin:12px 0}
+.cp-note{line-height:1.55;font-size:.9rem;color:#c0d6e5}
+.cp-state{padding:11px 13px;border-radius:7px;background:#0e2f41;border-left:3px solid #88c2d4;overflow-wrap:anywhere}
+.cp-fields{display:grid;grid-template-columns:minmax(170px,1fr) minmax(280px,2.4fr);gap:12px;margin:14px 0}
+.cp-actions{display:flex;gap:9px;flex-wrap:wrap}
+.cp-result{padding:15px;border:1px solid #6fb4c6;background:#153741;border-radius:9px;margin:15px 0;overflow-wrap:anywhere}
+.cp-result code{overflow-wrap:anywhere}
+.cp-result p{line-height:1.55}
+.cp-result a{color:#a3e9fb}
+.cp-error{padding:13px;background:#4b3036;border:1px solid #d28c94;border-radius:7px;overflow-wrap:anywhere}
+.cp-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}
+.cp-grid>div{border:1px solid #476884;background:#132235;border-radius:7px;padding:12px;display:grid;gap:7px;overflow-wrap:anywhere}
+.cp-grid small{color:#adc8d6;font-size:.75rem}
+.cp-grid b{font-size:.87rem}
+@media(max-width:850px){.cp-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.cp-layout,.cp-fields,.cp-grid{grid-template-columns:1fr}.cp-head{padding:14px}.cp-panel{padding:13px}}

@@ -338,3 +338,152 @@ Inside **Mission Board → Agent Flow + Chronicle → R30 Evidence Nervous Syste
 ## R33: Fleet Failure Investigator (public, bounded cohort)
 
 The **Mission Board → R33 Fleet Failure Investigator** lets an operator select up to four public repositories and explicitly scan GitHub Actions runs with conclusion `failure`. Each record is anchored to its exact SHA, workflow path and attempt, alongside the observed default-branch HEAD. Select a failed run to inspect independently revalidated GitHub job/step outcomes and copy a review-only diagnostic handoff. Historic feature-branch failures are not called active production incidents. Partial/unavailable sources are labeled; there are no credentials, log downloads, workflow reruns, merges or root-cause claims. [R33 operator and trust contract](docs/rung-33-fleet-failure-investigator.md).
+
+
+## R36: Vessel Evidence Bridge in the ThinkTank (review-only)
+
+**ThinkTank → Evidence & Trust** now has an offline/browser-local verification panel for original SuperPhiVessel/PhiLearn R10 signed R8 Skill Passports. It replays the six fixed R6 synthetic scenarios, checks original R7/R8 SHA-256 hashes, validates an independently operator-pinned R10 public trust-store fingerprint and, where possible, verifies the original Ed25519 signature with Web Crypto. No imported key is trusted merely because the sender attached it. No file is uploaded, retained or converted into a grant.
+
+**This verifies signed synthetic-passport consistency only.** R11 inspection approval, R12 event chains, R13 witnesses, real AI/model identity, FlashProve inference proof, execution, deployment and merge authority are **NOT evaluated** by R36. Refer to [R36 operator/acceptance contract](docs/rung-36-vessel-evidence-bridge.md) and use the original offline SuperPhiVessel R11–R13 checkers before considering any future integration.
+
+Tests: run npm test and npm run build, then perform separate manual Chrome/Edge acceptance on the deployed ThinkTank.
+
+
+## R37: Council Provenance in the ThinkTank (two independent rails)
+
+**ThinkTank → Council Provenance** pairs the existing R36 **signed synthetic R10 passport result** with an independent **live, GET-only GitHub Agentora R1** verification. A human selects one of four primary ThinkTank roles or five separate Ori Council roles to organize the review. The same strict GitHub reader already used by R31 verifies owner approvals, controller workflow/job, task digest, exact-SHA CI and historical tested/merge output. User-entered source/input SHAs are refused as proof of worker output.
+
+The two rails do **not** establish a cross-runtime cryptographic binding, genuine AI model identity, a running council session, real inference, product acceptance or execution authority. R37 keeps the bridge truthful: seat NOT AUTHENTICATED, cross-source binding NONE, all authority NONE. No R10 files are sent to GitHub or stored, and no bot operation is dispatched.
+
+See [R37 operator guidance, limitations and browser acceptance](docs/rung-37-council-provenance.md). Run npm test and npm run build for source validation; separately perform deployed browser and real GitHub-record acceptance.
+
+## R38: PhiTriBrain369 Three-Brain Ledger snapshot viewer
+
+The existing **ThinkTank → Three-Brain Ledger** room now accepts explicitly selected, locally exported PhiTriBrain369 R4a snapshot JSON files. Open the local file picker and inspect three separate, strictly read-only panes:
+
+- **WITNESS:** exact source quotes, claim states, observation age and provenance warnings.
+- **WEAVER:** proposed relationships, selected claim context and review status, without treating a suggestion as factual truth.
+- **STEWARD:** evidence-linked decisions, review attestation digest and explicit **no execution authority**.
+
+The viewer validates the producer's schema, selected dependencies, no-authority flags, and SHA-256 content digest against the Python canonical format. The digest is **not a digital signature or proof of source authenticity**, and the original source bodies are not included to reproduce the underlying source hashes. Nothing is uploaded, persisted, connected to the database, or dispatched. Clear the loaded file or leave the room to discard it from React memory.
+
+Generate a snapshot with the PhiTriBrain369 CLI, then pick the file in the ThinkTank:
+
+
+~~~bash
+phitribrain bridge --manifest ./my-bridge-manifest.json --output ./tri-brain-snapshot.json
+~~~
+
+See [R38 local Three-Brain Ledger contract](docs/rung-38-tribrain-ledger-viewer.md) for exact manifest fields, scope limits, privacy rules, and browser acceptance steps.
+
+**Gergy & Mreen Rule #377: The ThinkTank may read the ledger. It may not fire the engines.**
+
+## R39: Φ Verified Pipeline Factory · Visual Architect
+
+**ThinkTank → Pipeline Factory** offers a local-only, versioned graph editor.
+It uses existing @xyflow/react 12 and strict Zod 4 validation. A design
+can be imported or exported as JSON only when all paths pass evidence,
+verification and human review stages. Status remains DESIGN_VALID_NOT_RUN:
+the editor does not run tests or models, certify truth, grant permissions,
+persist evidence, or dispatch agents.
+
+See [Pipeline Factory R1](docs/verified-pipeline-factory-r1.md) for the
+document contract, security limits and follow-on runtime plan.
+
+
+
+## R40: Φ Verified Pipeline Factory · Offline Synthetic Verification Lab
+
+Rung 2 extends ThinkTank → Pipeline Factory with a **deterministic,
+offline-only** fixture harness. Ten selectable scenarios exercise missing
+test receipts, failures, unfinished jobs, mismatched SHAs, spoofed authority
+and contradictory exit codes.
+
+Even a "synthetic accepted" result is *never* real verification:
+`actual_tests_executed=false`, `actual_ci_verified=false`,
+`human_review_completed=false`, no permission grants.
+All fixtures point to an intentionally nonexistent `.invalid` repository.
+Nothing is fetched or executed.
+
+See [Pipeline Factory R2](docs/verified-pipeline-factory-r2.md).
+
+## R41: Verified Pipeline Factory R3 · Public CI observation bridge
+
+ThinkTank → Pipeline Factory now includes an opt-in read-only public GitHub
+HEAD/CI observation panel. Operators choose an actual catalog repo, request
+an inspection, pin the observed commit, and compare fresh sampled workflow
+conclusions to that SHA. It uses the existing bounded, user-triggered
+fetchRepoSignals path; no automatic network polling or execution is added.
+
+A reported green CI sample is NOT verification of all required tests,
+GMED validation, scientific truth, human approval or merge authority.
+Synthetic fixtures and live observations have separate contracts.
+See [R3 guide](docs/verified-pipeline-factory-r3.md).
+
+## R42: Pipeline Factory · GMED × WITNESS local receipt desk
+
+ThinkTank → Pipeline Factory includes a manual, local-only side-by-side
+comparison for **GMED `gmed-report:v1`** PR receipts and
+**PhiTriBrain369 Rung 4a** WITNESS/WEAVER/STEWARD exports. It strictly parses
+the GMED receipt, independently recomputes its reported classification from
+the embedded rows, uses the existing R38 checksum/shape parser for the
+PhiTriBrain snapshot, and optionally compares GitHub commit reference *text*
+between explicitly selected claims and the GMED-reported merge commit.
+
+Neither unsigned local file authenticates its producer. A matching repository
+and commit is not independent confirmation of source bytes, test execution,
+required CI checks, signatures, scientific truth or authorization. No
+external calls, AI models, worker actions, permission grants, database writes,
+or automatic synchronization are involved.
+
+R42 also corrects R38's source identifier parsing from 20 to the **24 hex
+characters actually generated by PhiTriBrain369's WITNESS BrainStore**.
+See [R42 operator guide](docs/verified-pipeline-factory-r42-local-receipts.md).
+
+## R43: Φ Verified Pipeline Factory · GMED public second opinion
+
+The existing ThinkTank Pipeline Factory GMED/WITNESS receipt desk now offers an
+**explicit Recheck public GitHub now** action after a locally selected GMED v1
+report. The new implementation re-reads the public repository, PR merge flag
+and exact merge SHA, plus bounded, fully paginated public check runs and
+legacy statuses. It independently recomputes the observed outcome and
+compares the check/status **multiset**, not just a green count or name.
+
+Missing or changing pages, failing GitHub responses, wrong repository or
+different merge SHA produce a held/mismatch outcome. Even perfect agreement
+is a **same-provider second observation**, not a signed issuer certificate,
+a replay of test commands or merge/deployment permission.
+No automatic network request occurs on local file import.
+See [R43 operator guide](docs/verified-pipeline-factory-r43-second-opinion.md).
+
+## R44: Pipeline Factory required-check policy visibility
+
+Following an explicit R43 public-GitHub GMED second opinion, the GMED/WITNESS
+desk offers an **Inspect required-check policy** action. It consults active
+public branch rulesets and classic branch-protection required checks, then
+compares declared status context names against the already re-observed
+exact merge-SHA check/status rows.
+
+A 403/404 for classic protection is **partial/unknown coverage**, not proof
+that no checks were required. Rulesets may impose additional workflows,
+approvals, signatures, scanning or deployment rules. Matching status names
+never grants merge permission or proves that a particular test ran.
+
+See [R44 policy guide](docs/verified-pipeline-factory-r44-policy.md).
+
+## R45: Verified Pipeline Factory · Ed25519 signed provenance inspection
+
+ThinkTank → Pipeline Factory → GMED × WITNESS desk now contains a separate
+**Signed provenance gate**. It accepts an explicitly selected signed claim
+and an optional *independently obtained* operator public-key pin store.
+The claim binds an Ed25519 signature to the SHA-256 of the imported GMED
+report's **exact raw bytes**, its PR identity, merge SHA and observation time.
+
+The verifier ships with **no pre-trusted issuer key**. A matching operator
+pin and mathematically valid signature remain distinguishable from
+independent issuer authentication. An optional operator checkbox can
+record that the fingerprint was checked out of band; this is self-declared,
+not something the app can prove. All merge/deploy and execution permissions
+remain denied. The signing private key is never accepted in the browser.
+
+See [R45 signed provenance guide](docs/verified-pipeline-factory-r45-signatures.md).

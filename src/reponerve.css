@@ -1,0 +1,23 @@
+.reponerve-panel { max-width: 1060px; margin: 1.5rem auto; padding: 1.3rem; border: 1px solid #53666e; border-radius: 14px; background: #101c23; color: #f0f6f5; }
+.reponerve-head { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; }
+.reponerve-head h2 { font-size: 1.5rem; margin: .2rem 0 .6rem; }
+.reponerve-head p { max-width: 72ch; line-height: 1.5; }
+.reponerve-kicker { text-transform: uppercase; letter-spacing: .14em; font-size: .75rem; color: #a5cbce; }
+.reponerve-status { border: 1px solid #8ac6c9; border-radius: 999px; padding: .4rem .8rem; font-size: .8rem; white-space: nowrap; }
+.reponerve-import { display: block; margin: 1rem 0; border: 1px dashed #8ac6c9; border-radius: 10px; padding: 1rem; }
+.reponerve-import input { display: block; max-width: 100%; margin-top: .8rem; }
+.reponerve-empty, .reponerve-notice { padding: 1rem; border-radius: 8px; background: #26343b; line-height: 1.5; }
+.reponerve-error { color: #ffd5cd; font-weight: 600; }
+.reponerve-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: .7rem; margin: 1rem 0; }
+.reponerve-stats > div { background: #26343b; padding: .9rem; border-radius: 9px; display: grid; gap: .2rem; }
+.reponerve-stats strong { font-size: 1.3rem; }
+.reponerve-stats small { color: #c1d2d2; }
+.reponerve-events { max-height: 350px; overflow-y: auto; line-height: 1.7; padding-left: 1.5rem; }
+.reponerve-events li { overflow-wrap: anywhere; }
+
+.reponerve-stewards { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #53666e; }
+.reponerve-stewards h3 { margin-bottom: .4rem; }
+.reponerve-steward-list { display: grid; gap: .5rem; max-height: 460px; overflow-y: auto; }
+.reponerve-steward-row { display: grid; grid-template-columns: minmax(100px,1fr) minmax(110px,1fr) minmax(150px,1fr); gap: .5rem; align-items: center; background: #26343b; padding: .7rem; border-radius: 8px; overflow-wrap: anywhere; }
+.reponerve-steward-row small { color: #c1d2d2; }
+@media (max-width: 650px) { .reponerve-steward-row { grid-template-columns: 1fr; } }

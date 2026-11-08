@@ -7,6 +7,7 @@ import { towerFloors, floorForId } from "./tower.mjs";
 import { fetchRepoSignals, signalsFresh } from "./signals.mjs";
 import { ChiefOfStaff, SignalInspector, WingRibbon } from "./office-parts.jsx";
 import { MissionBoard } from "./mission-board.jsx";
+import { RepoNervePanel } from "./reponerve.jsx";
 import { ThinkTank } from "./thinktank.jsx";
 import { TrustWorldLab } from "./trust-world.jsx";
 import { dialogFocusableElements, wrappedTabTarget, restoreFocusToOpener } from "./dialog-focus.mjs";
@@ -31,7 +32,7 @@ import "./browser-evidence.css";
 
 // Set at Vite build time. Empty local builds must never pretend to be deployed.
 const PUBLIC_BUILD_SHA = __PHIMADA_BUILD_SHA__;
-const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions", "Φ World", "ThinkTank"];
+const TABS = ["Directory", "Signals", "Coverage", "Contracts", "Missions", "RepoNerve", "Φ World", "ThinkTank"];
 const COLORS = ["cyan", "gold", "violet", "mint", "peach", "blue"];
 
 function Star({ index }) {
@@ -728,7 +729,7 @@ function App() {
         <main className="main-area">
           <div className="elevator-bar">
             <div><small>ΦMADA PRIME / VIRTUAL OFFICE</small>
-              <h1>{activeTab === "ThinkTank" ? "Φ The ThinkTank" : activeTab === "Φ World" ? "Φ World · Trust Gauntlet" : boardOpen ? "Fleet Mission Board" : "Deck " + String(activeFloor).padStart(2, "0")}
+              <h1>{activeTab === "RepoNerve" ? "Φ RepoNerve · Fleet Observations" : activeTab === "ThinkTank" ? "Φ The ThinkTank" : activeTab === "Φ World" ? "Φ World · Trust Gauntlet" : boardOpen ? "Fleet Mission Board" : "Deck " + String(activeFloor).padStart(2, "0")}
                 {!boardOpen && activeTab !== "Φ World" && activeTab !== "ThinkTank" && <span> · {currentFloor.title}</span>}</h1>
             </div>
             <div className="mission-top-actions">
@@ -760,7 +761,8 @@ function App() {
               "GitHub inventory unavailable. Curated examples only; no live statuses."}
             <span className="help-key">← → to change floors</span>
           </div>
-          {activeTab === "Φ World" ? <TrustWorldLab /> : activeTab === "ThinkTank" ?
+          {activeTab === "RepoNerve" ? <RepoNervePanel catalog={rows} catalogState={catalogState} /> :
+            activeTab === "Φ World" ? <TrustWorldLab /> : activeTab === "ThinkTank" ?
             <ThinkTank rows={rows} catalogState={catalogState} signals={signals}
               signalsBusy={signalsBusy} missions={missions} reviewedJobs={reviewedJobs}
               pinnedJobs={pinnedJobs} plan={plan}
@@ -769,7 +771,8 @@ function App() {
                 if (repo) inspectLiveRepo(repo);
               }}
               onVisit={jumpToRepo} onReview={markReviewed} onPin={togglePinned}
-              onClose={() => { setActiveTab("Directory"); setBoardOpen(false); }} /> : boardOpen ?
+              onClose={() => { setActiveTab("Directory"); setBoardOpen(false); }}
+              onOpenMissionBoard={() => { setActiveTab("Missions"); setBoardOpen(true); }} /> : boardOpen ?
             <MissionBoard queue={missions} plan={plan} catalog={rows} contracts={contracts}
               reviewed={reviewedJobs} pinned={pinnedJobs}
               signals={signals} signalsBusy={signalsBusy} signalsError={signalsError}
