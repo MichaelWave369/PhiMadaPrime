@@ -1,4 +1,4 @@
-// R39: browser-memory-only consumer for PhiServe R15 advisory + optional R13/PhiStream sources.
+// R46: browser-memory-only consumer for PhiServe R15 advisory + optional R13/PhiStream sources.
 // Matching file hashes establish local byte consistency only, never producer identity,
 // model execution, GPU execution, calibration, permission, or validated facts.
 export const INFERENCE_MAX_FILE_BYTES = 1_048_576;
@@ -242,7 +242,7 @@ export async function inspectInferenceFiles(files,{digest=sha256,now=Date.now()}
 export function inferenceSummary(report) {
   ensure(report && report.schema==="PHISERVE_HARDWARE_ADVICE_R15_V1","Missing reviewed inference report");
   return [
-    "PHIMADA PRIME / PHISERVE R15 / OBSERVATORY R39 / REVIEW ONLY",
+    "PHIMADA PRIME / PHISERVE R15 / OBSERVATORY R46 / REVIEW ONLY",
     "Model alias: "+report.alias,
     "Evaluation (producer-claimed): "+report.evaluatedUtc,
     "Classification (producer-claimed): "+report.classification,
