@@ -56,7 +56,7 @@ export function InferenceObservatory(){
   const report=view.report;
   return <section className="inf-root" aria-label="Inference Observatory read-only evidence room">
     <header className="inf-hero">
-      <small>ΦMADA PRIME / R39 / Φ INFERENCE FABRIC R16</small>
+      <small>ΦMADA PRIME / R46 / Φ INFERENCE FABRIC R16</small>
       <h3>Inference Observatory</h3>
       <p>PhiStream hardware snapshots + PhiServe benchmark receipts + R15 capacity advice.
         Review imported measurements before planning model placement. Nothing here connects
