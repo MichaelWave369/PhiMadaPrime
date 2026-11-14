@@ -471,6 +471,12 @@ never grants merge permission or proves that a particular test ran.
 
 See [R44 policy guide](docs/verified-pipeline-factory-r44-policy.md).
 
+## R46: Φ Inference Observatory · Local hardware evidence room
+
+**ThinkTank → Inference Observatory** adds a read-only, browser-memory-only review room for the existing Φ Inference Fabric: PhiStream R1 hardware snapshots, PhiServe R13 GGUF performance receipts, and PhiServe R15 offline capacity advisories. An operator selects exactly one R15 advisory and, optionally, its original local snapshot plus 1–8 benchmark JSON files together. The consumer checks reported RAM/VRAM file-size floors, classification consistency, evidence age at view time and SHA-256 file bindings when originals are supplied. It displays requested GPU layers, p50/p95 end-to-end timings and model startup cost; missing token counts stay unreported.
+
+Neither a source-hash match nor a reported R15 review status authenticates hardware or model execution. The room never reads live hardware, executes models, changes PhiServe R14 admission, grants permissions, uploads evidence or certifies real RTX 5070/3060 throughput. See [R46 local inference operator guide](docs/rung-46-inference-observatory.md).
+
 ## R45: Verified Pipeline Factory · Ed25519 signed provenance inspection
 
 ThinkTank → Pipeline Factory → GMED × WITNESS desk now contains a separate
