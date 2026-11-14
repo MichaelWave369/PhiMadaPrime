@@ -117,7 +117,7 @@ function setup({cuda=true}={}){
 }
 const parse=(files,now=baseNow)=>inspectInferenceFiles(files,{digest,now});
 
-test("R39 displays advice alone without falsely claiming source authentication",async()=>{
+test("R46 displays advice alone without falsely claiming source authentication",async()=>{
   const {files}=setup();
   const r=await parse(files.slice(0,1));
   assert.equal(r.classification,"REVIEW_REQUIRED_CAPACITY_NOT_CONFIRMED");
@@ -132,7 +132,7 @@ test("R39 displays advice alone without falsely claiming source authentication",
   assert.equal(r.cpuFileFloor,true);
   assert.equal(r.gpuFileFloor,false);
 });
-test("R39 SHA links all selected original local files but does not authenticate producer",async()=>{
+test("R46 SHA links all selected original local files but does not authenticate producer",async()=>{
   const {files}=setup();
   const r=await parse(files);
   assert.equal(r.matchedSources,3);
@@ -144,20 +144,20 @@ test("R39 SHA links all selected original local files but does not authenticate 
   assert.ok(inferenceSummary(r).includes("Execution authorized: NO"));
   assert.ok(!JSON.stringify(r).includes("VerySensitive"));
 });
-test("R39 allows partial support without implying full corroboration",async()=>{
+test("R46 allows partial support without implying full corroboration",async()=>{
   const {files}=setup();
   const r=await parse([files[0],files[2]]);
   assert.equal(r.matchedSources,1);
   assert.equal(r.provenance,"PARTIAL_LOCAL_BYTES_MATCH");
   assert.equal(r.snapshotMatched,false);
 });
-test("R39 refuses unbound, modified or duplicate source JSON",async()=>{
+test("R46 refuses unbound, modified or duplicate source JSON",async()=>{
   const {files}=setup();
   await assert.rejects(parse([files[0],{name:"unrelated.json",text:'{"foo":2}'}]),/Unexpected/);
   await assert.rejects(parse([files[0],{...files[2],text:files[2].text+" "}]),/Unexpected/);
   await assert.rejects(parse([files[0],files[2],files[2]]),/duplicate/);
 });
-test("R39 rejects forged live authority, GPU proof and positive fit assurance",async()=>{
+test("R46 rejects forged live authority, GPU proof and positive fit assurance",async()=>{
   for(const [category,key] of [
     ["assurances","execution_authorized"],
     ["assurances","automatic_model_route"],
@@ -170,7 +170,7 @@ test("R39 rejects forged live authority, GPU proof and positive fit assurance",a
     await assert.rejects(parse([files[0]]),/authority|assurance/);
   }
 });
-test("R39 recomputes capacity math and refuses contradictory floors",async()=>{
+test("R46 recomputes capacity math and refuses contradictory floors",async()=>{
   for(const [key,value] of [
     ["ram_budget_bytes",3],
     ["full_cpu_weight_file_floor_met",false],
@@ -183,19 +183,19 @@ test("R39 recomputes capacity math and refuses contradictory floors",async()=>{
     await assert.rejects(parse([files[0]]),/floor/);
   }
 });
-test("R39 refuses contradictory reported classification",async()=>{
+test("R46 refuses contradictory reported classification",async()=>{
   const {a,files}=setup();
   a.classification="HOLD_BENCHMARK_EVIDENCE_STALE_OR_FUTURE";
   files[0].text=JSON.stringify(a);
   await assert.rejects(parse([files[0]]),/classification/);
 });
-test("R39 stale-at-view overlay overrides an old producer-claimed review",async()=>{
+test("R46 stale-at-view overlay overrides an old producer-claimed review",async()=>{
   const {files}=setup();
   const r=await parse([files[0]],baseNow+15*60*1000);
   assert.equal(r.classification,"REVIEW_REQUIRED_CAPACITY_NOT_CONFIRMED");
   assert.equal(r.freshness,"STALE_OR_FUTURE_AT_VIEW");
 });
-test("R39 supports snapshot with missing GPU counters while holding GPU advice",async()=>{
+test("R46 supports snapshot with missing GPU counters while holding GPU advice",async()=>{
   const {files}=setup({cuda:false});
   const r=await parse(files);
   assert.equal(r.classification,"HOLD_CUDA_COUNTERS_MISSING");
@@ -203,14 +203,14 @@ test("R39 supports snapshot with missing GPU counters while holding GPU advice",
   assert.equal(r.matchedSources,3);
   assert.equal(r.executionAuthorized,false);
 });
-test("R39 refuses tampered benchmark content even if advisory has unchanged hash",async()=>{
+test("R46 refuses tampered benchmark content even if advisory has unchanged hash",async()=>{
   const {files}=setup();
   const bad=JSON.parse(files[2].text);
   bad.measurements[0].throughput_tps=500000;
   files[2].text=JSON.stringify(bad);
   await assert.rejects(parse(files),/Unexpected/);
 });
-test("R39 checks reported benchmark trial summaries against the source",async()=>{
+test("R46 checks reported benchmark trial summaries against the source",async()=>{
   const {a,files}=setup();
   const bad=JSON.parse(files[2].text);
   bad.summary.p50_wall_ms=900;
@@ -219,7 +219,7 @@ test("R39 checks reported benchmark trial summaries against the source",async()=
   files[0].text=JSON.stringify(a);
   await assert.rejects(parse(files),/aggregate/);
 });
-test("R39 verifies snapshot counters when the original source is provided",async()=>{
+test("R46 verifies snapshot counters when the original source is provided",async()=>{
   const {a,files}=setup();
   const bad=JSON.parse(files[1].text);
   bad.ram.available_bytes=15*1024**3;
@@ -228,12 +228,12 @@ test("R39 verifies snapshot counters when the original source is provided",async
   files[0].text=JSON.stringify(a);
   await assert.rejects(parse(files),/RAM/);
 });
-test("R39 refuses missing advice and two advisories",async()=>{
+test("R46 refuses missing advice and two advisories",async()=>{
   const {files}=setup();
   await assert.rejects(parse(files.slice(1)),/Exactly one/);
   await assert.rejects(parse([files[0],files[0]]),/Exactly one/);
 });
-test("R39 bounds local imports and rejects malformed JSON",async()=>{
+test("R46 bounds local imports and rejects malformed JSON",async()=>{
   const {files}=setup();
   await assert.rejects(parse([{name:"broken",text:"{not-json"}]),/Invalid JSON/);
   await assert.rejects(parse([{name:"huge",text:"x".repeat(INFERENCE_MAX_FILE_BYTES+1)}]),/too large/);
