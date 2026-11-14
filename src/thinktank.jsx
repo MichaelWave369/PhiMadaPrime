@@ -4,6 +4,7 @@ import {handoffText} from "./missions.mjs";
 import {VesselEvidence} from "./vessel-evidence.jsx";
 import {CouncilProvenance} from "./council-provenance.jsx";
 import {TriBrainSnapshotViewer} from "./tri-brain-viewer.jsx";
+import {InferenceObservatory} from "./inference-observatory.jsx";
 import {MissionRouter} from "./thinktank-router.jsx";
 import {VerifiedPipelineFactory} from "./verified-pipeline.jsx";
 import "./thinktank.css";
@@ -12,7 +13,8 @@ const PAGES=[
   ["overview","ThinkTank","◈"],["router","Mission Router","⑂"],["pipeline","Pipeline Factory","◇"],["bots","PhiBots","⚙"],["repos","Repo Health","▤"],
   ["builds","Build Queue","≋"],["oversight","Human Oversight","⬡"],
   ["ori","Ori Council","✦"],["pocket","PocketBrain","▣"],
-  ["trust","Evidence & Trust","⬡"],["provenance","Council Provenance","◎"],["tribrain","Three-Brain Ledger","◈"]
+  ["trust","Evidence & Trust","⬡"],["provenance","Council Provenance","◎"],["tribrain","Three-Brain Ledger","◈"],
+  ["inference","Inference Observatory","▦"]
 ];
 const summaryText="DESIGN / REVIEW ONLY · No runtime, grants, or automatic dispatch connected";
 function Panel({title,eyebrow,children,className=""}){
@@ -113,6 +115,7 @@ export function ThinkTank({rows=[],catalogState="loading",signals={},signalsBusy
     {page==="provenance"&&<CouncilProvenance r36Report={r36Report}
       onOpenR36={()=>open("trust")}/> }
     {page==="tribrain"&&<TriBrainSnapshotViewer onOpenTrust={()=>open("trust")} onOpenProvenance={()=>open("provenance")}/>}
+    {page==="inference"&&<InferenceObservatory/>}
     {page==="pipeline"&&<VerifiedPipelineFactory rows={rows} signals={signals}
       signalsBusy={signalsBusy} onInspectRepo={onInspectRepo}/>} 
     {page==="router"&&<MissionRouter missions={missions} plan={plan} rows={rows}
