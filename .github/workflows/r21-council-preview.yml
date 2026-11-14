@@ -33,7 +33,9 @@ permissions:
 
 jobs:
   isolated-council-browser:
-    runs-on: ubuntu-latest
+    # Playwright 1.56.1 supports Ubuntu 24.04; ubuntu-latest may resolve to
+    # Ubuntu 26.04 where 'playwright install --with-deps chromium' fails.
+    runs-on: ubuntu-24.04
     timeout-minutes: 18
     steps:
       - name: Checkout candidate snapshot without persisted credentials
