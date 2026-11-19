@@ -5,6 +5,7 @@ import { SchedulerPreview } from "./scheduler-preview.jsx";
 import { EvidenceBay } from "./evidence-bay.jsx";
 import { missionLiveTriage } from "./mission-live-triage.mjs";
 import { OneRepoCompletionLane } from "./completion-lane.jsx";
+import { R9TurnQueue } from "./r9-turn-queue.jsx";
 import "./agent-forge.css";
 const AgentForge = React.lazy(() => import("./agent-forge.jsx")
   .then(module => ({ default: module.AgentForge })));
@@ -45,14 +46,14 @@ export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned
   return <section className="missions-board" aria-label="Fleet mission board">
     <header className="missions-header">
       <div>
-        <small>ΦMADA PRIME / AGENTORA PLANNING</small>
+        <small>ΦMADA PRIME / AGENTORA</small>
         <h2>THE MISSION BOARD</h2>
-        <p>Every proposal is a draft for human review, never an active worker assignment.</p>
       </div>
       <button type="button" className="mission-close" onClick={onClose}>
         ← Return to office
       </button>
     </header>
+    <R9TurnQueue />
     <OneRepoCompletionLane catalog={catalog} contracts={contracts}
       signals={signals} signalsBusy={signalsBusy} signalsError={signalsError}
       onInspectRepo={onInspectRepo} onVisit={onVisit}

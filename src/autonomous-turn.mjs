@@ -112,7 +112,7 @@ export async function readTurnResult(number,{fetcher=fetch,crypto=globalThis.cry
   const pr=await get(`/pulls/${number}`,fetcher),head=pr.head?.sha;
   need(pr.number===number&&pr.base?.repo?.id===TURN_REPO_ID&&pr.head?.repo?.id===TURN_REPO_ID&&
     pr.base.ref==="main"&&SHA.test(head||""),"PR_IDENTITY");
-  const all=await get(`/commits/${head}/check-runs?per_page=100`,fetcher);
+  const all=await get(`/commits/${head}/check-runs?per_page=100&filter=all`,fetcher);
   need(Number.isInteger(all.total_count)&&all.total_count<100&&Array.isArray(all.check_runs)&&
     all.check_runs.length===all.total_count,"CHECKS_INCOMPLETE");
   const receipts=all.check_runs.filter(r=>r.name==="Autonomous Turn R1 receipt"&&
@@ -133,10 +133,13 @@ export async function readTurnResult(number,{fetcher=fetch,crypto=globalThis.cry
   const digest=await turnTaskDigest(task,crypto);
   need(r.task_sha256===digest&&check.external_id===digest&&r.authorization?.task_sha256===digest,"TASK_DIGEST");
   const runId=r.authorization.run_id;
+  const runUrl=`https://github.com/${TURN_REPO}/actions/runs/${runId}`;
+  // GitHub Actions owns the check UI and can return its own check-page URL.
+  const githubCheckPage=Number.isSafeInteger(check.id)&&check.id>0&&
+    check.details_url===`https://github.com/${TURN_REPO}/runs/${check.id}`;
   need(Number.isSafeInteger(runId)&&runId>0&&
     pr.head.ref===`autonomous/r1/${task.task_id}-${runId}`&&
-    check.details_url===`https://github.com/${TURN_REPO}/actions/runs/${runId}`&&
-    r.run_url===check.details_url,"RUN_LINKAGE");
+    (check.details_url===runUrl||githubCheckPage)&&r.run_url===runUrl,"RUN_LINKAGE");
   const [run,reviews,jobs]=await Promise.all([
     get(`/actions/runs/${runId}`,fetcher),get(`/actions/runs/${runId}/approvals`,fetcher),
     get(`/actions/runs/${runId}/jobs?per_page=100`,fetcher)
@@ -162,15 +165,24 @@ export async function readTurnResult(number,{fetcher=fetch,crypto=globalThis.cry
   need(REQUIRED.every(name=>ci.some(c=>c.name===name))&&ci.every(c=>
     c.head_sha===head&&c.app?.slug==="github-actions"&&c.app.id===15368&&
     c.status==="completed"&&c.conclusion==="success"),"CURRENT_SHA_CI_NOT_GREEN");
-  for(const rid of new Set(ci.map(c=>{
+  const byRun=new Map();
+  for(const c of ci) {
     const match=/^https:\/\/github\.com\/MichaelWave369\/Agentora\/actions\/runs\/(\d+)\/job\/\d+$/.exec(c.details_url||"");
-    need(match,"CI_RUN_LINK");return Number(match[1]);
-  }))) {
+    need(match,"CI_RUN_LINK");
+    const rid=Number(match[1]);
+    if(!byRun.has(rid))byRun.set(rid,new Set());
+    byRun.get(rid).add(c.name);
+  }
+  const covered=new Set();
+  for(const [rid,names] of byRun) {
     const ciRun=await get(`/actions/runs/${rid}`,fetcher);
     need(ciRun.head_sha===head&&ciRun.repository?.id===TURN_REPO_ID&&
       ciRun.path?.split("@")[0]===".github/workflows/ci.yml"&&
       ["push","pull_request"].includes(ciRun.event),"CI_WORKFLOW_IDENTITY");
+    for(const name of names)covered.add(ciRun.event+":"+name);
   }
+  need(["push","pull_request"].every(event=>
+    REQUIRED.every(name=>covered.has(event+":"+name))),"CI_EVENTS_INCOMPLETE");
   let state="AUTOMATED_CHECKS_PASSED";
   if(r.merge_commit_sha!==null) {
     need(SHA.test(r.merge_commit_sha)&&pr.merged===true&&pr.merge_commit_sha===r.merge_commit_sha&&
@@ -188,6 +200,6 @@ export async function readTurnResult(number,{fetcher=fetch,crypto=globalThis.cry
     checks:ci.map(c=>({name:c.name,conclusion:c.conclusion})),repairAttempts:r.repair_attempts,
     mergeDecision:String(r.merge_decision).slice(0,150),mergeSha:r.merge_commit_sha,
     outstandingAcceptance:r.outstanding_acceptance.map(s=>String(s).slice(0,500)),
-    nextAction:String(r.next_action).slice(0,500),runUrl:check.details_url,
+    nextAction:String(r.next_action).slice(0,500),runUrl,
     projectVerifiedComplete:false,observation:"LIVE_GITHUB_RECORDS_CORRELATED"};
 }
