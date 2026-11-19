@@ -146,6 +146,12 @@
 .one-repo-lane-facts dd{margin:6px 0 0;font:bold 11px monospace;color:#f5e1b9;
   overflow-wrap:anywhere}
 .one-repo-lane-actions{display:flex;gap:10px;flex-wrap:wrap}
+.fleet-inventory summary{cursor:pointer;padding-block:8px}
+.fleet-inventory label,.fleet-inventory nav{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
+.fleet-inventory input{width:min(100%,300px);background:#161f30;color:#f5e1b9;border:1px solid #8293aa;padding:8px}
+.fleet-inventory ul{list-style:none;padding:0}
+.fleet-inventory li{border-top:1px solid #506177;padding:4px 0;overflow-wrap:anywhere}
+.fleet-inventory li p{margin:6px 0;font-size:13px}
 .one-repo-lane-actions button{border:1px solid #b29e75;border-radius:5px;
   padding:10px;background:#4d4c54;color:#fff1dd;font:bold 11px monospace;
   min-height:40px}

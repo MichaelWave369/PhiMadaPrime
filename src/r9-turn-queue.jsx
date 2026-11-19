@@ -1,17 +1,77 @@
 import React, { useEffect, useState } from "react";
 import { readTurnResult, TURN_REPO } from "./autonomous-turn.mjs";
-import { nextTurnAction, parseReadinessProfiles, parseTurnQueue, SNAPSHOT_LIMIT } from "./r9-turn-queue.mjs";
+import { inventoryEvidence, inventoryRows, nextTurnAction,
+  parseReadinessProfiles, parseTurnQueue, SNAPSHOT_LIMIT } from "./r9-turn-queue.mjs";
 
 const GITHUB = "https://github.com/" + TURN_REPO;
 const LOOPBACK = ["localhost", "127.0.0.1"].includes(globalThis.location?.hostname);
 const READINESS = "https://github.com/MichaelWave369/PhiOS/blob/main/phishell/src/ecosystem/fleet-readiness.json";
 const READINESS_JSON = "https://raw.githubusercontent.com/MichaelWave369/PhiOS/main/phishell/src/ecosystem/fleet-readiness.json";
+const PAGE_SIZE = 20;
 
 function Link({ href, children }) {
   return <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>;
 }
 
-export function R9TurnQueue() {
+function FleetInventory({ catalog, catalogState, profiles, profileStatus, readReadiness,
+  signals, signalsBusy, signalsError, coverage, onInspectRepo }) {
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const rows = inventoryRows(catalog, profiles || [], query);
+  const pageCount = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  return <details className="fleet-inventory" onToggle={event => {
+    if (event.target === event.currentTarget && event.currentTarget.open && !profiles && !profileStatus) {
+      readReadiness();
+    }
+  }}>
+    <summary>Public fleet inventory and readiness</summary>
+    {catalogState !== "live" ? <p role="status">A complete public GitHub inventory is unavailable.</p> : <>
+      <p>{catalog.length} public repositories · {rows.length} matched</p>
+      <label>Find a repository
+        <input type="search" value={query} onChange={event => { setQuery(event.target.value); setPage(1); }} />
+      </label>
+      <button type="button" disabled={profileStatus === "Reading PhiOS profiles…"} onClick={readReadiness}>Refresh readiness</button>
+      {profileStatus && <p role="status">{profileStatus}</p>}
+      <ul aria-label="Current inventory page">
+        {rows.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map(({repo, profile}) => {
+          const { live, cohort, profileCurrent } = inventoryEvidence(repo, profile, signals, coverage);
+          return <li key={repo.id}><details>
+            <summary>{repo.name} · {profile?.kind || "unprofiled"}{repo.archived ? " · archived" : ""}</summary>
+            <p><Link href={repo.html_url}>Repository</Link> · GitHub ID <code>{repo.id}</code></p>
+            <p>{live.live ? live.ciMessage : live.message}</p>
+            {live.currentSha && <p>Observed head <code>{live.currentSha}</code></p>}
+            {live.openPrs.map(pr => <p key={pr.number}><Link href={pr.url}>PR #{pr.number}</Link> {pr.title}</p>)}
+            {(live.prListPartial || live.openPrCountObserved > live.openPrs.length) &&
+              <p><Link href={repo.html_url + "/pulls"}>See all open pull requests</Link></p>}
+            <p>Coverage {cohort ? cohort.state.replaceAll("_", " ").toLowerCase() : "awaiting a public cohort observation"}</p>
+            {profile ? <>
+              <p>Profile source <code>{profile.source}</code>
+                {profileCurrent === false ? " · inspected HEAD has moved" : ""}</p>
+              <p>Required tests {profile.tests.join(" · ")}</p>
+              <p>PhiOS {profile.integration.replaceAll("_", " ")} · Trellis {profile.distribution.replaceAll("_", " ")}</p>
+              {profile.artifact && <p>Artifact <code>{profile.artifact.path}</code>
+                {" · "}{profile.artifact.sha256 || "digest awaits a reviewed build"}</p>}
+              <p>{profile.acceptance.join(" ")}</p>
+            </> : <p>{profiles ? "Review source type and delivery requirements." : "Readiness profile status unavailable."}</p>}
+            <button type="button" disabled={Boolean(signalsBusy[repo.id])}
+              onClick={() => onInspectRepo(repo.id)}>{signalsBusy[repo.id] ? "Inspecting…" : "Check live GitHub"}</button>
+            {signalsError[repo.id] && <p role="alert">GitHub observation failed. Try again when quota is available.</p>}
+          </details></li>;
+        })}
+      </ul>
+      <nav aria-label="Fleet inventory pages">
+        <button type="button" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}>Previous</button>
+        <span>Page {currentPage} of {pageCount}</span>
+        <button type="button" disabled={currentPage >= pageCount} onClick={() => setPage(currentPage + 1)}>Next</button>
+      </nav>
+    </>}
+    <p><Link href={READINESS}>Readiness source</Link></p>
+  </details>;
+}
+
+export function R9TurnQueue({ catalog = [], catalogState, coverage, signals = {},
+  signalsBusy = {}, signalsError = {}, onInspectRepo = () => {} }) {
   const [snapshot, setSnapshot] = useState(null);
   const [failure, setFailure] = useState("");
   const [verified, setVerified] = useState(null);
@@ -78,7 +138,7 @@ export function R9TurnQueue() {
   async function readReadiness() {
     setProfileStatus("Reading PhiOS profiles…");
     try {
-      const response = await fetch(READINESS_JSON, { credentials: "omit", cache: "no-store" });
+      const response = await fetch(READINESS_JSON, { credentials: "omit", cache: "no-store", redirect: "error" });
       if (!response.ok) throw Error();
       setProfiles(parseReadinessProfiles(await response.text()));
       setProfileStatus("");
@@ -116,17 +176,10 @@ export function R9TurnQueue() {
       </article>)}</div>
     </> : <p>Connect a local queue snapshot to see requests, workers and merge evidence.</p>}
     <p>The docs lane records CI and merges. Deployment and human acceptance are separate milestones.</p>
-    <details>
-      <summary>PhiOS integration and Trellis distribution</summary>
-      <button type="button" onClick={readReadiness}>Read PhiOS readiness profiles</button>
-      {profileStatus && <p role="status">{profileStatus}</p>}
-      {profiles && <ul>{profiles.map(row => <li key={row.repository}>
-        <strong>{row.repository}</strong> · {row.kind} · integration {row.integration.replaceAll("_", " ")}
-        {" · distribution "}{row.distribution.replaceAll("_", " ")}
-        <br /><code>{row.source}</code><br />{row.acceptance.join(" ")}
-      </li>)}</ul>}
-      <p><Link href={READINESS}>Source profiles</Link></p>
-    </details>
+    <FleetInventory catalog={catalog} catalogState={catalogState} profiles={profiles}
+      profileStatus={profileStatus} readReadiness={readReadiness}
+      coverage={coverage} signals={signals} signalsBusy={signalsBusy} signalsError={signalsError}
+      onInspectRepo={onInspectRepo} />
     <p><Link href={`${GITHUB}/issues/124`}>Fleet mission #124</Link></p>
   </section>;
 }

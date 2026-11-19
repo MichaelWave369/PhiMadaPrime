@@ -17,7 +17,7 @@ const FleetFailureInvestigator = React.lazy(() => import("./fleet-failure-invest
 const PhiBotCrewDeck = React.lazy(() => import("./phibot-crew-deck.jsx")
   .then(module => ({ default: module.PhiBotCrewDeck })));
 
-export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned,
+export function MissionBoard({ queue, plan, catalog, catalogState, coverage, contracts, reviewed, pinned,
   signals={}, signalsBusy={}, signalsError={}, onInspectRepo, onExportVerification,
   onReview, onPin, onVisit, onClose }) {
   const [query, setQuery] = useState("");
@@ -53,7 +53,9 @@ export function MissionBoard({ queue, plan, catalog, contracts, reviewed, pinned
         ← Return to office
       </button>
     </header>
-    <R9TurnQueue />
+    <R9TurnQueue catalog={catalog} catalogState={catalogState} coverage={coverage}
+      signals={signals} signalsBusy={signalsBusy} signalsError={signalsError}
+      onInspectRepo={onInspectRepo} />
     <OneRepoCompletionLane catalog={catalog} contracts={contracts}
       signals={signals} signalsBusy={signalsBusy} signalsError={signalsError}
       onInspectRepo={onInspectRepo} onVisit={onVisit}

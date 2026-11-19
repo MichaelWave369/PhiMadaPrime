@@ -773,7 +773,8 @@ function App() {
               onVisit={jumpToRepo} onReview={markReviewed} onPin={togglePinned}
               onClose={() => { setActiveTab("Directory"); setBoardOpen(false); }}
               onOpenMissionBoard={() => { setActiveTab("Missions"); setBoardOpen(true); }} /> : boardOpen ?
-            <MissionBoard queue={missions} plan={plan} catalog={rows} contracts={contracts}
+            <MissionBoard queue={missions} plan={plan} catalog={rows} catalogState={catalogState}
+              coverage={coverage} contracts={contracts}
               reviewed={reviewedJobs} pinned={pinnedJobs}
               signals={signals} signalsBusy={signalsBusy} signalsError={signalsError}
               onInspectRepo={repoId => {
