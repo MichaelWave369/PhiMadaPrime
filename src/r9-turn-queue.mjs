@@ -1,4 +1,5 @@
 import { TURN_REPO, TURN_REPO_ID } from "./autonomous-turn.mjs";
+import { missionLiveTriage } from "./mission-live-triage.mjs";
 
 const SHA = /^[a-f0-9]{40}$/;
 const DIGEST = /^[a-f0-9]{64}$/;
@@ -57,8 +58,10 @@ export function nextTurnAction(row) {
   if (row.state === "HELD" || row.state === "SUBMISSION_UNCERTAIN") {
     const actions = {
       AGENTORA_R1_DISPATCH_TOKEN_REQUIRED: "Configure the Agentora-only dispatch token and retry preflight.",
+      AGENTORA_R1_READ_TOKEN_REQUIRED: "Configure the Agentora-only evidence reader, then restart the watcher.",
       OWNER_REVIEW_WINDOW_EXPIRED: "Inspect the original run and prepare a fresh current-source task.",
       RECONCILE_BEFORE_ANY_NEW_REQUEST: "Find the original Actions run and reconcile its frozen plan.",
+      R1_SUBMISSION_PENDING_LOOKUP: "The watcher is looking for the original frozen plan using its remaining read budget.",
       R1_SUBMISSION_NEEDS_ORIGINAL_RUN_REVIEW: "Match the original Actions run to this task digest before proceeding.",
       R1_FINISHED_WITHOUT_ALL_REQUIRED_CI: "Inspect the exact-head CI and the original observer receipt.",
       R1_CI_PASSED_MERGE_UNCONFIRMED: "Inspect the merge gate and GitHub PR before closing this mission.",
@@ -76,18 +79,56 @@ export function parseReadinessProfiles(text) {
   if (text.length > SNAPSHOT_LIMIT) throw Error("Readiness profiles are too large.");
   const value = JSON.parse(text);
   if (value?.schema_version !== "phios.fleet_readiness.v1" || value.owner !== "MichaelWave369" ||
-      !Array.isArray(value.profiles) || value.profiles.length > 50) throw Error("Invalid readiness profiles.");
+      !Array.isArray(value.profiles) || value.profiles.length > 100) throw Error("Invalid readiness profiles.");
+  const ids = new Set();
+  const names = new Set();
   return value.profiles.map(row => {
-    if (!/^MichaelWave369\/[A-Za-z0-9_.-]{1,100}$/.test(row?.repository || "") ||
-        !POSITIVE(row.repository_id) || !SHA.test(row.source_sha || "") ||
+    if (typeof row?.repository !== "string" ||
+        !/^MichaelWave369\/[A-Za-z0-9_.-]{1,100}$/.test(row.repository) ||
+        !POSITIVE(row.repository_id) || ids.has(row.repository_id) ||
+        names.has(row.repository.toLowerCase()) || !SHA.test(row.source_sha || "") ||
         !["application","library","service","research","documentation"].includes(row.kind) ||
-        !["staging_only","out_of_scope"].includes(row.integration?.status) ||
+        !["staging_only","candidate_review","out_of_scope"].includes(row.integration?.status) ||
         !["held","not_requested"].includes(row.distribution) ||
+        (row.integration.status === "candidate_review" &&
+         (row.kind !== "application" || row.distribution !== "held" || row.build_artifact !== null)) ||
+        !Array.isArray(row.required_tests) || row.required_tests.length < 1 ||
+        row.required_tests.length > 12 ||
+        !row.required_tests.every(v => typeof v === "string" && v.length > 0 && v.length <= 240) ||
         !Array.isArray(row.human_acceptance) || row.human_acceptance.length > 12 ||
         !row.human_acceptance.every(v => typeof v === "string" && v.length <= 240)) {
       throw Error("Invalid readiness profile.");
     }
-    return { repository: row.repository, source: row.source_sha, kind: row.kind,
-      integration: row.integration.status, distribution: row.distribution, acceptance: row.human_acceptance };
+    ids.add(row.repository_id);
+    names.add(row.repository.toLowerCase());
+    const artifact = row.build_artifact;
+    if (artifact !== null &&
+        (typeof artifact?.path !== "string" || !artifact.path || artifact.path.length > 240 ||
+         !(artifact.sha256 === null || DIGEST.test(artifact.sha256 || "")))) {
+      throw Error("Invalid readiness artifact.");
+    }
+    return { repository: row.repository, repositoryId: row.repository_id, source: row.source_sha, kind: row.kind,
+      integration: row.integration.status, distribution: row.distribution, acceptance: row.human_acceptance,
+      tests: row.required_tests, artifact };
   });
+}
+
+export function inventoryRows(catalog, profiles, query) {
+  const index = new Map(profiles.map(profile => [profile.repositoryId, profile]));
+  const filter = query.trim().toLowerCase();
+  return catalog.filter(repo => !repo.exampleOnly && POSITIVE(repo.id)).flatMap(repo => {
+    const candidate = index.get(repo.id);
+    const profile = candidate?.repository === repo.full_name ? candidate : null;
+    const text = [repo.full_name, repo.language, profile?.kind || "unprofiled"].join(" ").toLowerCase();
+    return text.includes(filter) ? [{ repo, profile }] : [];
+  });
+}
+
+export function inventoryEvidence(repo, profile, signals, coverage, now = Date.now()) {
+  const live = missionLiveTriage({ repository: repo.full_name, repoId: repo.id,
+    headSha: profile?.source }, signals[repo.id], now);
+  const observed = coverage?.byRepo?.[repo.name];
+  const cohort = observed?.source === "PUBLIC_COHORT_OBSERVATION_NOT_FUNCTIONAL_PROOF" &&
+    observed.completed === false ? observed : null;
+  return { live, cohort, profileCurrent: live.live && profile ? live.currentSha === profile.source : null };
 }
