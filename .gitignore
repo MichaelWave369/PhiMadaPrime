@@ -10,3 +10,4 @@ coverage/
 fleet-artifacts/
 fleet-audit.json
 fleet-plan.json
+/public/fleet/r9-turns.json

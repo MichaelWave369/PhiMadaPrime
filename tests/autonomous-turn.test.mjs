@@ -47,12 +47,12 @@ async function fixture({merged=true}={}) {
       environments:[{name:"autonomous-turn-owner",id:123}]}],
     jobs:{total_count:1,jobs:[{name:"merge-gate",status:"completed",conclusion:"success"}]},
     commit:{sha:MERGE,parents:[{sha:SOURCE}]},ciRun:{head_sha:HEAD,repository:META,event:"pull_request",path:".github/workflows/ci.yml"},
-    ci:["backend (3.12)","backend (3.13)","web"].map((name,i)=>({name,id:i+1,
+    ci:[22,23].flatMap(rid=>["backend (3.12)","backend (3.13)","web"].map((name,i)=>({name,id:rid*10+i,
       head_sha:HEAD,status:"completed",conclusion:"success",app:{id:15368,slug:"github-actions"},
-      details_url:`https://github.com/${TURN_REPO}/actions/runs/22/job/${i+1}`})),
-    check:{name:"Autonomous Turn R1 receipt",head_sha:HEAD,status:"completed",conclusion:merged?"success":"neutral",
+      details_url:`https://github.com/${TURN_REPO}/actions/runs/${rid}/job/${rid*10+i}`}))),
+    check:{id:717,name:"Autonomous Turn R1 receipt",head_sha:HEAD,status:"completed",conclusion:merged?"success":"neutral",
       app:{id:15368,slug:"github-actions"},external_id:digest,
-      details_url:`https://github.com/${TURN_REPO}/actions/runs/11`}
+      details_url:`https://github.com/${TURN_REPO}/runs/717`}
   };
   const calls=[];
   const fetcher=async(url,options)=>{
@@ -67,6 +67,7 @@ async function fixture({merged=true}={}) {
     if(url.endsWith("/approvals"))return response(records.reviews);
     if(url.includes("/jobs?"))return response(records.jobs);
     if(url.endsWith("/actions/runs/22"))return response(records.ciRun);
+    if(url.endsWith("/actions/runs/23"))return response({...records.ciRun,event:"push"});
     if(url.endsWith("/commits/"+MERGE))return response(records.commit);
     throw Error("unexpected fixture path "+url);
   };
@@ -121,6 +122,7 @@ test("R1 live record correlation distinguishes a merge from project completion",
   assert.equal(r.testedSha,HEAD);assert.equal(r.projectVerifiedComplete,false);
   assert.equal(r.outstandingAcceptance.length,1);
   assert.equal(r.observation,"LIVE_GITHUB_RECORDS_CORRELATED");
+  assert.equal(r.runUrl,f.records.receipt.run_url);
   assert.ok(f.calls.some(c=>c.url.endsWith("/approvals")));
   assert.ok(f.calls.some(c=>c.url.endsWith("/commits/"+MERGE)));
   assert.equal(f.calls.filter(c=>c.url.endsWith("/pulls/99")).length,2);
@@ -140,6 +142,7 @@ test("R1 rejects forged check, approval, run, digest, SHA, job and merge evidenc
     r=>{r.run.path=".github/workflows/fake.yml";},r=>{r.task.human_scope="changed after approval";},
     r=>{r.jobs.jobs[0].conclusion="failure";},r=>{r.ci[0].head_sha=SOURCE;},
     r=>{r.ci[0].conclusion="failure";},r=>{r.ciRun.path=".github/workflows/fake.yml";},
+    r=>{r.ci.splice(3);},r=>{r.check.details_url=`https://github.com/${TURN_REPO}/runs/718`;},
     r=>{r.pr.merged=false;},r=>{r.commit.parents[0].sha="e".repeat(40);},
     r=>{r.receipt.project_verified_complete=true;}
   ];
