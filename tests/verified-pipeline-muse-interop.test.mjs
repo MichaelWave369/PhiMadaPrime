@@ -58,8 +58,8 @@ function signedFixture(receipt,key=keys){
 }
 
 test("R45 Muse adapter: canonical raw Ed25519 public key maps to standard SPKI",async()=>{
-  assert.deepEqual(decodeMuseEd25519PublicKey(b64url),raw);
-  assert.deepEqual(decodeMuseEd25519PublicKey("ed25519:"+b64url),raw);
+  assert.deepEqual(decodeMuseEd25519PublicKey(b64url),new Uint8Array(raw));
+  assert.deepEqual(decodeMuseEd25519PublicKey("ed25519:"+b64url),new Uint8Array(raw));
   const x=await adapt();
   assert.equal(x.museFingerprint,museFp);
   assert.equal(x.r45KeyId,r45Fp);
@@ -85,7 +85,7 @@ test("R45 Muse adapter refuses wrong fingerprint, malformed public keys and priv
   ]) {
     if(invalid.endsWith(" ") && invalid.startsWith("ed25519:")){
       // surrounding whitespace is tolerated as a copy/paste convenience
-      assert.deepEqual(decodeMuseEd25519PublicKey(invalid),raw);
+      assert.deepEqual(decodeMuseEd25519PublicKey(invalid),new Uint8Array(raw));
     } else {
       assert.throws(()=>decodeMuseEd25519PublicKey(invalid));
     }
