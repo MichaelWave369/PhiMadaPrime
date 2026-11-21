@@ -43,3 +43,19 @@
 .vpsig-boundary{font-size:12px;line-height:1.6;color:#c0e1dc;margin:0}
 @media(max-width:700px){.vpsig-fields{grid-template-columns:1fr}
  .vpsig-result dl>div{grid-template-columns:1fr;gap:3px}}
+
+/* R45 Muse adapter: public material only, collapsed unless explicitly opened. */
+.vpsig-muse{border:1px solid #577e87;border-radius:9px;background:#0d2633;
+ padding:12px;color:#d6eaf0;overflow-wrap:anywhere}
+.vpsig-muse summary{cursor:pointer;font-weight:700;font-size:13px;color:#a8eadb}
+.vpsig-muse p{font-size:12px;line-height:1.5}
+.vpsig-muse-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.vpsig-muse-form label{display:grid;gap:5px;font-size:12px}
+.vpsig-muse-form input{min-width:0;background:#102f3a;color:#f3fefc;
+ border:1px solid #6faaa4;border-radius:7px;padding:9px}
+.vpsig-muse-form button{grid-column:1/-1;justify-self:start;padding:10px 13px;
+ border:1px solid #8cdec4;background:#235c55;color:#f4fffc;
+ border-radius:8px;cursor:pointer;font-weight:700}
+.vpsig-muse-form button:disabled{opacity:.5}
+.vpsig-muse code{overflow-wrap:anywhere;font-size:11px}
+@media(max-width:700px){.vpsig-muse-form{grid-template-columns:1fr}}
