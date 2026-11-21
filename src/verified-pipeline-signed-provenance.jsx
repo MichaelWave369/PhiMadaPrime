@@ -2,6 +2,7 @@ import React,{useEffect,useRef,useState} from "react";
 import {SIGNED_PROVENANCE_LIMIT,PIN_STORE_LIMIT,verifySignedGmedProvenance}
   from "./verified-pipeline-signed-provenance.mjs";
 import "./verified-pipeline-signed-provenance.css";
+import {MuseR45PinHelper} from "./verified-pipeline-muse-interop.jsx";
 
 /** Browser-local verification only. No signer, no issuer keys, no approvals. */
 export function SignedProvenanceGate({reportRaw=null}){
@@ -73,6 +74,12 @@ export function SignedProvenanceGate({reportRaw=null}){
         <small>Never trust a pin store just because the sender enclosed it.</small>
       </label>
     </div>
+    <MuseR45PinHelper onPinsCreated={json=>{
+      invalidate();
+      setPins(new File([json],"muse-r45-operator-pins.json",{type:"application/json"}));
+      setConfirmed(false);
+      if(pinsInput.current)pinsInput.current.value="";
+    }}/>
     <label className="vpsig-confirm">
       <input type="checkbox" checked={confirmed} disabled={!pins}
         onChange={e=>{invalidate();setConfirmed(e.target.checked);}}/>
