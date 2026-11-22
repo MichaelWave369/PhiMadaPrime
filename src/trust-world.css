@@ -65,3 +65,31 @@
 .world-roster{grid-template-columns:1fr}.world-compare-grid{grid-template-columns:1fr}
 .world-ledger-header{flex-direction:column}.world-ledger-header label{width:100%}}
 @media(prefers-reduced-motion:reduce){.trust-world *{scroll-behavior:auto!important}}
+
+/* R2 local Ollama evidence viewer. Imports are offline and never launch models. */
+.world-model-bay{margin:18px 0;padding:15px;border:1px solid #568d97;border-radius:9px;background:linear-gradient(135deg,#1b3139,#242338);min-width:0}
+.world-model-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.world-model-head small{font:700 10px/1.4 monospace;letter-spacing:.08em;color:#a8e4df}
+.world-model-head h3{font:800 17px/1.4 monospace;color:#e8faff;margin:7px 0}
+.world-model-head p{max-width:730px;font:12px/1.6 system-ui;color:#d9e7eb;margin:4px 0 12px}
+.world-model-tag{flex:none;border:1px solid #9ed7cb;border-radius:5px;color:#b2f6e1;padding:7px 10px;font:800 10px/1.4 monospace}
+.world-model-actions{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0}
+.world-model-actions button{min-height:40px;border:1px solid #b2dcd4;border-radius:5px;background:#315b61;color:#f3fffb;font:700 12px monospace;padding:9px 12px;cursor:pointer}
+.world-model-actions button.world-secondary{background:#303d53;color:#edf2ff;border-color:#9ca8c7}
+.world-model-actions button:focus-visible{outline:3px solid #ffe3a5;outline-offset:2px}
+.world-model-actions button:disabled{cursor:not-allowed;opacity:.55}
+.world-model-help{font:11px/1.6 system-ui;color:#d5dee6;margin:8px 0;overflow-wrap:anywhere}
+.world-model-help code{color:#f3d99c;background:#29293c;padding:2px 4px;border-radius:4px}
+.world-model-verified,.world-model-error{padding:10px 12px;border-radius:5px;font:12px/1.5 system-ui}
+.world-model-verified{border-left:4px solid #8edcb5;background:#24483e;color:#ddffec}
+.world-model-error{border-left:4px solid #f2a3ac;background:#4a2b3b;color:#ffe0e0}
+.world-model-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}
+.world-model-stats>div{border:1px solid #557880;border-radius:5px;padding:10px;background:#202f3a;min-width:0}
+.world-model-stats small{display:block;color:#aad6d6;font:10px monospace;margin-bottom:6px}
+.world-model-stats strong{display:block;color:#f7e3bd;font:700 13px monospace;overflow-wrap:anywhere}
+.world-model-digest{font:11px/1.5 system-ui;color:#d2e0e6;overflow-wrap:anywhere}
+.world-model-digest code{display:block;margin-top:5px;color:#c9f0d3;font:10px/1.5 monospace}
+.world-model-ledger h4{font:700 12px monospace;color:#e5e6fc;margin:12px 0}
+.world-model-ledger .world-table-wrap{max-height:320px}
+@media(max-width:740px){.world-model-head{display:block}.world-model-tag{display:inline-block;margin-bottom:11px}
+.world-model-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
