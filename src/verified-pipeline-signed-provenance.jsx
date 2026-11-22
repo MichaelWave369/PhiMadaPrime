@@ -10,6 +10,7 @@ export function SignedProvenanceGate({reportRaw=null}){
   const [confirmed,setConfirmed]=useState(false);
   const [result,setResult]=useState(null),[busy,setBusy]=useState(false);
   const [error,setError]=useState("");
+  const [museReset,setMuseReset]=useState(0);
   const signatureInput=useRef(null),pinsInput=useRef(null),attempt=useRef(0);
   const selectedReceipt=useRef(reportRaw);
   selectedReceipt.current=reportRaw;
@@ -17,6 +18,7 @@ export function SignedProvenanceGate({reportRaw=null}){
     ++attempt.current;
     setSigned(null);setPins(null);setConfirmed(false);
     setResult(null);setBusy(false);setError("");
+    setMuseReset(n=>n+1);
     if(signatureInput.current)signatureInput.current.value="";
     if(pinsInput.current)pinsInput.current.value="";
   },[reportRaw]);
@@ -25,6 +27,7 @@ export function SignedProvenanceGate({reportRaw=null}){
   }
   function clear(){
     invalidate();setSigned(null);setPins(null);setConfirmed(false);
+    setMuseReset(n=>n+1);
     if(signatureInput.current)signatureInput.current.value="";
     if(pinsInput.current)pinsInput.current.value="";
   }
@@ -74,7 +77,7 @@ export function SignedProvenanceGate({reportRaw=null}){
         <small>Never trust a pin store just because the sender enclosed it.</small>
       </label>
     </div>
-    <MuseR45PinHelper onPinsCreated={json=>{
+    <MuseR45PinHelper key={museReset} onPinsCreated={json=>{
       invalidate();
       setPins(new File([json],"muse-r45-operator-pins.json",{type:"application/json"}));
       setConfirmed(false);
