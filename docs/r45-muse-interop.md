@@ -1,6 +1,6 @@
 # R45 × Muse public-key interoperability experiment
 
-**Status: implementation proposed in draft PR; disposable-key tests only.**
+**Status: R45 Muse public-key adapter and synthetic Chromium acceptance merged. Python-to-JavaScript public fixture under review.**
 **Real Muse CLI signing: NOT YET TESTED.** The `muse sign phi-gmed-receipt` interface is being developed by the Muse team; neither its final arguments nor its release availability are assumed here.
 
 This is an extension of **PhiMadaPrime's existing R45 Signed Provenance Gate**, not a new trust system or repository.
@@ -37,6 +37,37 @@ PHI-GMED-REPORT-PROVENANCE-ED25519-V1\n
 There is exactly **one final newline**. The placeholders are each replaced with the literal ASCII field values; `claim_base64` encodes the exact UTF-8 claim JSON bytes. Do not reserialize the claim between signing and verification.
 
 The strict envelope schema, signed-claim schema, time relationship and operator pin schema are documented in [R45's existing contract](verified-pipeline-factory-r45-signatures.md), which remains unchanged.
+
+
+## Fixed public-only Python → JavaScript interoperability vector
+
+For a reproducible test independent of Node's own key generation, see
+[`tests/fixtures/r45-muse-python-public-vector.json`](../tests/fixtures/r45-muse-python-public-vector.json)
+and [`tests/r45-muse-python-public-vector.test.mjs`](../tests/r45-muse-python-public-vector.test.mjs).
+
+- A disposable Ed25519 keypair was generated **in memory** with Python's
+  `cryptography` library, its public key exported as raw 32-byte base64url,
+  and a strictly synthetic GMED report signed as an **R45 envelope**.
+- Only the **public key**, SHA-256 raw-key fingerprint, R45 SPKI fingerprint,
+  synthetic report bytes, encoded claim and 64-byte signature were published.
+  The private key was **never written, exported or committed**.
+- Node's independent `crypto.verify` implementation and the existing R45
+  `verifySignedGmedProvenance` Web Crypto implementation must both verify the
+  unmodified signature. Wrong fingerprint, mutated signature, altered report,
+  mismatched issuer, changed source revision and authority-field smuggling
+  must fail.
+- This demonstrates Python Ed25519 signing is compatible with R45's message
+  format, **not** that the unreleased Muse signing CLI generated the fixture,
+  or that the synthetic GitHub repository, PR or checks exist.
+
+Run only the targeted regression:
+
+```bash
+node --test tests/r45-muse-python-public-vector.test.mjs
+```
+
+The fixture's exact public bytes and fingerprints can be used by the Muse team
+for independent comparison without revealing any private-key material.
 
 ## Proposed operator workflow when Muse releases the signer
 

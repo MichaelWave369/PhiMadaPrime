@@ -1,0 +1,20 @@
+{
+  "fixture": "PHI_R45_PYTHON_ED25519_PUBLIC_VECTOR_V1",
+  "synthetic": true,
+  "source": "Disposable Python cryptography Ed25519 key generated in memory; no Muse identity or real GMED run",
+  "publicKey": "ed25519:dpMv68VBowngdIaytbSQI8F31gn_bLJKzpEx11jIc7k",
+  "museFingerprint": "sha256:0707bf4ff74c08d69ef197e2cb2b85d8d4c7046cc5036c51cdaf7c9f1b2ab506",
+  "r45KeyId": "sha256:16500f5235f781bc44a7991c49efd9d2e244cbac003fd9fcca25351e51ad9311",
+  "issuerId": "musehub:synthetic-python-vector",
+  "repository": "MichaelWave369/R45MuseSynthetic",
+  "reportRaw": "{\"schema\":\"gmed-report:v1\",\"state\":\"GMED\",\"merged\":true,\"sha\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"counts\":{\"total\":1,\"passed\":1,\"accepted\":1,\"failed\":0,\"pending\":0,\"unknown\":0},\"checks\":[{\"name\":\"SYNTHETIC\",\"kind\":\"check\",\"status\":\"completed\",\"conclusion\":\"success\",\"grade\":\"good\",\"url\":null}],\"pullUrl\":\"https://github.com/MichaelWave369/R45MuseSynthetic/pull/23\",\"title\":\"PUBLIC SYNTHETIC TEST VECTOR ONLY\",\"number\":23,\"observedAt\":\"2026-11-21T18:00:00Z\",\"detail\":\"Synthetic report; not from GitHub\",\"limits\":\"Not proof of CI, repository or merge\",\"target\":{\"owner\":\"MichaelWave369\",\"repo\":\"R45MuseSynthetic\",\"fullName\":\"MichaelWave369/R45MuseSynthetic\",\"number\":23,\"url\":\"https://github.com/MichaelWave369/R45MuseSynthetic/pull/23\"}}",
+  "envelope": {
+    "format": "phi.gmed.signed-provenance.v1",
+    "algorithm": "Ed25519",
+    "issuer_id": "musehub:synthetic-python-vector",
+    "key_id": "sha256:16500f5235f781bc44a7991c49efd9d2e244cbac003fd9fcca25351e51ad9311",
+    "signed_at": "2026-11-21T18:01:00Z",
+    "claim_base64": "eyJmb3JtYXQiOiJwaGkuZ21lZC5wcm92ZW5hbmNlLWNsYWltLnYxIiwic2NvcGUiOiJHTUVEX1YxX1JFUE9SVF9ESUdFU1RfT05MWSIsInJlcG9zaXRvcnkiOiJNaWNoYWVsV2F2ZTM2OS9SNDVNdXNlU3ludGhldGljIiwicHJfbnVtYmVyIjoyMywibWVyZ2Vfc2hhIjoiYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYSIsInJlcG9ydF9zaGEyNTYiOiJjZDc2OTA0ZDhkODhhNTI1YTc5YjRhNDg4MGVkMTAyMWUwMTBiOTMxNmY5MmFiNzA0N2JlMzg4YTJhOGM1OWRjIiwib2JzZXJ2ZWRfYXQiOiIyMDI2LTExLTIxVDE4OjAwOjAwWiIsImF1dGhvcml0eSI6Ik5PTkUiLCJwZXJtaXNzaW9ucyI6W119",
+    "signature_base64": "/s7QZXSzRJSV6t+SmysbXNAoAKAniYij2VtpWDzjENbGA+sm4FSIcIrli/Hbgx33ablyjJR3AUy7DbiQJqe6DQ=="
+  }
+}
