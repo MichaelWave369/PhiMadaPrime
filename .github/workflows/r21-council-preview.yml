@@ -7,6 +7,8 @@ on:
       - 'src/**'
       - 'scripts/r21_preview_council_browser.mjs'
       - 'scripts/r23_preview_r20_import_browser.mjs'
+      - 'scripts/r45_muse_preview_browser.mjs'
+      - 'tests/r45-muse-preview-browser.test.mjs'
       - 'tests/r23-evidence-import-browser.test.mjs'
       - 'tests/fixtures/council-e1-producer-golden.json'
       - 'tests/r21-preview-browser.test.mjs'
@@ -20,6 +22,8 @@ on:
       - 'src/**'
       - 'scripts/r21_preview_council_browser.mjs'
       - 'scripts/r23_preview_r20_import_browser.mjs'
+      - 'scripts/r45_muse_preview_browser.mjs'
+      - 'tests/r45-muse-preview-browser.test.mjs'
       - 'tests/r23-evidence-import-browser.test.mjs'
       - 'tests/fixtures/council-e1-producer-golden.json'
       - 'tests/r21-preview-browser.test.mjs'
@@ -54,6 +58,8 @@ jobs:
           node --test tests/r21-preview-browser.test.mjs
           node --check scripts/r23_preview_r20_import_browser.mjs
           node --test tests/r23-evidence-import-browser.test.mjs
+          node --check scripts/r45_muse_preview_browser.mjs
+          node --test tests/r45-muse-preview-browser.test.mjs
       - name: Build candidate source with exact CI checkout commit marker
         run: npm run build
       - name: Install isolated Chromium runtime
@@ -80,6 +86,18 @@ jobs:
         env:
           PREVIEW_SOURCE_SHA: ${{ github.sha }}
         run: node scripts/r23_preview_r20_import_browser.mjs r23-artifacts/r20-import-browser.json
+      - name: Exercise R45 Muse public-key adapter and signature refusals in isolated Chromium
+        env:
+          PREVIEW_SOURCE_SHA: ${{ github.sha }}
+        run: node scripts/r45_muse_preview_browser.mjs r45-muse-artifacts/browser-preview.json
+      - name: Upload bounded R45 Muse synthetic browser result even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phimada-r45-muse-local-preview-${{ github.run_id }}
+          path: r45-muse-artifacts/browser-preview.json
+          if-no-files-found: warn
+          retention-days: 7
       - name: Upload bounded preview result even on failed or incomplete steps
         if: always()
         uses: actions/upload-artifact@v4
